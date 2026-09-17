@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 카드 게임</title>
+    <title>단어 분류 카드 게임 - 스테이지 모드</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
         :root {
             --card-width: 75px;
             --card-height: 110px;
-            --gap-size: 15px;
+            --gap-size: 10px; /* 열 개수가 늘어날 수 있으므로 간격을 살짝 줄임 */
             --font-base: 1rem;
             
-            /* 유저 요청 3종 그린 테마 */
-            --bg-color: #c5dec4; /* 1. 연한 그린 (Veiled Vista 기반) */
-            --panel-bg: #025f1d; /* 3. 어두운 그린 (PMS 2427 C) */
-            --card-back-main: #13b54d; /* 2. 채도 높은 그린 (D50 Lighting Indicator 기반) */
-            --card-back-pattern: #0e9a40; /* 패턴용 톤다운 그린 */
+            --bg-color: #c5dec4; 
+            --panel-bg: #025f1d; 
+            --card-back-main: #13b54d; 
+            --card-back-pattern: #0e9a40; 
             
             --text-main: #025f1d; 
             --glass-border: rgba(255, 255, 255, 0.3);
@@ -25,30 +24,25 @@
 
         @media (max-width: 600px) {
             :root {
-                --card-width: 21vw; 
-                --card-height: 30vw;
-                --gap-size: 2vw;
-                --font-base: 0.85rem;
+                --card-width: 19vw; /* 5열까지 표시하기 위해 카드 너비 조정 */
+                --card-height: 28vw;
+                --gap-size: 1.5vw;
+                --font-base: 0.8rem;
             }
-            .game-layout {
-                padding: 0 15px !important;
-            }
+            .game-layout { padding: 0 10px !important; }
             .top-section {
-                gap: 45px !important;
-                margin-top: 15px !important;
-                margin-bottom: 45px !important; 
+                gap: 40px !important;
+                margin-top: 10px !important;
+                margin-bottom: 40px !important; 
             }
-            .status-panel {
-                margin: 10px 0;
-                font-size: 0.95rem !important;
-            }
-            h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); }
+            .status-panel { margin: 10px 0; font-size: 0.9rem !important; }
+            h1 { font-size: 1.3rem; text-align: center; margin-bottom: 5px; }
         }
 
         body { 
             background-color: var(--bg-color);
             color: var(--text-main); 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+            font-family: 'Pretendard', sans-serif; 
             margin: 0;
             padding-bottom: 80px;
             overflow-x: hidden;
@@ -59,25 +53,24 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 500px; 
+            max-width: 550px; 
             margin: 0 auto;
             box-sizing: border-box;
             padding: 0 20px;
         }
 
-        /* 점수판 - 3. 어두운 그린 */
         .status-panel {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
-            font-size: 1.1rem;
+            margin: 15px 0;
+            font-size: 1.05rem;
             font-weight: 600;
             background: var(--panel-bg);
             color: #ffffff;
-            padding: 12px 20px;
+            padding: 12px 15px;
             border-radius: 12px;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
         .top-section {
@@ -85,7 +78,7 @@
             flex-direction: column;
             width: 100%;
             gap: 40px;
-            margin: 20px 0 40px 0; 
+            margin: 15px 0 35px 0; 
         }
 
         .deck-area {
@@ -99,25 +92,22 @@
             display: flex;
             gap: var(--gap-size);
             width: 100%;
-            justify-content: space-between;
+            justify-content: center; /* 컬럼 수에 맞게 중앙 정렬 */
         }
         
-        .board {
-            align-items: flex-start;
-        }
+        .board { align-items: flex-start; }
 
         .column { 
             box-sizing: content-box; 
             width: var(--card-width); 
             min-height: var(--card-height); 
-            border: 2px dashed rgba(2, 95, 29, 0.3); /* 배경에 어울리는 점선 */
+            border: 2px dashed rgba(2, 95, 29, 0.3); 
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 8px; 
             position: relative; 
             transition: padding-bottom 0.3s ease;
         }
         
-        /* 파운데이션 - 3. 어두운 그린 */
         .foundation {
             border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
@@ -125,24 +115,22 @@
             box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
         }
 
-        /* 파운데이션 라벨 */
         .foundation-label {
             position: absolute;
-            top: -28px;
+            top: -26px;
             left: 50%;
             transform: translateX(-50%);
             width: max-content;
-            padding: 4px 10px;
+            padding: 3px 8px;
             text-align: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 800;
             color: var(--panel-bg);
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 10px;
             pointer-events: none; 
             z-index: 50;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border: 1px solid var(--panel-bg);
         }
 
         .card { 
@@ -161,15 +149,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.05);
             user-select: none;
             word-break: keep-all; 
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease; 
+            transition: transform 0.2s ease, opacity 0.3s ease; 
             touch-action: none; 
         }
 
-        .card-word {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-        }
+        .card-word { position: relative; z-index: 1; text-align: center; }
 
         .card[draggable="true"] { cursor: grab; }
         .card[draggable="true"]:active { 
@@ -183,10 +167,9 @@
         .category-card {
             background: #fdfdfd;
             border: 2px solid var(--panel-bg) !important; 
-            box-shadow: 0 0 8px rgba(2, 95, 29, 0.2), 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 8px rgba(2, 95, 29, 0.2);
         }
         
-        /* 카드 뒷면 - 2. 채도 높은 그린 기반 패턴 */
         .card-back {
             background-color: var(--card-back-main) !important;
             background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, var(--card-back-pattern) 10px, var(--card-back-pattern) 20px) !important;
@@ -196,29 +179,31 @@
 
         .stacked-deck {
             box-shadow: 
-                -1px 1px 0 #fff,
-                -2px 2px 0 var(--card-back-main),
-                -3px 3px 0 #fff,
-                -4px 4px 0 var(--card-back-main),
+                -1px 1px 0 #fff, -2px 2px 0 var(--card-back-main),
+                -3px 3px 0 #fff, -4px 4px 0 var(--card-back-main),
                 -5px 5px 6px rgba(0,0,0,0.2) !important;
         }
 
         .target-count-text {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             margin-top: 4px;
             color: #7f8c8d;
             font-weight: 600;
         }
 
-        /* 제공된 팔레트 기반 카테고리 색상 지정 (그린~블루 계열) */
-        .color-animal { color: #64731E; } /* FERN FROND */
-        .color-fruit { color: #267D39; } /* GORGEOUS GREEN */
-        .color-job { color: #00807A; } /* BLUE WINGED TEAL */
-        .color-country { color: #007863; } /* TEAL WATERS */
-        .color-food { color: #005452; } /* TABRIZ TEAL */
-        .color-sport { color: #008489; } /* PRECIOUS BLUE */
-        .color-color { color: #48A3A7; } /* BLUE RACER */
-        .color-instrument { color: #8AAD34; } /* AVOCADO */
+        /* 풀 확장된 12개 카테고리 색상 */
+        .color-animal { color: #64731E; } 
+        .color-fruit { color: #267D39; } 
+        .color-job { color: #00807A; } 
+        .color-country { color: #007863; } 
+        .color-food { color: #005452; } 
+        .color-sport { color: #008489; } 
+        .color-color { color: #48A3A7; } 
+        .color-instrument { color: #8AAD34; }
+        .color-space { color: #2c3e50; }
+        .color-weather { color: #2980b9; }
+        .color-transport { color: #d35400; }
+        .color-family { color: #e84393; }
         
         #deck-pile {
             cursor: pointer;
@@ -230,6 +215,28 @@
             border-radius: 8px;
             transition: all 0.2s ease;
         }
+
+        /* 팝업 UI (게임오버 / 클리어) */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(5px);
+        }
+        .popup {
+            background: #fff; color: var(--text-main);
+            padding: 30px; border-radius: 16px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;
+        }
+        .popup h2 { margin-top: 0; color: var(--panel-bg); }
+        .popup p { margin: 15px 0; font-weight: 600; }
+        .btn {
+            background: var(--card-back-main); color: #fff;
+            border: none; padding: 12px 24px; font-size: 1.1rem;
+            font-weight: bold; border-radius: 8px; cursor: pointer;
+            margin-top: 10px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -237,6 +244,7 @@
         <h1>단어 분류 카드 게임</h1>
         
         <div class="status-panel">
+            <div id="stage-display">스테이지: 1</div>
             <div id="score-display">점수: 0</div>
             <div id="action-display">남은 행동: 0</div>
         </div>
@@ -247,101 +255,228 @@
                 <div id="waste-pile" class="column"></div> 
             </div>
 
-            <div id="foundations" class="foundation-area">
-                <div class="column foundation dropzone"></div>
-                <div class="column foundation dropzone"></div>
-                <div class="column foundation dropzone"></div>
-                <div class="column foundation dropzone"></div>
-            </div>
+            <!-- 파운데이션과 보드는 JS에서 동적으로 생성됩니다 -->
+            <div id="foundations" class="foundation-area"></div>
         </div>
 
         <div id="board" class="board"></div>
     </div>
 
+    <!-- 상태 알림 팝업 -->
+    <div id="overlay">
+        <div class="popup" id="popup-content">
+            <h2 id="popup-title">스테이지 클리어!</h2>
+            <p id="popup-desc">모든 카테고리를 완성했습니다.</p>
+            <button class="btn" id="popup-btn">다음 스테이지</button>
+        </div>
+    </div>
+
     <script>
         const cardOffset = 22; 
-
-        // 트럼프 무늬 기호 모두 제거 후 단어만 남김
-        const categoryConfig = {
-            '동물': { colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'] },
-            '과일': { colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아'] },
-            '직업': { colorClass: 'color-job', words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우'] },
-            '국가': { colorClass: 'color-country', words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다'] },
-            '음식': { colorClass: 'color-food', words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨'] },
-            '스포츠': { colorClass: 'color-sport', words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프'] },
-            '색깔': { colorClass: 'color-color', words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정'] },
-            '악기': { colorClass: 'color-instrument', words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫'] }
+        
+        // 12개 카테고리 풀 확장
+        const categoryPool = {
+            '동물': { colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말'] },
+            '과일': { colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리'] },
+            '직업': { colorClass: 'color-job', words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너'] },
+            '국가': { colorClass: 'color-country', words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아'] },
+            '음식': { colorClass: 'color-food', words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드'] },
+            '스포츠': { colorClass: 'color-sport', words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도'] },
+            '색깔': { colorClass: 'color-color', words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘'] },
+            '악기': { colorClass: 'color-instrument', words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른'] },
+            '우주': { colorClass: 'color-space', words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운'] },
+            '날씨': { colorClass: 'color-weather', words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개'] },
+            '교통': { colorClass: 'color-transport', words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트'] },
+            '가족': { colorClass: 'color-family', words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
         };
 
+        // 전역 게임 상태
+        let currentStage = 1;
+        let score = 0;
         let deck = [];
         let draggedCards = []; 
         let sourceColumn = null; 
-        let score = 0;
         let remainingActions = 0;
         let isGameOver = false;
         
+        let targetCategoriesCount = 0;
+        let clearedCategoriesCount = 0;
+        let categoryTargetCounts = {};
+        
         let touchStartX = 0;
         let touchStartY = 0;
-        
-        const categoryTargetCounts = {};
 
-        for (let category in categoryConfig) {
-            const config = categoryConfig[category];
-            const randomWordCount = Math.floor(Math.random() * 6) + 3;
-            categoryTargetCounts[category] = randomWordCount + 1;
+        // 스테이지 난이도 설정 함수 (최대 파운데이션/보드 5열)
+        function getStageConfig(stage) {
+            let cols = 3, cats = 3, minW = 3, maxW = 4;
+            
+            if (stage <= 5) { cols = 3; cats = 3; minW = 3; maxW = 4; }
+            else if (stage <= 15) { cols = 4; cats = 4; minW = 4; maxW = 5; }
+            else if (stage <= 35) { cols = 4; cats = 5; minW = 4; maxW = 6; }
+            else if (stage <= 60) { cols = 5; cats = 6; minW = 5; maxW = 7; }
+            else if (stage <= 80) { cols = 5; cats = 8; minW = 5; maxW = 8; }
+            else { cols = 5; cats = Math.min(10, Object.keys(categoryPool).length); minW = 6; maxW = 8; }
+            
+            return { cols, cats, minW, maxW };
+        }
 
-            deck.push({ 
-                isCategoryCard: true, 
-                category: category, 
-                word: category, 
-                targetCount: randomWordCount, 
-                colorClass: config.colorClass 
+        // 배열 무작위 섞기 (피셔-예이츠)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 게임 초기화 및 시작
+        function initGame(stage) {
+            isGameOver = false;
+            deck = [];
+            clearedCategoriesCount = 0;
+            categoryTargetCounts = {};
+            
+            const config = getStageConfig(stage);
+            targetCategoriesCount = config.cats;
+            
+            document.getElementById('stage-display').innerText = `스테이지: ${stage}`;
+            
+            // 1. 사용할 카테고리 무작위 선정
+            const allCatKeys = Object.keys(categoryPool);
+            shuffle(allCatKeys);
+            const selectedCats = allCatKeys.slice(0, config.cats);
+            
+            // 2. 덱(카드 풀) 구성
+            for (let cat of selectedCats) {
+                const poolConfig = categoryPool[cat];
+                const wordCount = Math.floor(Math.random() * (config.maxW - config.minW + 1)) + config.minW;
+                categoryTargetCounts[cat] = wordCount + 1; // 카테고리 카드 1장 포함
+                
+                deck.push({ 
+                    isCategoryCard: true, category: cat, word: cat, 
+                    targetCount: wordCount, colorClass: poolConfig.colorClass 
+                });
+                
+                // 단어 풀에서 랜덤 선택
+                let wordsPool = [...poolConfig.words];
+                shuffle(wordsPool);
+                const selectedWords = wordsPool.slice(0, wordCount);
+                
+                for (let word of selectedWords) {
+                    deck.push({ 
+                        isCategoryCard: false, category: cat, word: word, colorClass: poolConfig.colorClass 
+                    });
+                }
+            }
+            
+            shuffle(deck);
+            
+            remainingActions = Math.floor(deck.length * 2.2); // 행동 횟수를 카드수의 2.2배로 넉넉히
+            document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
+            
+            // 3. 보드와 파운데이션 DOM 생성
+            const foundationsDiv = document.getElementById('foundations');
+            const boardDiv = document.getElementById('board');
+            foundationsDiv.innerHTML = '';
+            boardDiv.innerHTML = '';
+            
+            const columns = [];
+            for (let i = 0; i < config.cols; i++) {
+                // 파운데이션 칸
+                let fCol = document.createElement('div');
+                fCol.className = 'column foundation dropzone';
+                foundationsDiv.appendChild(fCol);
+                
+                // 보드 칸
+                let bCol = document.createElement('div');
+                bCol.className = 'column dropzone';
+                boardDiv.appendChild(bCol);
+                columns.push(bCol);
+            }
+            
+            // 이벤트 리스너 재부착
+            document.querySelectorAll('.dropzone').forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', handleDropArea);
             });
             
-            const selectedWords = config.words.slice(0, randomWordCount);
-            for (let word of selectedWords) {
-                deck.push({ 
-                    isCategoryCard: false, 
-                    category: category, 
-                    word: word, 
-                    colorClass: config.colorClass 
-                });
-            }
-        }
-        
-        remainingActions = deck.length * 2;
-        document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-
-        for (let i = deck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
-
-        const board = document.getElementById('board');
-        const columns = [];
-        for (let i = 0; i < 4; i++) {
-            let colDiv = document.createElement('div');
-            colDiv.className = 'column dropzone'; 
-            board.appendChild(colDiv);
-            columns.push([]);
-        }
-        
-        function adjustBoardHeight() {
-            document.querySelectorAll('.column').forEach(col => {
-                const cards = col.querySelectorAll('.card');
-                if (cards.length > 0) {
-                    const lastCard = cards[cards.length - 1];
-                    col.style.paddingBottom = lastCard.style.top;
-                } else {
-                    col.style.paddingBottom = '0px';
+            // 4. 보드에 초기 카드 분배 (열 번호에 따라 차등 분배)
+            let cardIndex = 0;
+            for (let i = 0; i < config.cols; i++) {
+                let cardCount = i + 2; // 컬럼당 분배 개수 조정
+                if(cardIndex + cardCount > deck.length / 2) cardCount = 2; // 안전 장치
+                
+                for (let j = 0; j < cardCount; j++) {
+                    if (cardIndex >= deck.length) break;
+                    let card = deck[cardIndex++];
+                    let cardElement = createCardElement(card, j);
+                    
+                    if (j === cardCount - 1) {
+                        flipCard(cardElement);
+                    } else {
+                        cardElement.classList.add('card-back', 'stacked-deck');
+                    }
+                    columns[i].appendChild(cardElement);
                 }
+            }
+            
+            // 남은 카드는 더미로
+            window.drawPile = deck.slice(cardIndex);
+            document.getElementById('waste-pile').innerHTML = '';
+            updateDeckUI();
+            adjustBoardHeight();
+        }
+
+        function createCardElement(cardData, index) {
+            let el = document.createElement('div');
+            el.className = 'card';
+            el.style.top = (index * cardOffset) + 'px'; 
+            el.dataset.category = cardData.category;
+            el.dataset.word = cardData.word;
+            el.dataset.colorClass = cardData.colorClass;
+            el.dataset.isCategoryCard = cardData.isCategoryCard;
+            el.dataset.targetCount = cardData.targetCount || ''; 
+            el.dataset.faceUp = 'false'; 
+            return el;
+        }
+
+        // 공통 로직 및 팝업 처리
+        function adjustBoardHeight() {
+            document.querySelectorAll('.board .column').forEach(col => {
+                const cards = col.querySelectorAll('.card');
+                if (cards.length > 0) col.style.paddingBottom = cards[cards.length - 1].style.top;
+                else col.style.paddingBottom = '0px';
             });
+        }
+
+        function showPopup(type) {
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('popup-title');
+            const desc = document.getElementById('popup-desc');
+            const btn = document.getElementById('popup-btn');
+            
+            if(type === 'clear') {
+                title.innerText = '스테이지 클리어!';
+                title.style.color = '#13b54d';
+                desc.innerText = `총 ${targetCategoriesCount}개의 카테고리를 모두 분류했습니다.\n(보너스 점수 획득!)`;
+                btn.innerText = '다음 스테이지로';
+                btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
+                score += remainingActions * 10; // 남은 횟수 비례 보너스
+                updateScore(0);
+            } else {
+                title.innerText = '게임 오버';
+                title.style.color = '#d35400';
+                desc.innerText = '행동 횟수를 모두 소진했습니다.';
+                btn.innerText = '다시 시작';
+                btn.onclick = () => { overlay.style.display = 'none'; score = 0; updateScore(0); initGame(currentStage); };
+            }
+            overlay.style.display = 'flex';
         }
 
         function checkGameOver() {
-            if (remainingActions <= 0 && !isGameOver) {
+            if (remainingActions <= 0 && !isGameOver && clearedCategoriesCount < targetCategoriesCount) {
                 isGameOver = true;
-                setTimeout(() => alert("행동 횟수를 모두 소진했습니다! 게임 오버!"), 300);
+                setTimeout(() => showPopup('gameover'), 300);
             }
         }
         
@@ -355,6 +490,14 @@
         function updateScore(points) {
             score += points;
             document.getElementById('score-display').innerText = `점수: ${score}`;
+        }
+
+        function handleDropArea(e) {
+            e.preventDefault();
+            if (draggedCards.length > 0 && !isGameOver) {
+                executeDropLogic(this);
+                draggedCards = [];
+            }
         }
 
         function executeDropLogic(dropZoneElement) {
@@ -396,12 +539,17 @@
                     
                     if (currentCardsCount === categoryTargetCounts[currentCategory]) {
                         updateScore(100); 
+                        clearedCategoriesCount++;
                         setTimeout(() => {
                             dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0');
                             if(label) label.style.opacity = '0';
                             setTimeout(() => {
                                 dropZoneElement.innerHTML = '';
                                 adjustBoardHeight(); 
+                                if(clearedCategoriesCount === targetCategoriesCount) {
+                                    isGameOver = true;
+                                    setTimeout(() => showPopup('clear'), 400);
+                                }
                             }, 500); 
                         }, 800);
                     }
@@ -410,9 +558,8 @@
                 const existingCards = dropZoneElement.querySelectorAll('.card');
                 let canDrop = false;
 
-                if (existingCards.length === 0) {
-                    canDrop = true;
-                } else {
+                if (existingCards.length === 0) { canDrop = true; } 
+                else {
                     const lastCard = existingCards[existingCards.length - 1];
                     if (lastCard.dataset.category === draggedCards[0].dataset.category) {
                         canDrop = draggedCards[0].dataset.isCategoryCard !== 'true';
@@ -432,15 +579,14 @@
             if (moveSuccessful && sourceColumn && sourceColumn !== dropZoneElement) {
                 consumeAction(); 
                 const remainingCards = sourceColumn.querySelectorAll('.card');
-                if (remainingCards.length > 0) {
-                    flipCard(remainingCards[remainingCards.length - 1]);
-                }
+                if (remainingCards.length > 0) flipCard(remainingCards[remainingCards.length - 1]);
             }
             
             adjustBoardHeight(); 
             return moveSuccessful;
         }
 
+        // 드래그 & 터치 핸들러
         function handleDragStart(e) {
             if (isGameOver || !this.draggable) return; 
             const column = this.parentNode;
@@ -464,11 +610,9 @@
             const cards = Array.from(column.querySelectorAll('.card'));
             draggedCards = cards.slice(cards.indexOf(this));
             sourceColumn = column;
-
             const touch = e.touches[0];
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
-
             draggedCards.forEach((card, index) => {
                 card.style.zIndex = 1000 + index;
                 card.style.transition = 'none'; 
@@ -489,22 +633,18 @@
         function handleTouchEnd(e) {
             if (draggedCards.length === 0) return;
             const touch = e.changedTouches[0];
-            
             draggedCards.forEach(card => card.style.pointerEvents = 'none');
             const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
             const dropZoneElement = dropTarget ? dropTarget.closest('.dropzone') : null;
             
             draggedCards.forEach(card => {
                 card.style.pointerEvents = '';
-                card.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease';
+                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease';
                 card.style.transform = ''; 
                 card.style.zIndex = '';
             });
 
-            if (dropZoneElement) {
-                executeDropLogic(dropZoneElement);
-            }
-
+            if (dropZoneElement) executeDropLogic(dropZoneElement);
             draggedCards = [];
             sourceColumn = null;
         }
@@ -536,39 +676,11 @@
             cardElement.addEventListener('touchend', handleTouchEnd);
         }
 
-        let cardIndex = 0;
-        for (let i = 0; i < 4; i++) {
-            let cardCount = i + 4; 
-            for (let j = 0; j < cardCount; j++) {
-                let card = deck[cardIndex++];
-                columns[i].push(card);
-                let cardElement = document.createElement('div');
-                cardElement.className = 'card';
-                cardElement.style.top = (j * cardOffset) + 'px'; 
-                cardElement.dataset.category = card.category;
-                cardElement.dataset.word = card.word;
-                cardElement.dataset.colorClass = card.colorClass;
-                cardElement.dataset.isCategoryCard = card.isCategoryCard;
-                cardElement.dataset.targetCount = card.targetCount || ''; 
-                cardElement.dataset.faceUp = 'false'; 
-                
-                if (j === cardCount - 1) {
-                    flipCard(cardElement);
-                } else {
-                    cardElement.classList.add('card-back', 'stacked-deck');
-                }
-                board.childNodes[i].appendChild(cardElement);
-            }
-        }
-        
-        adjustBoardHeight(); 
-
-        let drawPile = deck.slice(cardIndex); 
         const deckPileDiv = document.getElementById('deck-pile');
         const wastePileDiv = document.getElementById('waste-pile');
 
         function updateDeckUI() {
-            if (drawPile.length > 0) {
+            if (window.drawPile.length > 0) {
                 deckPileDiv.classList.add('card-back', 'stacked-deck');
                 deckPileDiv.style.border = 'none';
                 deckPileDiv.innerText = '';
@@ -583,17 +695,9 @@
 
         deckPileDiv.addEventListener('click', () => {
             if (isGameOver) return; 
-            if (drawPile.length > 0) {
-                const cardData = drawPile.pop();
-                let cardElement = document.createElement('div');
-                cardElement.className = 'card';
-                cardElement.style.top = '0px'; 
-                cardElement.dataset.category = cardData.category;
-                cardElement.dataset.word = cardData.word;
-                cardElement.dataset.colorClass = cardData.colorClass;
-                cardElement.dataset.isCategoryCard = cardData.isCategoryCard; 
-                cardElement.dataset.targetCount = cardData.targetCount || '';
-                cardElement.dataset.faceUp = 'false'; 
+            if (window.drawPile.length > 0) {
+                const cardData = window.drawPile.pop();
+                let cardElement = createCardElement(cardData, 0);
                 flipCard(cardElement);
                 wastePileDiv.appendChild(cardElement); 
                 consumeAction(); 
@@ -602,11 +706,9 @@
                 if (wasteCards.length > 0) {
                     for (let k = wasteCards.length - 1; k >= 0; k--) {
                         let cardEl = wasteCards[k];
-                        drawPile.push({
-                            category: cardEl.dataset.category, 
-                            word: cardEl.dataset.word,
-                            colorClass: cardEl.dataset.colorClass, 
-                            isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
+                        window.drawPile.push({
+                            category: cardEl.dataset.category, word: cardEl.dataset.word,
+                            colorClass: cardEl.dataset.colorClass, isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
                             targetCount: cardEl.dataset.targetCount
                         });
                         cardEl.remove();
@@ -618,18 +720,9 @@
             adjustBoardHeight(); 
         });
 
-        updateDeckUI();
+        // 5. 최초 1스테이지 시작
+        initGame(currentStage);
 
-        document.querySelectorAll('.dropzone').forEach(zone => {
-            zone.addEventListener('dragover', e => e.preventDefault());
-            zone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                if (draggedCards.length > 0 && !isGameOver) {
-                    executeDropLogic(this);
-                    draggedCards = [];
-                }
-            });
-        });
     </script>
 </body>
 </html>
