@@ -10,7 +10,7 @@
         :root {
             --card-width: 75px;
             --card-height: 110px;
-            --gap-size: 10px; /* 열 개수가 늘어날 수 있으므로 간격을 살짝 줄임 */
+            --gap-size: 10px; 
             --font-base: 1rem;
             
             --bg-color: #c5dec4; 
@@ -24,7 +24,7 @@
 
         @media (max-width: 600px) {
             :root {
-                --card-width: 19vw; /* 5열까지 표시하기 위해 카드 너비 조정 */
+                --card-width: 19vw; 
                 --card-height: 28vw;
                 --gap-size: 1.5vw;
                 --font-base: 0.8rem;
@@ -92,7 +92,7 @@
             display: flex;
             gap: var(--gap-size);
             width: 100%;
-            justify-content: center; /* 컬럼 수에 맞게 중앙 정렬 */
+            justify-content: center; 
         }
         
         .board { align-items: flex-start; }
@@ -134,6 +134,7 @@
         }
 
         .card { 
+            box-sizing: border-box; /* 카드가 파운데이션 안에서 완벽히 겹치도록 규격 통일 */
             width: var(--card-width); 
             height: var(--card-height); 
             background: #ffffff; 
@@ -153,7 +154,8 @@
             touch-action: none; 
         }
 
-        .card-word { position: relative; z-index: 1; text-align: center; }
+        /* 불필요한 z-index를 제거하여 글자 겹침 버그 해결 */
+        .card-word { text-align: center; }
 
         .card[draggable="true"] { cursor: grab; }
         .card[draggable="true"]:active { 
@@ -191,7 +193,6 @@
             font-weight: 600;
         }
 
-        /* 풀 확장된 12개 카테고리 색상 */
         .color-animal { color: #64731E; } 
         .color-fruit { color: #267D39; } 
         .color-job { color: #00807A; } 
@@ -216,7 +217,6 @@
             transition: all 0.2s ease;
         }
 
-        /* 팝업 UI (게임오버 / 클리어) */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
@@ -255,14 +255,12 @@
                 <div id="waste-pile" class="column"></div> 
             </div>
 
-            <!-- 파운데이션과 보드는 JS에서 동적으로 생성됩니다 -->
             <div id="foundations" class="foundation-area"></div>
         </div>
 
         <div id="board" class="board"></div>
     </div>
 
-    <!-- 상태 알림 팝업 -->
     <div id="overlay">
         <div class="popup" id="popup-content">
             <h2 id="popup-title">스테이지 클리어!</h2>
@@ -274,7 +272,6 @@
     <script>
         const cardOffset = 22; 
         
-        // 12개 카테고리 풀 확장
         const categoryPool = {
             '동물': { colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말'] },
             '과일': { colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리'] },
@@ -290,7 +287,6 @@
             '가족': { colorClass: 'color-family', words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
         };
 
-        // 전역 게임 상태
         let currentStage = 1;
         let score = 0;
         let deck = [];
@@ -306,7 +302,6 @@
         let touchStartX = 0;
         let touchStartY = 0;
 
-        // 스테이지 난이도 설정 함수 (최대 파운데이션/보드 5열)
         function getStageConfig(stage) {
             let cols = 3, cats = 3, minW = 3, maxW = 4;
             
@@ -320,7 +315,6 @@
             return { cols, cats, minW, maxW };
         }
 
-        // 배열 무작위 섞기 (피셔-예이츠)
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -329,7 +323,6 @@
             return array;
         }
 
-        // 게임 초기화 및 시작
         function initGame(stage) {
             isGameOver = false;
             deck = [];
@@ -341,23 +334,20 @@
             
             document.getElementById('stage-display').innerText = `스테이지: ${stage}`;
             
-            // 1. 사용할 카테고리 무작위 선정
             const allCatKeys = Object.keys(categoryPool);
             shuffle(allCatKeys);
             const selectedCats = allCatKeys.slice(0, config.cats);
             
-            // 2. 덱(카드 풀) 구성
             for (let cat of selectedCats) {
                 const poolConfig = categoryPool[cat];
                 const wordCount = Math.floor(Math.random() * (config.maxW - config.minW + 1)) + config.minW;
-                categoryTargetCounts[cat] = wordCount + 1; // 카테고리 카드 1장 포함
+                categoryTargetCounts[cat] = wordCount + 1; 
                 
                 deck.push({ 
                     isCategoryCard: true, category: cat, word: cat, 
                     targetCount: wordCount, colorClass: poolConfig.colorClass 
                 });
                 
-                // 단어 풀에서 랜덤 선택
                 let wordsPool = [...poolConfig.words];
                 shuffle(wordsPool);
                 const selectedWords = wordsPool.slice(0, wordCount);
@@ -371,10 +361,9 @@
             
             shuffle(deck);
             
-            remainingActions = Math.floor(deck.length * 2.2); // 행동 횟수를 카드수의 2.2배로 넉넉히
+            remainingActions = Math.floor(deck.length * 2.2); 
             document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
             
-            // 3. 보드와 파운데이션 DOM 생성
             const foundationsDiv = document.getElementById('foundations');
             const boardDiv = document.getElementById('board');
             foundationsDiv.innerHTML = '';
@@ -382,29 +371,25 @@
             
             const columns = [];
             for (let i = 0; i < config.cols; i++) {
-                // 파운데이션 칸
                 let fCol = document.createElement('div');
                 fCol.className = 'column foundation dropzone';
                 foundationsDiv.appendChild(fCol);
                 
-                // 보드 칸
                 let bCol = document.createElement('div');
                 bCol.className = 'column dropzone';
                 boardDiv.appendChild(bCol);
                 columns.push(bCol);
             }
             
-            // 이벤트 리스너 재부착
             document.querySelectorAll('.dropzone').forEach(zone => {
                 zone.addEventListener('dragover', e => e.preventDefault());
                 zone.addEventListener('drop', handleDropArea);
             });
             
-            // 4. 보드에 초기 카드 분배 (열 번호에 따라 차등 분배)
             let cardIndex = 0;
             for (let i = 0; i < config.cols; i++) {
-                let cardCount = i + 2; // 컬럼당 분배 개수 조정
-                if(cardIndex + cardCount > deck.length / 2) cardCount = 2; // 안전 장치
+                let cardCount = i + 2; 
+                if(cardIndex + cardCount > deck.length / 2) cardCount = 2; 
                 
                 for (let j = 0; j < cardCount; j++) {
                     if (cardIndex >= deck.length) break;
@@ -420,7 +405,6 @@
                 }
             }
             
-            // 남은 카드는 더미로
             window.drawPile = deck.slice(cardIndex);
             document.getElementById('waste-pile').innerHTML = '';
             updateDeckUI();
@@ -440,7 +424,6 @@
             return el;
         }
 
-        // 공통 로직 및 팝업 처리
         function adjustBoardHeight() {
             document.querySelectorAll('.board .column').forEach(col => {
                 const cards = col.querySelectorAll('.card');
@@ -461,7 +444,7 @@
                 desc.innerText = `총 ${targetCategoriesCount}개의 카테고리를 모두 분류했습니다.\n(보너스 점수 획득!)`;
                 btn.innerText = '다음 스테이지로';
                 btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
-                score += remainingActions * 10; // 남은 횟수 비례 보너스
+                score += remainingActions * 10; 
                 updateScore(0);
             } else {
                 title.innerText = '게임 오버';
@@ -586,7 +569,6 @@
             return moveSuccessful;
         }
 
-        // 드래그 & 터치 핸들러
         function handleDragStart(e) {
             if (isGameOver || !this.draggable) return; 
             const column = this.parentNode;
@@ -720,7 +702,6 @@
             adjustBoardHeight(); 
         });
 
-        // 5. 최초 1스테이지 시작
         initGame(currentStage);
 
     </script>
