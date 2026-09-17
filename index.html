@@ -13,14 +13,14 @@
             --gap-size: 15px;
             --font-base: 1rem;
             
-            /* 모던 미니멀 테마 컬러 */
-            --bg-color: #f0fdf4; /* 아주 연한 민트/그린톤이 도는 화이트 */
-            --text-main: #1e293b; /* 짙은 슬레이트 텍스트 */
-            --text-muted: #64748b;
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            /* 컬러 팔레트 기반 테마 */
+            --bg-color: #005452; 
+            --bg-gradient: linear-gradient(180deg, #006465 0%, #005452 100%); 
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
             
-            /* 세련된 카드 뒷면 (인디고-블루 그라데이션) */
-            --card-back-grad: linear-gradient(135deg, #6366f1, #3b82f6);
+            --card-back-main: #8AAD34; 
+            --card-back-pattern: #A2C341; 
         }
 
         @media (max-width: 600px) {
@@ -34,7 +34,7 @@
                 padding: 0 15px !important;
             }
             .top-section {
-                gap: 40px !important;
+                gap: 45px !important;
                 margin-top: 15px !important;
                 margin-bottom: 45px !important; 
             }
@@ -42,12 +42,14 @@
                 margin: 10px 0;
                 font-size: 0.95rem !important;
             }
-            h1 { font-size: 1.5rem; text-align: center; margin-bottom: 5px; color: var(--text-main); }
+            h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
         }
 
         body { 
+            background: var(--bg-gradient);
             background-color: var(--bg-color);
-            color: var(--text-main); 
+            background-attachment: fixed;
+            color: #f8f9fa; 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
             margin: 0;
             padding-bottom: 80px;
@@ -65,19 +67,19 @@
             padding: 0 20px;
         }
 
-        /* 깔끔한 화이트 패널 */
         .status-panel {
             display: flex;
             justify-content: space-between;
             margin: 20px 0;
             font-size: 1.1rem;
-            font-weight: 700;
-            background: #ffffff;
-            padding: 15px 25px;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-            color: var(--text-main);
+            font-weight: 600;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .top-section {
@@ -106,50 +108,48 @@
             align-items: flex-start;
         }
 
-        /* 눈에 거슬리지 않는 은은한 빈 칸 테두리 */
         .column { 
             box-sizing: content-box; 
             width: var(--card-width); 
             min-height: var(--card-height); 
-            border: 2px dashed #cbd5e1; 
-            background-color: rgba(255, 255, 255, 0.4);
-            border-radius: 12px; 
+            border: 2px solid rgba(255, 255, 255, 0.15); 
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 8px; 
             position: relative; 
             transition: padding-bottom 0.3s ease;
         }
         
         .foundation {
-            border: 2px solid #e2e8f0;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.15);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* 둥글고 세련된 앱 뱃지 스타일의 라벨 */
         .foundation-label {
             position: absolute;
             top: -28px;
             left: 50%;
             transform: translateX(-50%);
             width: max-content;
-            padding: 4px 12px;
+            padding: 4px 10px;
             text-align: center;
             font-size: 0.75rem;
             font-weight: 800;
             color: #fff;
-            background: #10b981; /* 산뜻한 에메랄드 그린 */
-            border-radius: 20px;
+            background: #3A6324;
+            border-radius: 12px;
             pointer-events: none; 
             z-index: 50;
-            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* 모던한 카드 렌더링 */
         .card { 
             width: var(--card-width); 
             height: var(--card-height); 
             background: #ffffff; 
-            color: var(--text-main); 
-            border-radius: 12px; 
+            border-radius: 8px; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -157,73 +157,98 @@
             font-size: var(--font-base); 
             font-weight: 800; 
             position: absolute; 
-            border: 1px solid #f1f5f9;
-            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
             user-select: none;
             word-break: keep-all; 
             transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease; 
             touch-action: none; 
+            overflow: hidden; /* 워터마크가 카드 밖으로 나가지 않게 */
         }
         
+        /* 트럼프 카드 디자인 요소들 */
+        .card-icon-tl {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            font-size: calc(var(--font-base) * 0.9);
+            line-height: 1;
+        }
+        .card-watermark {
+            position: absolute;
+            font-size: calc(var(--card-width) * 0.8);
+            opacity: 0.08; /* 은은한 배경 무늬 */
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .card-word {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
         .card[draggable="true"] { cursor: grab; }
         .card[draggable="true"]:active { 
             cursor: grabbing; 
             transform: scale(1.05) translateY(-5px); 
-            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
             z-index: 999;
         }
         .card.locked { cursor: default; touch-action: auto; }
         
-        /* 촌스러운 노란 테두리 제거, 은은한 하이라이트 부여 */
         .category-card {
-            background: #f8fafc;
-            border: 2px solid #3b82f6 !important; 
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--card-shadow);
+            background: #fdfdfd;
+            border: 2px solid var(--card-back-main) !important; 
+            box-shadow: 0 0 8px rgba(138, 173, 52, 0.4), 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        /* 세련된 그라데이션 기반의 카드 뒷면 */
         .card-back {
-            background: var(--card-back-grad) !important;
-            border: 2px solid #ffffff !important;
+            background-color: var(--card-back-main) !important;
+            background-image: 
+                radial-gradient(var(--card-back-pattern) 20%, transparent 20%),
+                radial-gradient(var(--card-back-pattern) 20%, transparent 20%) !important;
+            background-size: 20px 20px !important;
+            background-position: 0 0, 10px 10px !important;
+            border: 3px solid #ffffff !important;
             color: transparent !important;
-            background-image: none !important; /* 복잡한 패턴 제거 */
         }
 
-        /* 촌스럽지 않은 은은한 두께감 */
         .stacked-deck {
             box-shadow: 
                 -1px 1px 0 #fff,
-                -2px 2px 0 #818cf8,
+                -2px 2px 0 var(--card-back-main),
                 -3px 3px 0 #fff,
-                -4px 4px 0 #818cf8,
-                -4px 8px 12px rgba(0,0,0,0.1) !important;
+                -4px 4px 0 var(--card-back-main),
+                -5px 5px 6px rgba(0,0,0,0.3) !important;
         }
 
         .target-count-text {
             font-size: 0.7rem;
             margin-top: 4px;
-            color: var(--text-muted);
+            color: #7f8c8d;
             font-weight: 600;
         }
 
-        /* 파스텔 톤이나 눈이 편안한 단색으로 컬러 재조정 */
-        .color-animal { color: #d97706; } 
-        .color-fruit { color: #e11d48; } 
-        .color-job { color: #2563eb; } 
-        .color-country { color: #475569; } 
-        .color-food { color: #ea580c; } 
-        .color-sport { color: #7c3aed; } 
-        .color-color { color: #db2777; } 
-        .color-instrument { color: #059669; } 
+        /* 선명한 기호 색상들 */
+        .color-animal { color: #1e272e; } /* Black ♠ */
+        .color-fruit { color: #e84118; } /* Red ♥ */
+        .color-job { color: #0097e6; } /* Blue ♦ */
+        .color-country { color: #44bd32; } /* Green ♣ */
+        .color-food { color: #e1b12c; } /* Yellow ★ */
+        .color-sport { color: #8c7ae6; } /* Purple ✦ */
+        .color-color { color: #e84393; } /* Pink ☀ */
+        .color-instrument { color: #273c75; } /* Navy 🎵 */
         
         #deck-pile {
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: calc(var(--font-base) * 1.5);
-            color: #ffffff;
-            border-radius: 12px;
+            font-size: calc(var(--font-base) * 2);
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
             transition: all 0.2s ease;
         }
     </style>
@@ -257,20 +282,16 @@
     <script>
         const cardOffset = 22; 
 
-        const wordData = {
-            '동물': ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'],
-            '과일': ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아'],
-            '직업': ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우'],
-            '국가': ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다'],
-            '음식': ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨'],
-            '스포츠': ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프'],
-            '색깔': ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정'],
-            '악기': ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫']
-        };
-
-        const categoryColors = {
-            '동물': 'color-animal', '과일': 'color-fruit', '직업': 'color-job', '국가': 'color-country',
-            '음식': 'color-food', '스포츠': 'color-sport', '색깔': 'color-color', '악기': 'color-instrument'
+        // 카테고리별 무늬 매핑 추가
+        const categoryConfig = {
+            '동물': { icon: '♠', colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'] },
+            '과일': { icon: '♥', colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아'] },
+            '직업': { icon: '♦', colorClass: 'color-job', words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우'] },
+            '국가': { icon: '♣', colorClass: 'color-country', words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다'] },
+            '음식': { icon: '★', colorClass: 'color-food', words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨'] },
+            '스포츠': { icon: '✦', colorClass: 'color-sport', words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프'] },
+            '색깔': { icon: '☀', colorClass: 'color-color', words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정'] },
+            '악기': { icon: '🎵', colorClass: 'color-instrument', words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫'] }
         };
 
         let deck = [];
@@ -285,19 +306,29 @@
         
         const categoryTargetCounts = {};
 
-        for (let category in wordData) {
+        // 덱 생성 로직 변경
+        for (let category in categoryConfig) {
+            const config = categoryConfig[category];
             const randomWordCount = Math.floor(Math.random() * 6) + 3;
             categoryTargetCounts[category] = randomWordCount + 1;
 
             deck.push({ 
-                isCategoryCard: true, category: category, word: category, 
-                targetCount: randomWordCount, colorClass: categoryColors[category]
+                isCategoryCard: true, 
+                category: category, 
+                word: category, 
+                icon: config.icon,
+                targetCount: randomWordCount, 
+                colorClass: config.colorClass 
             });
             
-            const selectedWords = wordData[category].slice(0, randomWordCount);
+            const selectedWords = config.words.slice(0, randomWordCount);
             for (let word of selectedWords) {
                 deck.push({ 
-                    isCategoryCard: false, category: category, word: word, colorClass: categoryColors[category]
+                    isCategoryCard: false, 
+                    category: category, 
+                    word: word, 
+                    icon: config.icon,
+                    colorClass: config.colorClass 
                 });
             }
         }
@@ -502,6 +533,7 @@
             sourceColumn = null;
         }
 
+        // 트럼프 카드 디자인 적용 함수
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
             
@@ -509,13 +541,23 @@
             cardElement.dataset.faceUp = 'true';
             cardElement.classList.add(cardElement.dataset.colorClass);
             
+            const icon = cardElement.dataset.icon;
+            const word = cardElement.dataset.word;
+            
+            // 트럼프 카드 스타일 HTML 구조 삽입
+            let innerHTML = `
+                <div class="card-icon-tl">${icon}</div>
+                <div class="card-watermark">${icon}</div>
+            `;
+            
             if (cardElement.dataset.isCategoryCard === 'true') {
                 cardElement.classList.add('category-card');
-                cardElement.innerHTML = `<div>${cardElement.dataset.word}</div><div class="target-count-text">(${cardElement.dataset.targetCount}개)</div>`;
+                innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
             } else {
-                cardElement.innerText = cardElement.dataset.word; 
+                innerHTML += `<div class="card-word">${word}</div>`; 
             }
             
+            cardElement.innerHTML = innerHTML;
             cardElement.draggable = true;
             
             cardElement.addEventListener('dragstart', handleDragStart);
@@ -536,6 +578,7 @@
                 cardElement.style.top = (j * cardOffset) + 'px'; 
                 cardElement.dataset.category = card.category;
                 cardElement.dataset.word = card.word;
+                cardElement.dataset.icon = card.icon; // 기호 데이터 추가
                 cardElement.dataset.colorClass = card.colorClass;
                 cardElement.dataset.isCategoryCard = card.isCategoryCard;
                 cardElement.dataset.targetCount = card.targetCount || ''; 
@@ -563,10 +606,10 @@
                 deckPileDiv.innerText = '';
             } else {
                 deckPileDiv.classList.remove('card-back', 'stacked-deck');
-                deckPileDiv.style.background = 'rgba(255, 255, 255, 0.5)';
-                deckPileDiv.style.border = '2px dashed #cbd5e1';
+                deckPileDiv.style.background = 'rgba(255, 255, 255, 0.05)';
+                deckPileDiv.style.border = '2px dashed rgba(255, 255, 255, 0.3)';
                 deckPileDiv.innerText = '↺'; 
-                deckPileDiv.style.color = '#94a3b8';
+                deckPileDiv.style.color = '#fff';
             }
         }
 
@@ -579,6 +622,7 @@
                 cardElement.style.top = '0px'; 
                 cardElement.dataset.category = cardData.category;
                 cardElement.dataset.word = cardData.word;
+                cardElement.dataset.icon = cardData.icon;
                 cardElement.dataset.colorClass = cardData.colorClass;
                 cardElement.dataset.isCategoryCard = cardData.isCategoryCard; 
                 cardElement.dataset.targetCount = cardData.targetCount || '';
@@ -592,8 +636,11 @@
                     for (let k = wasteCards.length - 1; k >= 0; k--) {
                         let cardEl = wasteCards[k];
                         drawPile.push({
-                            category: cardEl.dataset.category, word: cardEl.dataset.word,
-                            colorClass: cardEl.dataset.colorClass, isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
+                            category: cardEl.dataset.category, 
+                            word: cardEl.dataset.word,
+                            icon: cardEl.dataset.icon,
+                            colorClass: cardEl.dataset.colorClass, 
+                            isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
                             targetCount: cardEl.dataset.targetCount
                         });
                         cardEl.remove();
