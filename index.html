@@ -10,7 +10,6 @@
             --card-height: 110px;
             --gap-size: 15px;
             --font-base: 1rem;
-            /* 테마 컬러 정의 */
             --bg-gradient: radial-gradient(circle at 50% 0%, #2f6b4a, #1b3d29);
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
@@ -26,8 +25,15 @@
             .top-section {
                 flex-direction: column;
                 align-items: center;
-                gap: 20px !important;
+                gap: 25px !important;
                 margin-top: 15px !important;
+                /* 파운데이션과 보드 사이 여백 확대 */
+                margin-bottom: 50px !important; 
+            }
+            /* 덱(카드 더미) 영역을 왼쪽으로 정렬 */
+            .top-section > .foundation-area:first-child {
+                align-self: flex-start;
+                margin-left: 2vw;
             }
             .status-panel {
                 margin: 10px 15px;
@@ -48,7 +54,6 @@
             touch-action: pan-y;
         }
         
-        /* 글래스모피즘 상태 패널 */
         .status-panel {
             display: flex;
             justify-content: space-between;
@@ -69,7 +74,7 @@
             display: flex;
             justify-content: center;
             gap: 50px;
-            margin: 30px 10px 20px 10px; 
+            margin: 30px 10px 40px 10px; /* PC에서도 하단 여백 추가 */
         }
 
         .foundation-area, .board {
@@ -79,10 +84,9 @@
         }
         
         .board {
-            margin: 30px 10px;
+            margin: 40px 10px 20px 10px; /* 라벨 겹침 방지를 위해 상단 여백 크게 확보 */
         }
 
-        /* 빈 칸 스타일링 */
         .column { 
             width: var(--card-width); 
             min-height: var(--card-height); 
@@ -118,7 +122,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* 카드 기본 디자인 */
         .card { 
             width: var(--card-width); 
             height: var(--card-height); 
@@ -133,7 +136,6 @@
             font-weight: 800; 
             position: absolute; 
             border: none;
-            /* 부드럽고 깊은 다중 그림자 */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
             user-select: none;
             word-break: keep-all; 
@@ -149,7 +151,6 @@
         }
         .card.locked { cursor: default; touch-action: auto; }
         
-        /* 카테고리 카드 특별 스타일 */
         .category-card {
             background: linear-gradient(135deg, #fff9e6, #ffffff);
             border: 2px solid #f1c40f !important; 
@@ -163,7 +164,6 @@
             font-weight: 600;
         }
 
-        /* 카테고리 텍스트 색상 */
         .color-animal { color: #8d6e63; }
         .color-fruit { color: #ff7675; }
         .color-job { color: #74b9ff; }
@@ -173,7 +173,6 @@
         .color-color { color: #fd79a8; }
         .color-instrument { color: #00b894; }
         
-        /* 덱 아이콘 */
         #deck-pile {
             cursor: pointer;
             display: flex;
@@ -241,13 +240,11 @@
         let remainingActions = 0;
         let isGameOver = false;
         
-        // 터치 이벤트를 위한 좌표 변수
         let touchStartX = 0;
         let touchStartY = 0;
         
         const categoryTargetCounts = {};
 
-        // 1. 덱 생성 및 초기화
         for (let category in wordData) {
             const randomWordCount = Math.floor(Math.random() * 6) + 3;
             categoryTargetCounts[category] = randomWordCount + 1;
@@ -282,7 +279,6 @@
             columns.push([]);
         }
         
-        // 2. 공통 상태 업데이트 함수
         function checkGameOver() {
             if (remainingActions <= 0 && !isGameOver) {
                 isGameOver = true;
@@ -302,7 +298,6 @@
             document.getElementById('score-display').innerText = `점수: ${score}`;
         }
 
-        // 3. 공통 드롭 로직 (마우스 및 터치 통합)
         function executeDropLogic(dropZoneElement) {
             const isFoundation = dropZoneElement.parentNode.id === 'foundations';
             const isBoard = dropZoneElement.parentNode.id === 'board';
@@ -382,7 +377,6 @@
             return moveSuccessful;
         }
 
-        // 4. 이벤트 핸들러 (PC 마우스)
         function handleDragStart(e) {
             if (isGameOver || !this.draggable) return; 
             const column = this.parentNode;
@@ -400,7 +394,6 @@
             }, 0);
         }
 
-        // 5. 이벤트 핸들러 (모바일 터치)
         function handleTouchStart(e) {
             if (isGameOver || !this.draggable) return;
             const column = this.parentNode;
@@ -433,14 +426,13 @@
             if (draggedCards.length === 0) return;
             const touch = e.changedTouches[0];
             
-            // 터치한 위치 아래의 요소를 찾기 위해 드래그 중인 카드 무시
             draggedCards.forEach(card => card.style.pointerEvents = 'none');
             const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
             const dropZoneElement = dropTarget ? dropTarget.closest('.dropzone') : null;
             
             draggedCards.forEach(card => {
                 card.style.pointerEvents = '';
-                card.style.transition = 'opacity 0.5s ease';
+                card.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease';
                 card.style.transform = ''; 
                 card.style.zIndex = '';
             });
@@ -453,7 +445,6 @@
             sourceColumn = null;
         }
 
-        // 6. 카드 렌더링 및 이벤트 바인딩
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
             cardElement.dataset.faceUp = 'true';
@@ -470,7 +461,6 @@
             cardElement.style.backgroundImage = 'none';
             cardElement.draggable = true;
             
-            // 마우스 & 터치 이벤트 모두 등록
             cardElement.addEventListener('dragstart', handleDragStart);
             cardElement.addEventListener('dragend', handleDragEnd);
             cardElement.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -496,8 +486,8 @@
                 
                 if (j === cardCount - 1) flipCard(cardElement);
                 else {
-                    cardElement.style.background = '#1a5276'; 
-                    cardElement.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, #2980b9 5px, #2980b9 10px)';
+                    cardElement.style.background = 'rgba(255,255,255,0.1)'; 
+                    cardElement.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px)';
                 }
                 board.childNodes[i].appendChild(cardElement);
             }
@@ -509,8 +499,8 @@
 
         function updateDeckUI() {
             if (drawPile.length > 0) {
-                deckPileDiv.style.background = '#1a5276';
-                deckPileDiv.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, #2980b9 5px, #2980b9 10px)';
+                deckPileDiv.style.background = 'rgba(255,255,255,0.1)';
+                deckPileDiv.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px)';
                 deckPileDiv.innerText = '';
             } else {
                 deckPileDiv.style.background = 'transparent';
@@ -556,14 +546,573 @@
 
         updateDeckUI();
 
-        // 7. PC 마우스용 드롭 존 이벤트 바인딩
         document.querySelectorAll('.dropzone').forEach(zone => {
             zone.addEventListener('dragover', e => e.preventDefault());
             zone.addEventListener('drop', function(e) {
                 e.preventDefault();
                 if (draggedCards.length > 0 && !isGameOver) {
                     executeDropLogic(this);
-                    draggedCards = []; // 마우스 드롭 처리 완료 후 배열 초기화
+                    draggedCards = [];
+                }
+            });
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>단어 분류 카드 게임</title>
+    <style>
+        :root {
+            --card-width: 75px;
+            --card-height: 110px;
+            --gap-size: 15px;
+            --font-base: 1rem;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #2f6b4a, #1b3d29);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --card-width: 22vw; 
+                --card-height: 31vw;
+                --gap-size: 2.5vw;
+                --font-base: 0.85rem;
+            }
+            .top-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 25px !important;
+                margin-top: 15px !important;
+                /* 파운데이션과 보드 사이 여백 확대 */
+                margin-bottom: 50px !important; 
+            }
+            /* 덱(카드 더미) 영역을 왼쪽으로 정렬 */
+            .top-section > .foundation-area:first-child {
+                align-self: flex-start;
+                margin-left: 2vw;
+            }
+            .status-panel {
+                margin: 10px 15px;
+                font-size: 0.95rem !important;
+            }
+            h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+            p { font-size: 0.8rem; text-align: center; margin: 0 15px; opacity: 0.9; }
+        }
+
+        body { 
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: #f8f9fa; 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+            margin: 0;
+            padding-bottom: 60px;
+            overflow-x: hidden;
+            touch-action: pan-y;
+        }
+        
+        .status-panel {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            letter-spacing: 0.5px;
+        }
+        
+        .top-section {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 30px 10px 40px 10px; /* PC에서도 하단 여백 추가 */
+        }
+
+        .foundation-area, .board {
+            display: flex;
+            justify-content: center;
+            gap: var(--gap-size);
+        }
+        
+        .board {
+            margin: 40px 10px 20px 10px; /* 라벨 겹침 방지를 위해 상단 여백 크게 확보 */
+        }
+
+        .column { 
+            width: var(--card-width); 
+            min-height: var(--card-height); 
+            border: 2px dashed rgba(255, 255, 255, 0.25); 
+            border-radius: 10px; 
+            position: relative; 
+        }
+        
+        .foundation {
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease; 
+        }
+
+        .foundation-label {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: max-content;
+            padding: 4px 12px;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            pointer-events: none; 
+            z-index: 50;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card { 
+            width: var(--card-width); 
+            height: var(--card-height); 
+            background: #ffffff; 
+            color: #2c3e50; 
+            border-radius: 10px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: var(--font-base); 
+            font-weight: 800; 
+            position: absolute; 
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+            user-select: none;
+            word-break: keep-all; 
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease; 
+            touch-action: none; 
+        }
+        
+        .card[draggable="true"] { cursor: grab; }
+        .card[draggable="true"]:active { 
+            cursor: grabbing; 
+            transform: scale(1.05) translateY(-5px); 
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+        }
+        .card.locked { cursor: default; touch-action: auto; }
+        
+        .category-card {
+            background: linear-gradient(135deg, #fff9e6, #ffffff);
+            border: 2px solid #f1c40f !important; 
+            box-shadow: 0 0 12px rgba(241, 196, 15, 0.4), 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .target-count-text {
+            font-size: 0.7rem;
+            margin-top: 6px;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .color-animal { color: #8d6e63; }
+        .color-fruit { color: #ff7675; }
+        .color-job { color: #74b9ff; }
+        .color-country { color: #636e72; }
+        .color-food { color: #e17055; }
+        .color-sport { color: #a29bfe; }
+        .color-color { color: #fd79a8; }
+        .color-instrument { color: #00b894; }
+        
+        #deck-pile {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(var(--font-base) * 2.2);
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        #deck-pile:hover { 
+            background: rgba(255, 255, 255, 0.15); 
+            color: #fff;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <h1>단어 분류 카드 게임</h1>
+    
+    <div class="status-panel">
+        <div id="score-display">점수: 0</div>
+        <div id="action-display">남은 행동 횟수: 0</div>
+    </div>
+    
+    <div class="top-section">
+        <div class="foundation-area">
+            <div id="deck-pile" class="column" title="클릭하여 카드 뽑기">↻</div>
+            <div id="waste-pile" class="column"></div> 
+        </div>
+
+        <div id="foundations" class="foundation-area">
+            <div class="column foundation dropzone"></div>
+            <div class="column foundation dropzone"></div>
+            <div class="column foundation dropzone"></div>
+            <div class="column foundation dropzone"></div>
+        </div>
+    </div>
+
+    <div id="board" class="board"></div>
+
+    <script>
+        const wordData = {
+            '동물': ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'],
+            '과일': ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아'],
+            '직업': ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우'],
+            '국가': ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다'],
+            '음식': ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨'],
+            '스포츠': ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프'],
+            '색깔': ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정'],
+            '악기': ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫']
+        };
+
+        const categoryColors = {
+            '동물': 'color-animal', '과일': 'color-fruit', '직업': 'color-job', '국가': 'color-country',
+            '음식': 'color-food', '스포츠': 'color-sport', '색깔': 'color-color', '악기': 'color-instrument'
+        };
+
+        let deck = [];
+        let draggedCards = []; 
+        let sourceColumn = null; 
+        let score = 0;
+        let remainingActions = 0;
+        let isGameOver = false;
+        
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        const categoryTargetCounts = {};
+
+        for (let category in wordData) {
+            const randomWordCount = Math.floor(Math.random() * 6) + 3;
+            categoryTargetCounts[category] = randomWordCount + 1;
+
+            deck.push({ 
+                isCategoryCard: true, category: category, word: category, 
+                targetCount: randomWordCount, colorClass: categoryColors[category]
+            });
+            
+            const selectedWords = wordData[category].slice(0, randomWordCount);
+            for (let word of selectedWords) {
+                deck.push({ 
+                    isCategoryCard: false, category: category, word: word, colorClass: categoryColors[category]
+                });
+            }
+        }
+        
+        remainingActions = deck.length * 2;
+        document.getElementById('action-display').innerText = `남은 행동 횟수: ${remainingActions}`;
+
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+
+        const board = document.getElementById('board');
+        const columns = [];
+        for (let i = 0; i < 4; i++) {
+            let colDiv = document.createElement('div');
+            colDiv.className = 'column dropzone'; 
+            board.appendChild(colDiv);
+            columns.push([]);
+        }
+        
+        function checkGameOver() {
+            if (remainingActions <= 0 && !isGameOver) {
+                isGameOver = true;
+                setTimeout(() => alert("행동 횟수를 모두 소진했습니다! 게임 오버!"), 300);
+            }
+        }
+        
+        function consumeAction() {
+            if (isGameOver) return;
+            remainingActions--;
+            document.getElementById('action-display').innerText = `남은 행동 횟수: ${remainingActions}`;
+            checkGameOver();
+        }
+        
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score-display').innerText = `점수: ${score}`;
+        }
+
+        function executeDropLogic(dropZoneElement) {
+            const isFoundation = dropZoneElement.parentNode.id === 'foundations';
+            const isBoard = dropZoneElement.parentNode.id === 'board';
+            let moveSuccessful = false;
+
+            if (isFoundation) {
+                const existingCards = dropZoneElement.querySelectorAll('.card');
+                let canDrop = false;
+
+                if (existingCards.length === 0) {
+                    if (draggedCards[0].dataset.isCategoryCard === 'true') canDrop = true;
+                } else {
+                    if (existingCards[0].dataset.category === draggedCards[0].dataset.category) canDrop = true;
+                }
+
+                if (canDrop) {
+                    draggedCards.forEach(card => {
+                        card.style.top = '0px'; 
+                        dropZoneElement.appendChild(card);
+                        card.draggable = false;
+                        card.classList.add('locked');
+                        updateScore(10); 
+                    });
+                    moveSuccessful = true;
+                    
+                    let label = dropZoneElement.querySelector('.foundation-label');
+                    if (!label) {
+                        label = document.createElement('div');
+                        label.className = 'foundation-label';
+                        dropZoneElement.appendChild(label);
+                    }
+                    
+                    const currentCardsCount = dropZoneElement.querySelectorAll('.card').length;
+                    const currentCategory = draggedCards[0].dataset.category;
+                    label.innerText = `${currentCategory} (${currentCardsCount - 1}/${categoryTargetCounts[currentCategory] - 1})`;
+                    dropZoneElement.appendChild(label);
+                    
+                    if (currentCardsCount === categoryTargetCounts[currentCategory]) {
+                        updateScore(100); 
+                        setTimeout(() => {
+                            dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0');
+                            if(label) label.style.opacity = '0';
+                            setTimeout(() => dropZoneElement.innerHTML = '', 500); 
+                        }, 800);
+                    }
+                }
+            } else if (isBoard) {
+                const existingCards = dropZoneElement.querySelectorAll('.card');
+                let canDrop = false;
+
+                if (existingCards.length === 0) {
+                    canDrop = true;
+                } else {
+                    const lastCard = existingCards[existingCards.length - 1];
+                    if (lastCard.dataset.category === draggedCards[0].dataset.category) {
+                        canDrop = draggedCards[0].dataset.isCategoryCard !== 'true';
+                    }
+                }
+
+                if (canDrop) {
+                    let count = existingCards.length;
+                    draggedCards.forEach((card, index) => {
+                        card.style.top = ((count + index) * 20) + 'px';
+                        dropZoneElement.appendChild(card);
+                    });
+                    moveSuccessful = true;
+                }
+            }
+
+            if (moveSuccessful && sourceColumn && sourceColumn !== dropZoneElement) {
+                consumeAction(); 
+                const remainingCards = sourceColumn.querySelectorAll('.card');
+                if (remainingCards.length > 0) {
+                    flipCard(remainingCards[remainingCards.length - 1]);
+                }
+            }
+            return moveSuccessful;
+        }
+
+        function handleDragStart(e) {
+            if (isGameOver || !this.draggable) return; 
+            const column = this.parentNode;
+            const cards = Array.from(column.querySelectorAll('.card'));
+            draggedCards = cards.slice(cards.indexOf(this));
+            sourceColumn = column; 
+            setTimeout(() => { draggedCards.forEach(card => card.style.opacity = '0'); }, 0);
+        }
+
+        function handleDragEnd(e) {
+            setTimeout(() => {
+                draggedCards.forEach(card => { if (card.style.opacity === '0') card.style.opacity = '1'; });
+                draggedCards = [];
+                sourceColumn = null;
+            }, 0);
+        }
+
+        function handleTouchStart(e) {
+            if (isGameOver || !this.draggable) return;
+            const column = this.parentNode;
+            const cards = Array.from(column.querySelectorAll('.card'));
+            draggedCards = cards.slice(cards.indexOf(this));
+            sourceColumn = column;
+
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+
+            draggedCards.forEach((card, index) => {
+                card.style.zIndex = 1000 + index;
+                card.style.transition = 'none'; 
+            });
+        }
+
+        function handleTouchMove(e) {
+            if (draggedCards.length === 0) return;
+            e.preventDefault(); 
+            const touch = e.touches[0];
+            const dx = touch.clientX - touchStartX;
+            const dy = touch.clientY - touchStartY;
+            draggedCards.forEach(card => {
+                card.style.transform = `translate(${dx}px, ${dy}px) scale(1.05)`;
+            });
+        }
+
+        function handleTouchEnd(e) {
+            if (draggedCards.length === 0) return;
+            const touch = e.changedTouches[0];
+            
+            draggedCards.forEach(card => card.style.pointerEvents = 'none');
+            const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropZoneElement = dropTarget ? dropTarget.closest('.dropzone') : null;
+            
+            draggedCards.forEach(card => {
+                card.style.pointerEvents = '';
+                card.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease';
+                card.style.transform = ''; 
+                card.style.zIndex = '';
+            });
+
+            if (dropZoneElement) {
+                executeDropLogic(dropZoneElement);
+            }
+
+            draggedCards = [];
+            sourceColumn = null;
+        }
+
+        function flipCard(cardElement) {
+            if (!cardElement || cardElement.dataset.faceUp === 'true') return;
+            cardElement.dataset.faceUp = 'true';
+            cardElement.classList.add(cardElement.dataset.colorClass);
+            
+            if (cardElement.dataset.isCategoryCard === 'true') {
+                cardElement.classList.add('category-card');
+                cardElement.innerHTML = `<div>${cardElement.dataset.word}</div><div class="target-count-text">(${cardElement.dataset.targetCount}개)</div>`;
+            } else {
+                cardElement.innerText = cardElement.dataset.word; 
+            }
+            
+            cardElement.style.background = 'white';
+            cardElement.style.backgroundImage = 'none';
+            cardElement.draggable = true;
+            
+            cardElement.addEventListener('dragstart', handleDragStart);
+            cardElement.addEventListener('dragend', handleDragEnd);
+            cardElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+            cardElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+            cardElement.addEventListener('touchend', handleTouchEnd);
+        }
+
+        let cardIndex = 0;
+        for (let i = 0; i < 4; i++) {
+            let cardCount = i + 4; 
+            for (let j = 0; j < cardCount; j++) {
+                let card = deck[cardIndex++];
+                columns[i].push(card);
+                let cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.style.top = (j * 20) + 'px'; 
+                cardElement.dataset.category = card.category;
+                cardElement.dataset.word = card.word;
+                cardElement.dataset.colorClass = card.colorClass;
+                cardElement.dataset.isCategoryCard = card.isCategoryCard;
+                cardElement.dataset.targetCount = card.targetCount || ''; 
+                cardElement.dataset.faceUp = 'false'; 
+                
+                if (j === cardCount - 1) flipCard(cardElement);
+                else {
+                    cardElement.style.background = 'rgba(255,255,255,0.1)'; 
+                    cardElement.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px)';
+                }
+                board.childNodes[i].appendChild(cardElement);
+            }
+        }
+
+        let drawPile = deck.slice(cardIndex); 
+        const deckPileDiv = document.getElementById('deck-pile');
+        const wastePileDiv = document.getElementById('waste-pile');
+
+        function updateDeckUI() {
+            if (drawPile.length > 0) {
+                deckPileDiv.style.background = 'rgba(255,255,255,0.1)';
+                deckPileDiv.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px)';
+                deckPileDiv.innerText = '';
+            } else {
+                deckPileDiv.style.background = 'transparent';
+                deckPileDiv.style.backgroundImage = 'none';
+                deckPileDiv.innerText = '↺'; 
+                deckPileDiv.style.color = '#fff';
+            }
+        }
+
+        deckPileDiv.addEventListener('click', () => {
+            if (isGameOver) return; 
+            if (drawPile.length > 0) {
+                const cardData = drawPile.pop();
+                let cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                cardElement.style.top = '0px'; 
+                cardElement.dataset.category = cardData.category;
+                cardElement.dataset.word = cardData.word;
+                cardElement.dataset.colorClass = cardData.colorClass;
+                cardElement.dataset.isCategoryCard = cardData.isCategoryCard; 
+                cardElement.dataset.targetCount = cardData.targetCount || '';
+                cardElement.dataset.faceUp = 'false'; 
+                flipCard(cardElement);
+                wastePileDiv.appendChild(cardElement); 
+                consumeAction(); 
+            } else {
+                const wasteCards = Array.from(wastePileDiv.querySelectorAll('.card'));
+                if (wasteCards.length > 0) {
+                    for (let k = wasteCards.length - 1; k >= 0; k--) {
+                        let cardEl = wasteCards[k];
+                        drawPile.push({
+                            category: cardEl.dataset.category, word: cardEl.dataset.word,
+                            colorClass: cardEl.dataset.colorClass, isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
+                            targetCount: cardEl.dataset.targetCount
+                        });
+                        cardEl.remove();
+                    }
+                    consumeAction(); 
+                }
+            }
+            updateDeckUI();
+        });
+
+        updateDeckUI();
+
+        document.querySelectorAll('.dropzone').forEach(zone => {
+            zone.addEventListener('dragover', e => e.preventDefault());
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                if (draggedCards.length > 0 && !isGameOver) {
+                    executeDropLogic(this);
+                    draggedCards = [];
                 }
             });
         });
