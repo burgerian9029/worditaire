@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>단어 분류 카드 게임</title>
     <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+        
         :root {
             --card-width: 75px;
             --card-height: 110px;
@@ -25,13 +27,16 @@
             .top-section {
                 flex-direction: column;
                 align-items: center;
-                gap: 25px !important;
+                gap: 45px !important; /* 덱과 파운데이션 사이 간격을 대폭 확대 */
                 margin-top: 15px !important;
                 margin-bottom: 50px !important; 
             }
             .top-section > .foundation-area:first-child {
                 align-self: flex-start;
                 margin-left: 2vw;
+            }
+            #foundations {
+                margin-top: 25px; /* 라벨이 들어갈 윗공간을 추가로 확보 */
             }
             .status-panel {
                 margin: 10px 15px;
@@ -45,9 +50,12 @@
             background: var(--bg-gradient);
             background-attachment: fixed;
             color: #f8f9fa; 
+        
+            /* Pretendard를 최우선으로 적용 */
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
+        
             margin: 0;
-            padding-bottom: 80px; /* 여유로운 하단 스크롤 공간 확보 */
+            padding-bottom: 80px;
             overflow-x: hidden;
             touch-action: pan-y;
         }
