@@ -13,14 +13,14 @@
             --gap-size: 15px;
             --font-base: 1rem;
             
-            /* 컬러 팔레트 기반 테마 */
-            --bg-color: #005452; 
-            --bg-gradient: linear-gradient(180deg, #006465 0%, #005452 100%); 
-            --glass-bg: rgba(255, 255, 255, 0.12);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            /* 유저 요청 3종 그린 테마 */
+            --bg-color: #c5dec4; /* 1. 연한 그린 (Veiled Vista 기반) */
+            --panel-bg: #025f1d; /* 3. 어두운 그린 (PMS 2427 C) */
+            --card-back-main: #13b54d; /* 2. 채도 높은 그린 (D50 Lighting Indicator 기반) */
+            --card-back-pattern: #0e9a40; /* 패턴용 톤다운 그린 */
             
-            --card-back-main: #8AAD34; 
-            --card-back-pattern: #A2C341; 
+            --text-main: #025f1d; 
+            --glass-border: rgba(255, 255, 255, 0.3);
         }
 
         @media (max-width: 600px) {
@@ -42,14 +42,12 @@
                 margin: 10px 0;
                 font-size: 0.95rem !important;
             }
-            h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+            h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); }
         }
 
         body { 
-            background: var(--bg-gradient);
             background-color: var(--bg-color);
-            background-attachment: fixed;
-            color: #f8f9fa; 
+            color: var(--text-main); 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
             margin: 0;
             padding-bottom: 80px;
@@ -67,15 +65,15 @@
             padding: 0 20px;
         }
 
+        /* 점수판 - 3. 어두운 그린 */
         .status-panel {
             display: flex;
             justify-content: space-between;
             margin: 20px 0;
             font-size: 1.1rem;
             font-weight: 600;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: var(--panel-bg);
+            color: #ffffff;
             padding: 12px 20px;
             border-radius: 12px;
             border: 1px solid var(--glass-border);
@@ -112,20 +110,22 @@
             box-sizing: content-box; 
             width: var(--card-width); 
             min-height: var(--card-height); 
-            border: 2px solid rgba(255, 255, 255, 0.15); 
-            background-color: rgba(0, 0, 0, 0.1);
+            border: 2px dashed rgba(2, 95, 29, 0.3); /* 배경에 어울리는 점선 */
+            background-color: rgba(255, 255, 255, 0.2);
             border-radius: 8px; 
             position: relative; 
             transition: padding-bottom 0.3s ease;
         }
         
+        /* 파운데이션 - 3. 어두운 그린 */
         .foundation {
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
-            background-color: rgba(0, 0, 0, 0.15);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--panel-bg);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
         }
 
+        /* 파운데이션 라벨 */
         .foundation-label {
             position: absolute;
             top: -28px;
@@ -136,13 +136,13 @@
             text-align: center;
             font-size: 0.75rem;
             font-weight: 800;
-            color: #fff;
-            background: #3A6324;
+            color: var(--panel-bg);
+            background: #ffffff;
             border-radius: 12px;
             pointer-events: none; 
             z-index: 50;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--panel-bg);
         }
 
         .card { 
@@ -158,31 +158,13 @@
             font-weight: 800; 
             position: absolute; 
             border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.05);
             user-select: none;
             word-break: keep-all; 
             transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease; 
             touch-action: none; 
-            overflow: hidden; /* 워터마크가 카드 밖으로 나가지 않게 */
         }
-        
-        /* 트럼프 카드 디자인 요소들 */
-        .card-icon-tl {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            font-size: calc(var(--font-base) * 0.9);
-            line-height: 1;
-        }
-        .card-watermark {
-            position: absolute;
-            font-size: calc(var(--card-width) * 0.8);
-            opacity: 0.08; /* 은은한 배경 무늬 */
-            z-index: 0;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
+
         .card-word {
             position: relative;
             z-index: 1;
@@ -193,25 +175,22 @@
         .card[draggable="true"]:active { 
             cursor: grabbing; 
             transform: scale(1.05) translateY(-5px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             z-index: 999;
         }
         .card.locked { cursor: default; touch-action: auto; }
         
         .category-card {
             background: #fdfdfd;
-            border: 2px solid var(--card-back-main) !important; 
-            box-shadow: 0 0 8px rgba(138, 173, 52, 0.4), 0 2px 5px rgba(0,0,0,0.1);
+            border: 2px solid var(--panel-bg) !important; 
+            box-shadow: 0 0 8px rgba(2, 95, 29, 0.2), 0 2px 5px rgba(0,0,0,0.1);
         }
         
+        /* 카드 뒷면 - 2. 채도 높은 그린 기반 패턴 */
         .card-back {
             background-color: var(--card-back-main) !important;
-            background-image: 
-                radial-gradient(var(--card-back-pattern) 20%, transparent 20%),
-                radial-gradient(var(--card-back-pattern) 20%, transparent 20%) !important;
-            background-size: 20px 20px !important;
-            background-position: 0 0, 10px 10px !important;
-            border: 3px solid #ffffff !important;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, var(--card-back-pattern) 10px, var(--card-back-pattern) 20px) !important;
+            border: 2px solid #ffffff !important;
             color: transparent !important;
         }
 
@@ -221,7 +200,7 @@
                 -2px 2px 0 var(--card-back-main),
                 -3px 3px 0 #fff,
                 -4px 4px 0 var(--card-back-main),
-                -5px 5px 6px rgba(0,0,0,0.3) !important;
+                -5px 5px 6px rgba(0,0,0,0.2) !important;
         }
 
         .target-count-text {
@@ -231,15 +210,15 @@
             font-weight: 600;
         }
 
-        /* 선명한 기호 색상들 */
-        .color-animal { color: #1e272e; } /* Black ♠ */
-        .color-fruit { color: #e84118; } /* Red ♥ */
-        .color-job { color: #0097e6; } /* Blue ♦ */
-        .color-country { color: #44bd32; } /* Green ♣ */
-        .color-food { color: #e1b12c; } /* Yellow ★ */
-        .color-sport { color: #8c7ae6; } /* Purple ✦ */
-        .color-color { color: #e84393; } /* Pink ☀ */
-        .color-instrument { color: #273c75; } /* Navy 🎵 */
+        /* 제공된 팔레트 기반 카테고리 색상 지정 (그린~블루 계열) */
+        .color-animal { color: #64731E; } /* FERN FROND */
+        .color-fruit { color: #267D39; } /* GORGEOUS GREEN */
+        .color-job { color: #00807A; } /* BLUE WINGED TEAL */
+        .color-country { color: #007863; } /* TEAL WATERS */
+        .color-food { color: #005452; } /* TABRIZ TEAL */
+        .color-sport { color: #008489; } /* PRECIOUS BLUE */
+        .color-color { color: #48A3A7; } /* BLUE RACER */
+        .color-instrument { color: #8AAD34; } /* AVOCADO */
         
         #deck-pile {
             cursor: pointer;
@@ -282,16 +261,16 @@
     <script>
         const cardOffset = 22; 
 
-        // 카테고리별 무늬 매핑 추가
+        // 트럼프 무늬 기호 모두 제거 후 단어만 남김
         const categoryConfig = {
-            '동물': { icon: '♠', colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'] },
-            '과일': { icon: '♥', colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아'] },
-            '직업': { icon: '♦', colorClass: 'color-job', words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우'] },
-            '국가': { icon: '♣', colorClass: 'color-country', words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다'] },
-            '음식': { icon: '★', colorClass: 'color-food', words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨'] },
-            '스포츠': { icon: '✦', colorClass: 'color-sport', words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프'] },
-            '색깔': { icon: '☀', colorClass: 'color-color', words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정'] },
-            '악기': { icon: '🎵', colorClass: 'color-instrument', words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫'] }
+            '동물': { colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'] },
+            '과일': { colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아'] },
+            '직업': { colorClass: 'color-job', words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우'] },
+            '국가': { colorClass: 'color-country', words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다'] },
+            '음식': { colorClass: 'color-food', words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨'] },
+            '스포츠': { colorClass: 'color-sport', words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프'] },
+            '색깔': { colorClass: 'color-color', words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정'] },
+            '악기': { colorClass: 'color-instrument', words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫'] }
         };
 
         let deck = [];
@@ -306,7 +285,6 @@
         
         const categoryTargetCounts = {};
 
-        // 덱 생성 로직 변경
         for (let category in categoryConfig) {
             const config = categoryConfig[category];
             const randomWordCount = Math.floor(Math.random() * 6) + 3;
@@ -316,7 +294,6 @@
                 isCategoryCard: true, 
                 category: category, 
                 word: category, 
-                icon: config.icon,
                 targetCount: randomWordCount, 
                 colorClass: config.colorClass 
             });
@@ -327,7 +304,6 @@
                     isCategoryCard: false, 
                     category: category, 
                     word: word, 
-                    icon: config.icon,
                     colorClass: config.colorClass 
                 });
             }
@@ -533,7 +509,6 @@
             sourceColumn = null;
         }
 
-        // 트럼프 카드 디자인 적용 함수
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
             
@@ -541,14 +516,8 @@
             cardElement.dataset.faceUp = 'true';
             cardElement.classList.add(cardElement.dataset.colorClass);
             
-            const icon = cardElement.dataset.icon;
             const word = cardElement.dataset.word;
-            
-            // 트럼프 카드 스타일 HTML 구조 삽입
-            let innerHTML = `
-                <div class="card-icon-tl">${icon}</div>
-                <div class="card-watermark">${icon}</div>
-            `;
+            let innerHTML = '';
             
             if (cardElement.dataset.isCategoryCard === 'true') {
                 cardElement.classList.add('category-card');
@@ -578,7 +547,6 @@
                 cardElement.style.top = (j * cardOffset) + 'px'; 
                 cardElement.dataset.category = card.category;
                 cardElement.dataset.word = card.word;
-                cardElement.dataset.icon = card.icon; // 기호 데이터 추가
                 cardElement.dataset.colorClass = card.colorClass;
                 cardElement.dataset.isCategoryCard = card.isCategoryCard;
                 cardElement.dataset.targetCount = card.targetCount || ''; 
@@ -606,10 +574,10 @@
                 deckPileDiv.innerText = '';
             } else {
                 deckPileDiv.classList.remove('card-back', 'stacked-deck');
-                deckPileDiv.style.background = 'rgba(255, 255, 255, 0.05)';
-                deckPileDiv.style.border = '2px dashed rgba(255, 255, 255, 0.3)';
+                deckPileDiv.style.background = 'rgba(255, 255, 255, 0.2)';
+                deckPileDiv.style.border = '2px dashed rgba(2, 95, 29, 0.3)';
                 deckPileDiv.innerText = '↺'; 
-                deckPileDiv.style.color = '#fff';
+                deckPileDiv.style.color = 'var(--panel-bg)';
             }
         }
 
@@ -622,7 +590,6 @@
                 cardElement.style.top = '0px'; 
                 cardElement.dataset.category = cardData.category;
                 cardElement.dataset.word = cardData.word;
-                cardElement.dataset.icon = cardData.icon;
                 cardElement.dataset.colorClass = cardData.colorClass;
                 cardElement.dataset.isCategoryCard = cardData.isCategoryCard; 
                 cardElement.dataset.targetCount = cardData.targetCount || '';
@@ -638,7 +605,6 @@
                         drawPile.push({
                             category: cardEl.dataset.category, 
                             word: cardEl.dataset.word,
-                            icon: cardEl.dataset.icon,
                             colorClass: cardEl.dataset.colorClass, 
                             isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
                             targetCount: cardEl.dataset.targetCount
