@@ -8,28 +8,31 @@
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
         :root {
-            /* PC 기준 크기 */
             --card-width: 75px;
             --card-height: 110px;
             --gap-size: 15px;
             --font-base: 1rem;
-            /* 테마 컬러: 슬레이트 블루 (참조 이미지 스타일) */
-            --bg-color: #4a6583;
-            --bg-gradient: linear-gradient(180deg, #4a6583 0%, #2c3e50 100%);
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.25);
+            
+            /* 컬러 팔레트 기반 테마 재설정 */
+            --bg-color: #005452; /* TABRIZ TEAL */
+            --bg-gradient: linear-gradient(180deg, #006465 0%, #005452 100%); /* TEAL GREEN to TABRIZ TEAL */
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            
+            /* 카드 뒷면 테마 색상 */
+            --card-back-main: #8AAD34; /* AVOCADO */
+            --card-back-pattern: #A2C341; /* AEROBIC FIX */
         }
 
         @media (max-width: 600px) {
             :root {
-                /* 양옆 여백을 고려하여 카드 너비를 21vw로 축소 */
                 --card-width: 21vw; 
                 --card-height: 30vw;
                 --gap-size: 2vw;
                 --font-base: 0.85rem;
             }
             .game-layout {
-                padding: 0 15px !important; /* 모바일 양옆 여백 추가 */
+                padding: 0 15px !important;
             }
             .top-section {
                 gap: 45px !important;
@@ -55,12 +58,11 @@
             touch-action: pan-y;
         }
         
-        /* 전체 레이아웃 래퍼 (좌우 여백 및 중앙 정렬) */
         .game-layout {
             display: flex;
             flex-direction: column;
             width: 100%;
-            max-width: 500px; /* PC에서도 너무 넓어지지 않도록 제한 */
+            max-width: 500px; 
             margin: 0 auto;
             box-sizing: border-box;
             padding: 0 20px;
@@ -125,7 +127,6 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* 파운데이션 라벨을 앱 배지 스타일로 변경 */
         .foundation-label {
             position: absolute;
             top: -28px;
@@ -137,7 +138,7 @@
             font-size: 0.75rem;
             font-weight: 800;
             color: #fff;
-            background: #e67e22; /* 오렌지색 포인트 */
+            background: #3A6324; /* BRIGHT NORI */
             border-radius: 12px;
             pointer-events: none; 
             z-index: 50;
@@ -177,29 +178,28 @@
         
         .category-card {
             background: #fff;
-            border: 2px solid #f39c12 !important; 
-            box-shadow: 0 0 8px rgba(243, 156, 18, 0.3), 0 2px 5px rgba(0,0,0,0.1);
+            border: 2px solid var(--card-back-main) !important; 
+            box-shadow: 0 0 8px rgba(138, 173, 52, 0.4), 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        /* 카드 뒷면 오렌지 패턴 (캐주얼 모바일 게임 스타일) */
+        /* 팔레트 색상을 적용한 뒷면 */
         .card-back {
-            background-color: #e67e22 !important;
+            background-color: var(--card-back-main) !important;
             background-image: 
-                radial-gradient(#d35400 20%, transparent 20%),
-                radial-gradient(#d35400 20%, transparent 20%) !important;
+                radial-gradient(var(--card-back-pattern) 20%, transparent 20%),
+                radial-gradient(var(--card-back-pattern) 20%, transparent 20%) !important;
             background-size: 20px 20px !important;
             background-position: 0 0, 10px 10px !important;
             border: 3px solid #ffffff !important;
             color: transparent !important;
         }
 
-        /* 카드 두께감 (다중 그림자 스택 효과) */
         .stacked-deck {
             box-shadow: 
                 -1px 1px 0 #fff,
-                -2px 2px 0 #d35400,
+                -2px 2px 0 var(--card-back-main),
                 -3px 3px 0 #fff,
-                -4px 4px 0 #d35400,
+                -4px 4px 0 var(--card-back-main),
                 -5px 5px 6px rgba(0,0,0,0.3) !important;
         }
 
@@ -210,15 +210,15 @@
             font-weight: 600;
         }
 
-        /* 텍스트 컬러 (채도 약간 낮춰 세련되게) */
-        .color-animal { color: #8d6e63; }
-        .color-fruit { color: #ff7675; }
-        .color-job { color: #0984e3; }
-        .color-country { color: #2d3436; }
-        .color-food { color: #d35400; }
-        .color-sport { color: #6c5ce7; }
-        .color-color { color: #e84393; }
-        .color-instrument { color: #00b894; }
+        /* 텍스트 컬러 (팔레트 기반 매칭) */
+        .color-animal { color: #64731E; } /* FERN FROND */
+        .color-fruit { color: #267D39; } /* GORGEOUS GREEN */
+        .color-job { color: #007863; } /* TEAL WATERS */
+        .color-country { color: #005452; } /* TABRIZ TEAL */
+        .color-food { color: #48A3A7; } /* BLUE RACER */
+        .color-sport { color: #63A355; } /* MUTED GREEN */
+        .color-color { color: #00817A; } /* BLUE WINGED TEAL */
+        .color-instrument { color: #8AAD34; } /* AVOCADO */
         
         #deck-pile {
             cursor: pointer;
@@ -259,7 +259,7 @@
     </div>
 
     <script>
-        const cardOffset = 22; // 모바일에서 카드가 겹치는 간격을 살짝 넓혀 시인성 확보
+        const cardOffset = 22; 
 
         const wordData = {
             '동물': ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우'],
