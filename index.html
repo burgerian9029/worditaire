@@ -25,41 +25,36 @@
                 --font-base: 0.85rem;
             }
             .top-section {
-                flex-direction: column;
-                align-items: center;
-                gap: 45px !important; /* 덱과 파운데이션 사이 간격을 대폭 확대 */
-                margin-top: 15px !important;
-                margin-bottom: 50px !important; 
-            }
-            .top-section > .foundation-area:first-child {
-                align-self: flex-start;
-                margin-left: 2vw;
-            }
-            #foundations {
-                margin-top: 25px; /* 라벨이 들어갈 윗공간을 추가로 확보 */
+                gap: 45px !important;
+                margin-top: 10px !important;
+                margin-bottom: 40px !important; 
             }
             .status-panel {
                 margin: 10px 15px;
                 font-size: 0.95rem !important;
             }
             h1 { font-size: 1.4rem; text-align: center; margin-bottom: 5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
-            p { font-size: 0.8rem; text-align: center; margin: 0 15px; opacity: 0.9; }
         }
 
         body { 
             background: var(--bg-gradient);
             background-attachment: fixed;
             color: #f8f9fa; 
-        
-            /* Pretendard를 최우선으로 적용 */
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; 
-        
             margin: 0;
             padding-bottom: 80px;
             overflow-x: hidden;
             touch-action: pan-y;
         }
         
+        /* 전체 레이아웃을 감싸서 좌우 여백을 완벽하게 일치시킴 */
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
         .status-panel {
             display: flex;
             justify-content: space-between;
@@ -78,24 +73,32 @@
         
         .top-section {
             display: flex;
-            justify-content: center;
-            gap: 50px;
-            margin: 30px 10px 40px 10px; 
+            flex-direction: column;
+            width: 100%;
+            gap: 40px;
+            margin: 20px 0 30px 0; 
+        }
+
+        .deck-area {
+            display: flex;
+            gap: var(--gap-size);
+            width: 100%;
+            justify-content: flex-start;
         }
 
         .foundation-area, .board {
             display: flex;
-            justify-content: center;
-            align-items: flex-start; /* 열의 높이가 서로 독립적으로 유지되도록 설정 */
             gap: var(--gap-size);
+            width: 100%;
+            justify-content: space-between;
         }
         
         .board {
-            margin: 40px 10px 20px 10px; 
+            align-items: flex-start;
         }
 
         .column { 
-            box-sizing: content-box; /* padding-bottom이 높이를 팽창시키도록 보장 */
+            box-sizing: content-box; 
             width: var(--card-width); 
             min-height: var(--card-height); 
             border: 2px dashed rgba(255, 255, 255, 0.25); 
@@ -114,7 +117,7 @@
 
         .foundation-label {
             position: absolute;
-            top: -35px;
+            top: -32px;
             left: 50%;
             transform: translateX(-50%);
             width: max-content;
@@ -166,6 +169,24 @@
             box-shadow: 0 0 12px rgba(241, 196, 15, 0.4), 0 4px 8px rgba(0,0,0,0.1);
         }
         
+        /* 카드 뒷면 디자인 (딥 블루 & 흰 테두리) */
+        .card-back {
+            background-color: #1e3799 !important;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.15) 5px, rgba(255,255,255,0.15) 10px) !important;
+            border: 3px solid #ffffff !important;
+            color: transparent !important;
+        }
+
+        /* 카드 두께감 (다중 그림자 스택 효과) */
+        .stacked-deck {
+            box-shadow: 
+                -1px 1px 0 #fff,
+                -2px 2px 0 #bdc3c7,
+                -3px 3px 0 #fff,
+                -4px 4px 0 #bdc3c7,
+                -5px 5px 8px rgba(0,0,0,0.5) !important;
+        }
+
         .target-count-text {
             font-size: 0.7rem;
             margin-top: 6px;
@@ -189,15 +210,8 @@
             justify-content: center;
             font-size: calc(var(--font-base) * 2.2);
             color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px dashed rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             transition: all 0.2s ease;
-        }
-        #deck-pile:hover { 
-            background: rgba(255, 255, 255, 0.15); 
-            color: #fff;
-            transform: scale(1.02);
         }
     </style>
 </head>
@@ -209,24 +223,26 @@
         <div id="action-display">남은 행동 횟수: 0</div>
     </div>
     
-    <div class="top-section">
-        <div class="foundation-area">
-            <div id="deck-pile" class="column" title="클릭하여 카드 뽑기">↻</div>
-            <div id="waste-pile" class="column"></div> 
+    <!-- 완벽한 좌우 정렬을 위한 래퍼 -->
+    <div class="game-layout">
+        <div class="top-section">
+            <div class="deck-area">
+                <div id="deck-pile" class="column" title="클릭하여 카드 뽑기">↻</div>
+                <div id="waste-pile" class="column"></div> 
+            </div>
+
+            <div id="foundations" class="foundation-area">
+                <div class="column foundation dropzone"></div>
+                <div class="column foundation dropzone"></div>
+                <div class="column foundation dropzone"></div>
+                <div class="column foundation dropzone"></div>
+            </div>
         </div>
 
-        <div id="foundations" class="foundation-area">
-            <div class="column foundation dropzone"></div>
-            <div class="column foundation dropzone"></div>
-            <div class="column foundation dropzone"></div>
-            <div class="column foundation dropzone"></div>
-        </div>
+        <div id="board" class="board"></div>
     </div>
 
-    <div id="board" class="board"></div>
-
     <script>
-        // 상수 정의 (카드가 겹치는 간격)
         const cardOffset = 18;
 
         const wordData = {
@@ -291,13 +307,11 @@
             columns.push([]);
         }
         
-        // 동적 높이 조절 함수: absolute 카드들에 의해 브라우저가 높이를 인식하지 못하는 현상 해결
         function adjustBoardHeight() {
             document.querySelectorAll('.column').forEach(col => {
                 const cards = col.querySelectorAll('.card');
                 if (cards.length > 0) {
                     const lastCard = cards[cards.length - 1];
-                    // 마지막 카드의 top 위치만큼 컬럼의 하단 여백을 추가하여 문서 스크롤을 틔움
                     col.style.paddingBottom = lastCard.style.top;
                 } else {
                     col.style.paddingBottom = '0px';
@@ -404,7 +418,7 @@
                 }
             }
             
-            adjustBoardHeight(); // 카드 이동 완료 시 전체 높이 갱신
+            adjustBoardHeight(); 
             return moveSuccessful;
         }
 
@@ -478,6 +492,9 @@
 
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
+            
+            // 뒷면 및 스택 클래스 제거
+            cardElement.classList.remove('card-back', 'stacked-deck');
             cardElement.dataset.faceUp = 'true';
             cardElement.classList.add(cardElement.dataset.colorClass);
             
@@ -488,8 +505,6 @@
                 cardElement.innerText = cardElement.dataset.word; 
             }
             
-            cardElement.style.background = 'white';
-            cardElement.style.backgroundImage = 'none';
             cardElement.draggable = true;
             
             cardElement.addEventListener('dragstart', handleDragStart);
@@ -515,16 +530,17 @@
                 cardElement.dataset.targetCount = card.targetCount || ''; 
                 cardElement.dataset.faceUp = 'false'; 
                 
-                if (j === cardCount - 1) flipCard(cardElement);
-                else {
-                    cardElement.style.background = 'rgba(255,255,255,0.1)'; 
-                    cardElement.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px)';
+                if (j === cardCount - 1) {
+                    flipCard(cardElement);
+                } else {
+                    // 뒷면 디자인 및 두께감 부여
+                    cardElement.classList.add('card-back', 'stacked-deck');
                 }
                 board.childNodes[i].appendChild(cardElement);
             }
         }
         
-        adjustBoardHeight(); // 분배 후 초기 높이 측정 적용
+        adjustBoardHeight(); 
 
         let drawPile = deck.slice(cardIndex); 
         const deckPileDiv = document.getElementById('deck-pile');
@@ -532,12 +548,13 @@
 
         function updateDeckUI() {
             if (drawPile.length > 0) {
-                deckPileDiv.style.background = 'rgba(255,255,255,0.1)';
-                deckPileDiv.style.backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.05) 5px, rgba(255,255,255,0.05) 10px)';
+                deckPileDiv.classList.add('card-back', 'stacked-deck');
+                deckPileDiv.style.border = 'none';
                 deckPileDiv.innerText = '';
             } else {
+                deckPileDiv.classList.remove('card-back', 'stacked-deck');
                 deckPileDiv.style.background = 'transparent';
-                deckPileDiv.style.backgroundImage = 'none';
+                deckPileDiv.style.border = '2px dashed rgba(255, 255, 255, 0.3)';
                 deckPileDiv.innerText = '↺'; 
                 deckPileDiv.style.color = '#fff';
             }
