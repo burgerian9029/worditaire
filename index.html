@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 난이도 밸런스 패치</title>
+    <title>단어 분류 게임 - 카드 겹침 레이아웃 최적화</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -51,7 +51,8 @@
             color: var(--text-main); 
             font-family: 'Pretendard', sans-serif; 
             margin: 0;
-            padding-bottom: 120px; 
+            /* 하단 아이템 바와 겹치지 않도록 스크롤 여백 대폭 확장 (120px -> 170px) */
+            padding-bottom: 170px; 
             overflow-x: hidden;
             touch-action: pan-y;
         }
@@ -252,6 +253,7 @@
         <div id="board" class="board"></div>
     </div>
 
+    <!-- 하단 플로팅 아이템 바 -->
     <div class="item-bar">
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
@@ -298,7 +300,8 @@
     </div>
 
     <script>
-        const cardOffset = 22; 
+        // 모바일 기기에서는 카드가 덜 겹치도록 동적 오프셋 적용
+        const cardOffset = window.innerWidth <= 600 ? 15 : 22; 
         
         const categoryPool = {
             '동물': { words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말', '치타', '코뿔소', '하마'] },
@@ -421,7 +424,6 @@
             addBadge.style.display = inventory.addAction > 0 ? 'flex' : 'none';
         }
 
-        // 유저 요청에 맞춘 새로운 난이도 밸런스 설정 
         function getStageConfig(stage) {
             let cols = 3, foundations = 3, cats = 3, minW = 3, maxW = 6;
             
@@ -518,12 +520,10 @@
             
             const columns = [];
             
-            // 파운데이션(완성 슬롯) 개수 적용
             for (let i = 0; i < config.foundations; i++) {
                 let fCol = document.createElement('div'); fCol.className = 'column foundation dropzone'; foundationsDiv.appendChild(fCol);
             }
             
-            // 보드 열 개수 적용
             for (let i = 0; i < config.cols; i++) {
                 let bCol = document.createElement('div'); bCol.className = 'column dropzone'; boardDiv.appendChild(bCol);
                 columns.push(bCol);
@@ -570,7 +570,9 @@
         function adjustBoardHeight() {
             document.querySelectorAll('.board .column').forEach(col => {
                 const cards = col.querySelectorAll('.card');
-                if (cards.length > 0) col.style.paddingBottom = cards[cards.length - 1].style.top;
+                if (cards.length > 0) {
+                    col.style.paddingBottom = (parseInt(cards[cards.length - 1].style.top) + 30) + 'px';
+                }
                 else col.style.paddingBottom = '0px';
             });
         }
@@ -765,6 +767,7 @@
                     card.addEventListener('dragend', handleDragEnd);
                     card.addEventListener('touchstart', handleTouchStart, { passive: false });
                     card.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    card.addEventListener('touchmove', preventDefault, { passive: false }); // 모바일 스크롤 방지 보강
                     card.addEventListener('touchend', handleTouchEnd);
                 }
             });
