@@ -3,60 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Word Solitaire - Modern Edition</title>
+    <title>Word Solitaire - Retro Synthwave Edition</title>
+    <!-- 구글 픽셀 레트로 폰트 로드 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DungGeunMo&display=swap" rel="stylesheet">
     <style>
-        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
-        
         :root {
             --card-width: 80px;
             --card-height: 118px;
             --gap-size: 15px; 
-            --font-base: 1.05rem;
+            --font-base: 0.9rem;
             
-            --bg-gradient: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); 
-            --text-main: #004d40; 
-            --text-muted: #00695c;
-            
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-            
-            /* 카드 뒷면 (딥 에메랄드 패턴) */
-            --card-back-grad: linear-gradient(135deg, #00796b 0%, #004d40 100%);
-            
-            --coin-color: #f39c12;
-            --hint-color: #ffffff;
+            /* 레트로 신스웨이브 컬러 팔레트 */
+            --retro-bg: #0b021d;
+            --neon-pink: #ff007f;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #9d00ff;
+            --neon-yellow: #f3e600;
+            --pixel-border: #2a1b4e;
         }
 
-        .game-layout[data-cols="3"] { --card-width: 80px; --card-height: 118px; --gap-size: 15px; --font-base: 1.05rem; }
-        .game-layout[data-cols="4"] { --card-width: 75px; --card-height: 110px; --gap-size: 10px; --font-base: 1rem; }
-        .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px;  --font-base: 0.85rem; }
+        .game-layout[data-cols="3"] { --card-width: 80px; --card-height: 118px; --gap-size: 15px; }
+        .game-layout[data-cols="4"] { --card-width: 75px; --card-height: 110px; --gap-size: 10px; }
+        .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px; }
 
         @media (max-width: 600px) {
-            .game-layout[data-cols="3"] { --card-width: min(23vw, 80px); --card-height: min(34vw, 118px); --gap-size: 2vw; --font-base: 0.95rem; }
-            .game-layout[data-cols="4"] { --card-width: min(19vw, 75px); --card-height: min(28vw, 110px); --gap-size: 1.5vw; --font-base: 0.85rem; }
-            .game-layout[data-cols="5"] { --card-width: min(16.5vw, 65px); --card-height: min(24vw, 95px); --gap-size: 1.2vw; --font-base: 0.75rem; }
+            .game-layout[data-cols="3"] { --card-width: min(23vw, 80px); --card-height: min(34vw, 118px); --gap-size: 2vw; }
+            .game-layout[data-cols="4"] { --card-width: min(19vw, 75px); --card-height: min(28vw, 110px); --gap-size: 1.5vw; }
+            .game-layout[data-cols="5"] { --card-width: min(16.5vw, 65px); --card-height: min(24vw, 95px); --gap-size: 1.2vw; }
             
             .game-layout { padding: 0 10px !important; }
             .top-section { gap: 30px !important; margin-top: 10px !important; margin-bottom: 30px !important; }
-            .status-panel { margin: 10px 0; font-size: 0.9rem !important; }
-            h1 { font-size: 1.3rem; text-align: center; margin-bottom: 5px; font-weight: 800; color: var(--text-main); }
+            .status-panel { margin: 10px 0; font-size: 0.8rem !important; }
             
-            .item-bar { bottom: 25px !important; gap: 20px !important; }
-            .item-btn { width: 50px !important; height: 50px !important; }
-            .item-btn svg.item-icon { width: 22px; height: 22px; }
+            .item-bar { bottom: 25px !important; gap: 15px !important; }
+            .item-btn { width: 54px !important; height: 54px !important; }
         }
 
         body { 
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-main); 
-            font-family: 'Pretendard', sans-serif; 
+            background-color: var(--retro-bg);
+            /* 우주 배경 별빛 및 하단 신스웨이브 그리드 레이저 패턴 */
+            background-image: 
+                radial-gradient(white 1px, transparent 0),
+                radial-gradient(rgba(0,243,255,0.5) 1px, transparent 0),
+                linear-gradient(to bottom, rgba(157,0,255,0.2) 0%, transparent 60%),
+                linear-gradient(to top, rgba(255,0,127,0.4) 0%, transparent 40%);
+            background-size: 50px 50px, 80px 80px, 100% 100%, 100% 100%;
+            background-position: 0 0, 40px 40px, 0 0, 0 0;
+            color: #ffffff; 
+            font-family: 'DungGeunMo', 'Press Start 2P', monospace; 
             margin: 0;
             padding-bottom: 180px; 
             overflow-x: hidden;
             touch-action: pan-y;
             min-height: 100vh;
+        }
+
+        /* CRT 모니터 오버레이 스캔라인 느낌 */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 9999;
+            pointer-events: none;
         }
         
         .game-layout {
@@ -64,18 +75,34 @@
             margin: 0 auto; box-sizing: border-box; padding: 0 20px; position: relative;
         }
 
-        h1 { margin-top: 20px; font-weight: 800; color: var(--text-main); text-align: center; letter-spacing: -0.5px; }
+        /* 네온 글로우 타이틀 */
+        h1 {
+            margin-top: 25px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-cyan),
+                0 0 80px var(--neon-cyan);
+            letter-spacing: 2px;
+        }
 
+        /* 레트로 패널 스타일 */
         .status-panel {
             display: flex; justify-content: space-between; align-items: center;
-            margin: 15px 0; font-size: 1.05rem; font-weight: 700;
-            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            color: var(--text-main); padding: 14px 18px; border-radius: 16px;
-            border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
+            margin: 15px 0; font-size: 0.95rem; font-weight: bold;
+            background: rgba(26, 11, 46, 0.85);
+            color: #ffffff; padding: 12px 16px; border-radius: 4px;
+            border: 3px solid var(--neon-purple);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.4), inset 0 0 10px rgba(0, 243, 255, 0.2);
         }
         
         .coin-icon { width: 1.3em; height: 1.3em; margin-right: 4px; display: inline-block; vertical-align: middle; }
-        #coin-display { display: flex; align-items: center; color: #d35400; font-weight: 900; line-height: 1; }
+        #coin-display { display: flex; align-items: center; color: var(--neon-yellow); font-weight: bold; line-height: 1; text-shadow: 0 0 5px var(--neon-yellow); }
         
         .top-section { display: flex; flex-direction: column; width: 100%; gap: 35px; margin: 15px 0 35px 0; }
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
@@ -84,144 +111,146 @@
 
         .column { 
             box-sizing: content-box; width: var(--card-width); min-height: var(--card-height); 
-            border-radius: 12px; position: relative; transition: padding-bottom 0.3s ease;
+            border-radius: 6px; position: relative; transition: padding-bottom 0.3s ease;
         }
 
         #board .column::before, #waste-pile::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: var(--card-height);
-            border: 2px dashed rgba(0, 77, 64, 0.2); background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 12px; box-sizing: border-box; z-index: 0; 
+            border: 2px dashed rgba(0, 243, 255, 0.4); background-color: rgba(11, 2, 29, 0.5);
+            border-radius: 6px; box-sizing: border-box; z-index: 0; 
         }
         
         .foundation {
-            border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 12px;
-            background: rgba(255,255,255,0.2); box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+            border: 3px dashed var(--neon-cyan); border-radius: 6px;
+            background: rgba(0, 243, 255, 0.05); box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
         }
 
-        /* 파운데이션 라벨: 카드 뒷면과 다른 차별화된 컬러 (인디고/네이비 톤) 적용 */
         .foundation-label {
-            position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
-            width: max-content; padding: 5px 10px; text-align: center; font-size: 0.7rem; font-weight: 800;
-            color: #ffffff; background: linear-gradient(135deg, #3f51b5 0%, #1a237e 100%);
-            border-radius: 10px; border: 1px solid rgba(255,255,255,0.4);
-            pointer-events: none; z-index: 50; box-shadow: 0 4px 10px rgba(26,35,126,0.3);
+            position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+            width: max-content; padding: 4px 8px; text-align: center; font-size: 0.65rem; font-weight: bold;
+            color: #0b021d; background: var(--neon-cyan);
+            border-radius: 4px; border: 2px solid #ffffff;
+            pointer-events: none; z-index: 50; box-shadow: 0 0 8px var(--neon-cyan);
             line-height: 1.3; white-space: nowrap;
         }
         .foundation-label .sub-count {
-            display: block; font-size: 0.65rem; opacity: 0.85; font-weight: 600;
+            display: block; font-size: 0.6rem; opacity: 0.9;
         }
 
+        /* 픽셀 아케이드 스타일 카드 */
         .card { 
             box-sizing: border-box; width: var(--card-width); height: var(--card-height); 
-            background: #ffffff; color: var(--text-main); border-radius: 12px; 
+            background: #fdfdfd; color: #111111; border-radius: 6px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            font-size: var(--font-base); font-weight: 800; position: absolute; 
-            border: 1px solid rgba(0, 77, 64, 0.25);
-            border-top: 2px solid rgba(255, 255, 255, 1);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1); 
+            font-size: var(--font-base); font-weight: bold; position: absolute; 
+            border: 3px solid #1a0b2e;
+            box-shadow: 4px 4px 0px #1a0b2e, 0 0 10px rgba(255,255,255,0.2); 
             user-select: none; word-break: keep-all; 
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease; 
+            transition: transform 0.1s ease, opacity 0.2s ease; 
             touch-action: none; z-index: 1; 
         }
 
         @keyframes hintGlow {
-            0% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 6px 12px rgba(0,0,0,0.15); transform: translateY(0); }
-            50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(0, 200, 150, 0.6); transform: translateY(-3px); }
-            100% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 6px 12px rgba(0,0,0,0.15); transform: translateY(0); }
+            0% { box-shadow: 4px 4px 0px #1a0b2e, 0 0 10px var(--neon-yellow); transform: translateY(0); }
+            50% { box-shadow: 4px 4px 0px #1a0b2e, 0 0 25px var(--neon-yellow); transform: translateY(-4px); }
+            100% { box-shadow: 4px 4px 0px #1a0b2e, 0 0 10px var(--neon-yellow); transform: translateY(0); }
         }
         
-        .hint-active { animation: hintGlow 1.5s ease-in-out infinite !important; z-index: 100 !important; }
-        .column.hint-active::before { animation: hintGlow 1.5s ease-in-out infinite !important; border-color: #fff !important; }
+        .hint-active { animation: hintGlow 1s ease-in-out infinite !important; z-index: 100 !important; border-color: var(--neon-yellow) !important; }
+        .column.hint-active::before { animation: hintGlow 1s ease-in-out infinite !important; border-color: var(--neon-yellow) !important; }
 
         .card-word { text-align: center; pointer-events: none; }
         .card[draggable="true"] { cursor: grab; }
-        .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-8px); box-shadow: 0 20px 30px rgba(0,0,0,0.25); z-index: 999; }
+        .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-6px); box-shadow: 6px 10px 0px rgba(0,0,0,0.8); z-index: 999; }
         .card.locked { cursor: default; touch-action: auto; }
         
-        .category-card { background: #f4fdfb; border-color: #80cbc4; }
+        .category-card { background: #fff0f5; border-color: var(--neon-pink); color: var(--neon-pink); }
         
+        /* 레트로 지그재그 패턴 카드 뒷면 */
         .card-back {
             background: 
-                linear-gradient(135deg, rgba(255,255,255,0.1) 25%, transparent 25%) -10px 0,
-                linear-gradient(225deg, rgba(255,255,255,0.1) 25%, transparent 25%) -10px 0,
-                linear-gradient(315deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-                var(--card-back-grad) !important;
-            background-size: 20px 20px, 20px 20px, 20px 20px, 20px 20px, 100% 100% !important;
-            border: 2px solid rgba(255,255,255,0.4) !important; color: transparent !important;
+                linear-gradient(135deg, rgba(0,243,255,0.2) 25%, transparent 25%) -10px 0,
+                linear-gradient(225deg, rgba(0,243,255,0.2) 25%, transparent 25%) -10px 0,
+                linear-gradient(315deg, rgba(0,243,255,0.2) 25%, transparent 25%),
+                linear-gradient(45deg, rgba(0,243,255,0.2) 25%, transparent 25%),
+                linear-gradient(135deg, #093456 0%, #110033 100%) !important;
+            background-size: 16px 16px, 16px 16px, 16px 16px, 16px 16px, 100% 100% !important;
+            border: 3px solid var(--neon-cyan) !important; 
+            box-shadow: 4px 4px 0px #000 !important;
+            color: transparent !important;
         }
 
-        /* 2장 이상 겹쳐있을 때만 스택 그림자 효과 적용 (1장일 때는 미적용) */
-        .stacked-deck { box-shadow: -1px 1px 0 rgba(255,255,255,0.5), -2px 2px 0 #00695c, -3px 3px 0 rgba(255,255,255,0.5), -4px 4px 0 #00695c, -6px 6px 14px rgba(0,0,0,0.25) !important; }
-        
-        .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: var(--text-muted); font-weight: 600; }
-        #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: rgba(255, 255, 255, 0.9); border-radius: 12px; transition: all 0.2s ease; }
+        .stacked-deck { box-shadow: -2px 2px 0 var(--neon-cyan), -4px 4px 0 #110033, -6px 6px 0px #000 !important; }
+        .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: #555555; font-weight: bold; }
+        #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: var(--neon-cyan); border-radius: 6px; transition: all 0.2s ease; text-shadow: 0 0 8px var(--neon-cyan); }
 
+        /* 하단 아케이드 스타일 버튼 바 */
         .item-bar {
-            position: fixed; bottom: 35px; left: 0; width: 100%;
-            display: flex; justify-content: center; align-items: flex-end; gap: 35px;
+            position: fixed; bottom: 30px; left: 0; width: 100%;
+            display: flex; justify-content: center; align-items: flex-end; gap: 30px;
             pointer-events: none; z-index: 900;
         }
         
-        .item-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: auto; }
+        .item-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: auto; }
         
         .item-badge {
-            position: absolute; top: -6px; right: -6px;
-            background-color: #ff5252; color: #fff; font-size: 0.75rem; font-weight: 800;
-            min-width: 24px; height: 24px; border-radius: 12px;
+            position: absolute; top: -8px; right: -8px;
+            background-color: var(--neon-pink); color: #fff; font-size: 0.7rem; font-weight: bold;
+            min-width: 22px; height: 22px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 10; padding: 0 4px; box-sizing: border-box;
+            box-shadow: 0 0 8px var(--neon-pink); z-index: 10; padding: 0 4px; box-sizing: border-box;
+            border: 2px solid #ffffff;
         }
 
         .item-btn {
-            width: 60px; height: 60px; 
-            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; color: var(--text-main);
-            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 58px; height: 58px; 
+            background: #1a0b2e; 
+            border: 3px solid var(--neon-purple); border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; color: var(--neon-cyan);
+            cursor: pointer; transition: all 0.1s ease;
+            box-shadow: 4px 4px 0px var(--neon-purple), 0 0 10px rgba(157, 0, 255, 0.5);
         }
-        .item-btn svg.item-icon { width: 26px; height: 26px; }
-        .item-btn:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: rgba(255,255,255,0.8); }
+        .item-btn svg.item-icon { width: 26px; height: 26px; stroke: var(--neon-cyan); filter: drop-shadow(0 0 4px var(--neon-cyan)); }
+        .item-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px var(--neon-purple); background: #2a1b4e; }
         
         .item-cost {
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; font-weight: 800; color: #fff;
-            background: rgba(0, 77, 64, 0.8); backdrop-filter: blur(4px);
-            padding: 5px 12px; border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            line-height: 1; 
+            font-size: 0.75rem; font-weight: bold; color: var(--neon-yellow);
+            background: #1a0b2e; padding: 4px 10px; border-radius: 6px;
+            border: 2px solid var(--neon-yellow);
+            box-shadow: 0 0 8px rgba(243, 230, 0, 0.4);
+            line-height: 1; text-shadow: 0 0 4px var(--neon-yellow);
         }
 
+        /* 레트로 아케이드 팝업 */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,30,20,0.4); display: none; justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            background: rgba(11, 2, 29, 0.85); display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(4px);
         }
         .popup {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            color: var(--text-main); padding: 35px 25px; border-radius: 24px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 20px 40px rgba(0,0,0,0.15); width: 80%; max-width: 320px;
+            background: #1a0b2e; color: #ffffff; padding: 35px 25px; border-radius: 8px; text-align: center;
+            border: 4px solid var(--neon-pink); box-shadow: 0 0 30px var(--neon-pink), inset 0 0 20px rgba(255, 0, 127, 0.3); width: 85%; max-width: 320px;
         }
-        .popup h2 { margin-top: 0; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800;}
-        .popup p { margin: 20px 0; font-weight: 600; line-height: 1.5; white-space: pre-wrap; color: #00695c; }
+        .popup h2 { margin-top: 0; color: var(--neon-yellow); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.2rem; text-shadow: 0 0 8px var(--neon-yellow); }
+        .popup p { margin: 20px 0; font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; color: #00f3ff; }
         .btn {
-            background: var(--text-main); color: #fff; border: none; padding: 14px 24px; font-size: 1.05rem;
-            font-weight: bold; border-radius: 14px; cursor: pointer; margin-top: 10px; width: 100%; box-shadow: 0 4px 12px rgba(0,77,64,0.2);
+            background: var(--neon-pink); color: #fff; border: 3px solid #fff; padding: 12px 20px; font-size: 0.9rem;
+            font-family: inherit; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; box-shadow: 4px 4px 0px #000, 0 0 10px var(--neon-pink);
             transition: transform 0.1s;
         }
-        .btn-cancel { background: rgba(0,0,0,0.1); color: var(--text-main); margin-top: 12px; box-shadow: none; }
-        .btn:active { transform: translateY(2px); }
+        .btn-cancel { background: #4a4a4a; border-color: #fff; box-shadow: 4px 4px 0px #000; margin-top: 12px; }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #000; }
 
+        /* 우측 상단 개발자 버튼 */
         #dev-tools {
             position: absolute; top: 15px; right: 20px; z-index: 1000;
-            display: flex; gap: 6px; opacity: 0.4; transition: opacity 0.2s;
+            display: flex; gap: 6px; opacity: 0.5; transition: opacity 0.2s;
         }
         #dev-tools:hover { opacity: 1; }
         .dev-btn {
-            background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;
-            padding: 4px 8px; font-size: 14px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            backdrop-filter: blur(4px);
+            background: #1a0b2e; border: 2px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 4px;
+            padding: 4px 8px; font-size: 12px; cursor: pointer; box-shadow: 0 0 6px var(--neon-cyan);
         }
         @media (max-width: 600px) {
             #dev-tools { top: 15px; right: 15px; }
@@ -231,8 +260,8 @@
 <body>
     <svg style="display: none;">
         <symbol id="icon-coin" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#F39C12" stroke-width="2"/>
-            <text x="12" y="12" dy="0.35em" text-anchor="middle" fill="#D35400" font-size="15" font-weight="900" font-family="sans-serif">C</text>
+            <circle cx="12" cy="12" r="10" fill="#f3e600" stroke="#ff007f" stroke-width="2"/>
+            <text x="12" y="12" dy="0.35em" text-anchor="middle" fill="#0b021d" font-size="14" font-weight="900" font-family="monospace">C</text>
         </symbol>
     </svg>
 
@@ -245,7 +274,7 @@
         <h1>Word Solitaire</h1>
         
         <div class="status-panel">
-            <div id="stage-display">Stage: 1</div>
+            <div id="stage-display">Stage 1</div>
             <div id="coin-display">
                 <svg class="coin-icon"><use href="#icon-coin"></use></svg>
                 <span id="coin-value">100</span>
@@ -264,7 +293,7 @@
         <div id="board" class="board"></div>
     </div>
 
-    <!-- 하단 아이콘 픽토그램 선 두께 2배 강화 (stroke-width="3.5") -->
+    <!-- 하단 아이콘 (선 두께 3.5 적용) -->
     <div class="item-bar">
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
@@ -398,7 +427,7 @@
                     categoryTargetCounts = state.categoryTargetCounts;
                     moveHistory = state.moveHistory || [];
 
-                    document.getElementById('stage-display').innerText = `Stage: ${currentStage}`;
+                    document.getElementById('stage-display').innerText = `Stage ${currentStage}`;
                     
                     const config = getStageConfig(currentStage);
                     document.querySelector('.game-layout').dataset.cols = config.cols;
@@ -511,7 +540,7 @@
             document.querySelector('.game-layout').dataset.cols = config.cols;
             
             targetCategoriesCount = config.cats;
-            document.getElementById('stage-display').innerText = `Stage: ${stage}`;
+            document.getElementById('stage-display').innerText = `Stage ${stage}`;
             
             const allCatKeys = Object.keys(categoryPool);
             shuffle(allCatKeys);
@@ -567,10 +596,10 @@
                     
                     if (j === cardCount - 1) {
                         flipCard(cardElement);
-                        cardElement.classList.remove('card-back', 'stacked-deck'); // 1장일 때 스택 제거
+                        cardElement.classList.remove('card-back', 'stacked-deck');
                     } else {
                         cardElement.classList.add('card-back');
-                        if (j > 0) cardElement.classList.add('stacked-deck'); // 2장 이상일 때만 스택 그림자 적용
+                        if (j > 0) cardElement.classList.add('stacked-deck');
                     }
                 }
             }
@@ -629,14 +658,14 @@
             cancelBtn.onclick = () => { overlay.style.display = 'none'; };
             
             if(type === 'clear') {
-                title.innerText = '스테이지 클리어!'; title.style.color = '#00897b';
+                title.innerText = 'STAGE CLEAR!'; title.style.color = '#00f3ff';
                 const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
                 desc.innerHTML = `<span style="display: inline-flex; align-items: center; justify-content: center;">(<svg class="coin-icon" viewBox="0 0 24 24" style="margin: 0 4px;"><use href="#icon-coin"></use></svg> ${earnedCoins} 획득!)</span>`;
-                btn.innerText = '다음 스테이지로';
+                btn.innerText = '다음 스테이지';
                 addCoins(earnedCoins); 
                 btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
             } else if (type === 'gameover') {
-                title.innerText = 'GAME OVER'; title.style.color = '#e53935';
+                title.innerText = 'GAME OVER'; title.style.color = '#ff007f';
                 desc.innerText = '남은 행동 횟수가 없어요.';
                 btn.innerText = '행동 수 추가 아이템 사용';
                 cancelBtn.style.display = 'block';
@@ -649,18 +678,18 @@
                     initGame(currentStage); 
                 };
             } else if (type === 'no-coin') {
-                title.innerText = '코인 부족'; title.style.color = '#e53935';
-                desc.innerText = '아이템을 구매할 코인이 부족해요.\n게임을 진행하여 코인을 획득하세요.';
+                title.innerText = 'COIN 부족'; title.style.color = '#ff007f';
+                desc.innerText = '코인이 부족합니다.';
                 btn.innerText = '확인';
             } else if (type === 'buy-item') {
                 title.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> 아이템 구매`; 
-                title.style.color = 'var(--text-main)';
-                desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매하고<br>즉시 사용할까요?`;
+                title.style.color = '#f3e600';
+                desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매할까요?`;
                 btn.innerText = '구매 및 사용';
                 cancelBtn.style.display = 'block';
             } else if (type === 'no-moves') {
-                title.innerText = '이동 불가'; title.style.color = '#e53935';
-                desc.innerText = '현재 더 이상 뽑거나 옮길 카드가 없어요.\n행동 수 추가나 실행 취소를 사용해 보세요.';
+                title.innerText = '이동 불가'; title.style.color = '#ff007f';
+                desc.innerText = '더 이상 이동할 수 없습니다.';
                 btn.innerText = '확인';
             }
             overlay.style.display = 'flex';
@@ -778,7 +807,6 @@
                 const remainingCards = sourceColumn.querySelectorAll('.card');
                 if (remainingCards.length > 0) {
                     flipCard(remainingCards[remainingCards.length - 1]);
-                    // 노출된 카드가 1장이 되면 스택 그림자 제거
                     if (remainingCards.length === 1) {
                         remainingCards[0].classList.remove('card-back', 'stacked-deck');
                     }
@@ -846,7 +874,7 @@
             
             draggedCards.forEach(card => {
                 card.style.pointerEvents = '';
-                card.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease';
+                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease';
                 card.style.transform = ''; card.style.zIndex = '';
             });
 
@@ -893,18 +921,17 @@
         function updateDeckUI() {
             if (window.drawPile && window.drawPile.length > 0) {
                 deckPileDiv.classList.add('card-back');
-                // 남은 덱 장수에 따라 2장 이상일 때만 stacked-deck 추가
                 if (window.drawPile.length > 1) {
                     deckPileDiv.classList.add('stacked-deck');
                 } else {
                     deckPileDiv.classList.remove('stacked-deck');
                 }
-                deckPileDiv.style.border = 'none'; deckPileDiv.innerText = '';
+                deckPileDiv.style.border = '3px solid var(--neon-cyan)'; deckPileDiv.innerText = '';
             } else {
                 deckPileDiv.classList.remove('card-back', 'stacked-deck');
-                deckPileDiv.style.background = 'rgba(255, 255, 255, 0.2)';
-                deckPileDiv.style.border = '2px dashed rgba(0, 77, 64, 0.3)';
-                deckPileDiv.innerText = '↺'; deckPileDiv.style.color = 'var(--text-main)';
+                deckPileDiv.style.background = 'rgba(11, 2, 29, 0.5)';
+                deckPileDiv.style.border = '2px dashed rgba(0, 243, 255, 0.4)';
+                deckPileDiv.innerText = '↺'; deckPileDiv.style.color = 'var(--neon-cyan)';
             }
         }
 
