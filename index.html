@@ -97,15 +97,30 @@
         
         .board { align-items: flex-start; }
 
+        /* 테두리와 배경색을 제거하고 순수 레이아웃 박스로만 사용 */
         .column { 
             box-sizing: content-box; 
             width: var(--card-width); 
             min-height: var(--card-height); 
-            border: 2px dashed rgba(2, 95, 29, 0.3); 
-            background-color: rgba(255, 255, 255, 0.2);
             border-radius: 8px; 
             position: relative; 
             transition: padding-bottom 0.3s ease;
+        }
+
+        /* 보드와 폐기물 더미의 빈 슬롯 시각화 (크기 고정) */
+        #board .column::before,
+        #waste-pile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--card-height); /* 테두리가 늘어나지 않도록 카드 크기로 고정 */
+            border: 2px dashed rgba(2, 95, 29, 0.3);
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            box-sizing: border-box;
+            z-index: 0; /* 카드보다 뒤에 위치 */
         }
         
         .foundation {
@@ -134,7 +149,7 @@
         }
 
         .card { 
-            box-sizing: border-box; /* 카드가 파운데이션 안에서 완벽히 겹치도록 규격 통일 */
+            box-sizing: border-box; 
             width: var(--card-width); 
             height: var(--card-height); 
             background: #ffffff; 
@@ -151,10 +166,10 @@
             user-select: none;
             word-break: keep-all; 
             transition: transform 0.2s ease, opacity 0.3s ease; 
-            touch-action: none; 
+            touch-action: none;
+            z-index: 1; /* 빈 슬롯 테두리보다 항상 위에 위치 */
         }
 
-        /* 불필요한 z-index를 제거하여 글자 겹침 버그 해결 */
         .card-word { text-align: center; }
 
         .card[draggable="true"] { cursor: grab; }
