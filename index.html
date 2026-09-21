@@ -243,7 +243,7 @@
         
         <div class="status-panel">
             <div id="stage-display">스테이지: 1</div>
-            <div id="coin-display">💰 500</div>
+            <div id="coin-display">💰 100</div>
             <div id="action-display">남은 행동: 0</div>
         </div>
         
@@ -271,7 +271,7 @@
             <div class="item-cost">50 C</div>
         </div>
         <div class="item-container">
-            <div class="item-badge" id="badge-add-action">1</div>
+            <div class="item-badge" id="badge-add-action">0</div>
             <button class="item-btn" id="btn-add-action" title="행동 수 +10">➕</button>
             <div class="item-cost">100 C</div>
         </div>
@@ -305,8 +305,8 @@
             '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
         };
 
-        // 인벤토리 상태
-        let inventory = { undo: 1, hint: 1, addAction: 1 };
+        // 초기 인벤토리 상태 (add-action은 0개로 시작)
+        let inventory = { undo: 1, hint: 1, addAction: 0 };
         
         const itemConfig = {
             'undo': { cost: 30, name: '실행 취소', key: 'undo' },
@@ -315,7 +315,7 @@
         };
 
         let currentStage = 1;
-        let coins = 500; 
+        let coins = 100; // 초기 시작 코인 100으로 변경
         let deck = [];
         let draggedCards = []; 
         let sourceColumn = null; 
@@ -377,6 +377,7 @@
             document.getElementById('btn-undo').style.opacity = '1';
         }
 
+        // 새 게임 / 새 스테이지 시작 로직
         function initGame(stage) {
             isGameOver = false;
             deck = [];
@@ -384,6 +385,18 @@
             clearedCategoriesCount = 0;
             categoryTargetCounts = {};
             document.getElementById('btn-undo').style.opacity = '0.5';
+            
+            // 1스테이지일 때만 코인을 100으로 초기화 (이후 스테이지는 누적)
+            if (stage === 1) {
+                coins = 100;
+                // 게임 최초 시작 시 아이템 초기화: 취소/힌트는 1개 기본, 행동추가는 0개
+                inventory = { undo: 1, hint: 1, addAction: 0 };
+            } else {
+                // 스테이지가 넘어갈 때, 실행 취소와 힌트는 1개로 리필
+                // (만약 이전 판에서 안 써서 이미 1개 이상 있다면 그대로 유지)
+                inventory.undo = Math.max(1, inventory.undo);
+                inventory.hint = Math.max(1, inventory.hint);
+            }
             
             updateCoinDisplay();
             updateInventoryUI();
@@ -510,7 +523,11 @@
                     overlay.style.display = 'none'; 
                     handleItemClick('add-action');
                 };
-                cancelBtn.onclick = () => { overlay.style.display = 'none'; initGame(currentStage); };
+                cancelBtn.onclick = () => { 
+                    overlay.style.display = 'none'; 
+                    // 게임오버 시, 현재 스테이지를 재도전 (스테이지 유지)
+                    initGame(currentStage); 
+                };
             } else if (type === 'no-coin') {
                 title.innerText = '코인 부족'; title.style.color = '#d35400';
                 desc.innerText = '아이템을 구매할 코인이 부족합니다.\n게임을 진행하여 코인을 획득하세요.';
@@ -747,8 +764,11 @@
             if (window.drawPile.length > 0) {
                 const cardData = window.drawPile.pop();
                 let cardElement = createCardElement(cardData, 0);
-                flipCard(cardElement);
+                
+                // --- 버그 수정: 덱에서 뽑은 카드를 렌더링하고 바로 flipCard() 호출하여 드래그 이벤트 바인딩 ---
                 wastePileDiv.appendChild(cardElement); 
+                flipCard(cardElement); 
+                
                 consumeAction(); 
             } else {
                 const wasteCards = Array.from(wastePileDiv.querySelectorAll('.card'));
@@ -869,6 +889,7 @@
         document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
         document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
 
+        // 첫 게임 시작 (1스테이지)
         initGame(currentStage);
 
     </script>
