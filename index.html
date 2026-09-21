@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 뭉치 이동 복구</title>
+    <title>단어 분류 게임 - 힌트 로직 완벽 개선</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -81,19 +81,11 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
-        .coin-icon {
-            width: 1.25em;
-            height: 1.25em;
-            margin-right: 4px;
-            display: block;
-        }
+        .coin-icon { width: 1.25em; height: 1.25em; margin-right: 4px; display: block; }
 
         #coin-display { 
-            display: flex; 
-            align-items: center; 
-            color: var(--hint-color); 
-            font-weight: 800; 
-            line-height: 1; 
+            display: flex; align-items: center; color: var(--hint-color); 
+            font-weight: 800; line-height: 1; 
         }
         
         .top-section {
@@ -138,14 +130,16 @@
             touch-action: none; z-index: 1; 
         }
 
+        /* !important를 뚫고 확실하게 빛나도록 outline 기반 애니메이션 적용 */
         @keyframes hintGlow {
-            0% { box-shadow: 0 0 5px var(--hint-color), inset 0 0 5px var(--hint-color); border-color: var(--hint-color); }
-            50% { box-shadow: 0 0 20px var(--hint-color), inset 0 0 10px var(--hint-color); border-color: var(--hint-color); }
-            100% { box-shadow: 0 0 5px var(--hint-color), inset 0 0 5px var(--hint-color); border-color: var(--hint-color); }
+            0% { outline: 0px solid var(--hint-color); outline-offset: 0; box-shadow: 0 0 5px var(--hint-color); }
+            50% { outline: 4px solid var(--hint-color); outline-offset: 4px; box-shadow: 0 0 20px var(--hint-color); }
+            100% { outline: 0px solid var(--hint-color); outline-offset: 0; box-shadow: 0 0 5px var(--hint-color); }
         }
         
         .hint-active { 
             animation: hintGlow 1.5s ease-in-out infinite !important; 
+            z-index: 100 !important; 
         }
         
         .column.hint-active::before {
@@ -217,7 +211,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;
         }
         .popup h2 { margin-top: 0; color: var(--panel-bg); display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .popup p { margin: 15px 0; font-weight: 600; line-height: 1.5; }
+        .popup p { margin: 15px 0; font-weight: 600; line-height: 1.5; white-space: pre-wrap; }
         .btn {
             background: var(--card-back-main); color: #fff; border: none; padding: 12px 24px; font-size: 1.1rem;
             font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
@@ -227,7 +221,6 @@
     </style>
 </head>
 <body>
-    <!-- 코인 아이콘 SVG -->
     <svg style="display: none;">
         <symbol id="icon-coin" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#F39C12" stroke-width="2"/>
@@ -550,6 +543,10 @@
                 desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매하고<br>즉시 사용하시겠습니까?`;
                 btn.innerText = '구매 및 사용';
                 cancelBtn.style.display = 'block';
+            } else if (type === 'no-moves') {
+                title.innerText = '이동 불가'; title.style.color = '#d35400';
+                desc.innerText = '현재 더 이상 뽑거나 옮길 카드가 없습니다.\n행동 수 추가나 실행 취소를 사용해 보세요.';
+                btn.innerText = '확인';
             }
             overlay.style.display = 'flex';
         }
@@ -808,7 +805,7 @@
             }, 2000);
         }
 
-        /* --- 아이템 실행 로직 --- */
+        /* --- 아이템 실행 로직 완벽 개선 --- */
         function executeItemLogic(type) {
             if (type === 'undo') {
                 const prevState = moveHistory.pop();
@@ -842,8 +839,8 @@
                 });
 
                 const allCandidates = wasteCard ? [wasteCard, ...boardMovableCards] : boardMovableCards;
-                let foundHint = false;
                 
+                // 1. 최우선: 파운데이션 이동 확인
                 for(let card of allCandidates) {
                     const cardCat = card.dataset.category;
                     const isCatCard = card.dataset.isCategoryCard === 'true';
@@ -852,7 +849,6 @@
                     const cardIndex = cardsInSource.indexOf(card);
                     const draggedStack = cardsInSource.slice(cardIndex);
                     
-                    // 1. 파운데이션 이동 가능 여부
                     const foundations = Array.from(document.querySelectorAll('#foundations .column'));
                     for(let fCol of foundations) {
                         const existing = fCol.querySelectorAll('.card');
@@ -861,21 +857,29 @@
                             return true;
                         }
                     }
+                }
+
+                // 2. 보드 및 빈칸 이동 확인
+                for(let card of allCandidates) {
+                    const cardCat = card.dataset.category;
+                    const isCatCard = card.dataset.isCategoryCard === 'true';
+                    const sourceCol = card.parentNode;
+                    const cardsInSource = Array.from(sourceCol.querySelectorAll('.card'));
+                    const cardIndex = cardsInSource.indexOf(card);
+                    const draggedStack = cardsInSource.slice(cardIndex);
                     
-                    // 2. 보드 이동 가능 여부
                     for(let bCol of boardCols) {
                         if (bCol === sourceCol) continue; 
                         const existing = bCol.querySelectorAll('.card');
                         
-                        // 빈 슬롯으로의 이동 (아래 카드를 까볼 수 있는 경우만)
                         if (existing.length === 0) {
-                            if (cardIndex > 0 && cardsInSource[cardIndex - 1].dataset.faceUp === 'false') {
+                            // 폐기물 더미에서 빈 보드 칸으로 이동하는 것은 행동 수 낭비이므로 추천 배제
+                            // 오직 아래에 깔린 뒤집힌 카드를 까볼 수 있는 의미 있는 이동일 때만 빈 칸 추천
+                            if (sourceCol.id !== 'waste-pile' && cardIndex > 0 && cardsInSource[cardIndex - 1].dataset.faceUp === 'false') {
                                 applyHint(draggedStack, bCol);
                                 return true;
                             }
-                        } 
-                        // 카드가 있는 슬롯으로의 이동
-                        else {
+                        } else {
                             const lastExisting = existing[existing.length - 1];
                             if (lastExisting.dataset.category === cardCat && !isCatCard) {
                                 applyHint(draggedStack, lastExisting);
@@ -885,13 +889,16 @@
                     }
                 }
                 
-                // 3. 더미 뒤집기 추천
-                if(!foundHint && (window.drawPile.length > 0 || wasteCards.length > 0)) {
+                // 3. 더 이상 옮길 카드가 없을 때 덱(더미) 뒤집기 추천
+                if(window.drawPile.length > 0 || wasteCards.length > 0) {
                     deckPileDiv.classList.add('hint-active');
                     setTimeout(() => deckPileDiv.classList.remove('hint-active'), 2000);
                     return true;
                 }
-                return false;
+                
+                // 4. 정말로 더 이상 아무것도 할 수 없을 때
+                showPopup('no-moves');
+                return false; // 코인 차감 안 됨
             }
             
             if (type === 'add-action') {
