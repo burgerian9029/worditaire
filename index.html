@@ -124,7 +124,6 @@
         }
 
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
-        /* 줄바꿈을 방지하여 열이 아래로 떨어지지 않도록 nowrap 적용 */
         .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; flex-wrap: nowrap; }
         .board { align-items: flex-start; }
 
@@ -158,9 +157,30 @@
             font-size: var(--font-base); font-weight: 800; position: absolute; 
             border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.05);
             user-select: none; word-break: keep-all; 
-            /* 트랜지션에 3D 변형 효과 반영 */
             transition: transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease; 
             touch-action: none; z-index: 1; 
+        }
+
+        /* 🟢 성공 시 튕기는 효과 */
+        @keyframes successPop {
+            0% { transform: scale(1); box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+            50% { transform: scale(1.15); box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4); z-index: 10; }
+            100% { transform: scale(1); box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        }
+        
+        .success-pop {
+            animation: successPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* 🔴 실패 시 붉게 변하며 흔들리는 효과 */
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); background-color: #ffffff; }
+            20%, 60% { transform: translateX(-6px); background-color: #ffeaa7; color: #d63031; border-color: #d63031; }
+            40%, 80% { transform: translateX(6px); background-color: #ffcccc; color: #d63031; border-color: #d63031; }
+        }
+        
+        .error-shake {
+            animation: errorShake 0.4s ease-in-out;
         }
 
         @keyframes hintGlow {
@@ -413,7 +433,6 @@
 
                     document.getElementById('stage-display').innerText = `Stage: ${currentStage}`;
                     
-                    // 동적으로 화면 열 개수 데이터 속성 복구
                     const config = getStageConfig(currentStage);
                     document.querySelector('.game-layout').dataset.cols = config.cols;
 
@@ -522,7 +541,6 @@
             
             const config = getStageConfig(stage);
             
-            // 데이터 속성 업데이트로 CSS 변수 자동 적용 유도
             document.querySelector('.game-layout').dataset.cols = config.cols;
             
             targetCategoriesCount = config.cats;
@@ -537,13 +555,17 @@
                 const wordCount = Math.floor(Math.random() * (config.maxW - config.minW + 1)) + config.minW;
                 categoryTargetCounts[cat] = wordCount + 1; 
                 
-                deck.push({ isCategoryCard: true, category: cat, word: cat, targetCount: wordCount });
+                deck.push({ 
+                    isCategoryCard: true, category: cat, word: cat, targetCount: wordCount 
+                });
                 
                 let wordsPool = [...poolConfig.words];
                 shuffle(wordsPool);
                 const selectedWords = wordsPool.slice(0, wordCount);
                 for (let word of selectedWords) {
-                    deck.push({ isCategoryCard: false, category: cat, word: word });
+                    deck.push({ 
+                        isCategoryCard: false, category: cat, word: word 
+                    });
                 }
             }
             shuffle(deck);
@@ -707,6 +729,11 @@
                 let success = executeDropLogic(this);
                 if(!success) {
                     moveHistory.pop(); 
+                    // 🔴 보드나 파운데이션에 드롭했으나 규칙이 틀렸을 때 에러 흔들림 효과
+                    draggedCards.forEach(c => {
+                        c.classList.add('error-shake');
+                        setTimeout(() => c.classList.remove('error-shake'), 400);
+                    });
                 } else {
                     saveToLocalStorage();
                 }
@@ -727,6 +754,10 @@
 
                 if (canDrop) {
                     draggedCards.forEach(card => {
+                        // 🟢 성공 시 착! 달라붙는 팝 효과
+                        card.classList.add('success-pop');
+                        setTimeout(() => card.classList.remove('success-pop'), 300);
+                        
                         card.style.top = '0px'; 
                         dropZoneElement.appendChild(card);
                         card.draggable = false; card.classList.add('locked');
@@ -744,32 +775,21 @@
                     label.innerText = `${currentCategory} (${currentCardsCount - 1}/${categoryTargetCounts[currentCategory] - 1})`;
                     dropZoneElement.appendChild(label);
                     
-                    // 여기서 촤라라락 연출 로직 적용
                     if (currentCardsCount === categoryTargetCounts[currentCategory]) {
                         clearedCategoriesCount++;
-                        
-                        const cardsToRemove = Array.from(dropZoneElement.querySelectorAll('.card'));
-                        
-                        cardsToRemove.reverse().forEach((c, idx) => {
-                            setTimeout(() => {
-                                c.style.transition = 'all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                                c.style.transform = 'translateY(-60px) rotate(15deg) scale(1.1)';
-                                c.style.opacity = '0';
-                            }, idx * 80); 
-                        });
-
-                        if(label) label.style.opacity = '0';
-                        
-                        const totalAnimationTime = (cardsToRemove.length * 80) + 400;
                         setTimeout(() => {
-                            dropZoneElement.innerHTML = '';
-                            adjustBoardHeight(); 
-                            saveToLocalStorage();
-                            if(clearedCategoriesCount === targetCategoriesCount) {
-                                isGameOver = true;
-                                setTimeout(() => showPopup('clear'), 400);
-                            }
-                        }, totalAnimationTime); 
+                            dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0');
+                            if(label) label.style.opacity = '0';
+                            setTimeout(() => {
+                                dropZoneElement.innerHTML = '';
+                                adjustBoardHeight(); 
+                                saveToLocalStorage();
+                                if(clearedCategoriesCount === targetCategoriesCount) {
+                                    isGameOver = true;
+                                    setTimeout(() => showPopup('clear'), 400);
+                                }
+                            }, 500); 
+                        }, 800);
                     }
                 }
             } else if (isBoard) {
@@ -786,6 +806,10 @@
                 if (canDrop) {
                     let count = existingCards.length;
                     draggedCards.forEach((card, index) => {
+                        // 🟢 성공 시 착! 달라붙는 팝 효과
+                        card.classList.add('success-pop');
+                        setTimeout(() => card.classList.remove('success-pop'), 300);
+                        
                         card.style.top = ((count + index) * cardOffset) + 'px';
                         dropZoneElement.appendChild(card);
                     });
@@ -828,12 +852,21 @@
             sourceColumn = column; 
             setTimeout(() => { draggedCards.forEach(card => card.style.opacity = '0'); }, 0);
         }
+
         function handleDragEnd(e) {
+            // 🔴 허공에 드롭했을 때 흔들리는 에러 효과
+            if (draggedCards.length > 0) {
+                draggedCards.forEach(card => {
+                    card.classList.add('error-shake');
+                    setTimeout(() => card.classList.remove('error-shake'), 400);
+                });
+            }
             setTimeout(() => {
                 draggedCards.forEach(card => { if (card.style.opacity === '0') card.style.opacity = '1'; });
                 draggedCards = []; sourceColumn = null;
             }, 0);
         }
+
         function handleTouchStart(e) {
             if (isGameOver || !this.draggable) return;
             const column = this.parentNode;
@@ -844,6 +877,7 @@
             touchStartX = touch.clientX; touchStartY = touch.clientY;
             draggedCards.forEach((card, index) => { card.style.zIndex = 1000 + index; card.style.transition = 'none'; });
         }
+
         function handleTouchMove(e) {
             if (draggedCards.length === 0) return;
             e.preventDefault(); 
@@ -851,6 +885,7 @@
             const dx = touch.clientX - touchStartX; const dy = touch.clientY - touchStartY;
             draggedCards.forEach(card => { card.style.transform = `translate(${dx}px, ${dy}px) scale(1.05)`; });
         }
+
         function handleTouchEnd(e) {
             if (draggedCards.length === 0) return;
             const touch = e.changedTouches[0];
@@ -860,7 +895,7 @@
             
             draggedCards.forEach(card => {
                 card.style.pointerEvents = '';
-                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease';
+                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
                 card.style.transform = ''; card.style.zIndex = '';
             });
 
@@ -869,50 +904,44 @@
                 let success = executeDropLogic(dropZoneElement);
                 if(!success) {
                     moveHistory.pop();
+                    // 🔴 드롭존에 놓았으나 규칙에 어긋났을 때 효과 (터치)
+                    draggedCards.forEach(c => {
+                        c.classList.add('error-shake');
+                        setTimeout(() => c.classList.remove('error-shake'), 400);
+                    });
                 } else {
                     saveToLocalStorage(); 
                 }
+            } else {
+                // 🔴 허공에 놓았을 때 에러 효과 (터치)
+                draggedCards.forEach(card => {
+                    card.classList.add('error-shake');
+                    setTimeout(() => card.classList.remove('error-shake'), 400);
+                });
             }
             draggedCards = []; sourceColumn = null;
         }
 
-        // 여기서 3D 입체 뒤집기 연출 로직 적용
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
             
-            // 1. 카드를 얇은 측면이 보이도록 회전 애니메이션 시작
-            cardElement.style.transition = 'transform 0.15s ease-in';
-            cardElement.style.transform = 'rotateY(90deg)';
+            cardElement.classList.remove('card-back', 'stacked-deck');
+            cardElement.dataset.faceUp = 'true';
             
-            setTimeout(() => {
-                // 2. 카드가 가장 얇아졌을 때 앞면 데이터로 교체
-                cardElement.classList.remove('card-back', 'stacked-deck');
-                cardElement.dataset.faceUp = 'true';
-                
-                const word = cardElement.dataset.word;
-                let innerHTML = '';
-                if (cardElement.dataset.isCategoryCard === 'true') {
-                    cardElement.classList.add('category-card');
-                    innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
-                } else {
-                    innerHTML += `<div class="card-word">${word}</div>`; 
-                }
-                cardElement.innerHTML = innerHTML;
-                cardElement.draggable = true;
-                
-                // 3. 다시 0도로 튕기듯 펼쳐지는 연출
-                cardElement.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                cardElement.style.transform = 'rotateY(0deg)';
-                
-                rebindCardEvents();
-                
-                // 4. 애니메이션 종료 후 기존 드래그 속성 복구
-                setTimeout(() => {
-                    cardElement.style.transform = '';
-                    cardElement.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
-                }, 200);
-                
-            }, 150);
+            const word = cardElement.dataset.word;
+            let innerHTML = '';
+            
+            if (cardElement.dataset.isCategoryCard === 'true') {
+                cardElement.classList.add('category-card');
+                innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
+            } else {
+                innerHTML += `<div class="card-word">${word}</div>`; 
+            }
+            
+            cardElement.innerHTML = innerHTML;
+            cardElement.draggable = true;
+            
+            rebindCardEvents();
         }
 
         const deckPileDiv = document.getElementById('deck-pile');
