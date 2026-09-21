@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 자동 저장 및 아이템 개선</title>
+    <title>단어 분류 게임 - 단어장 확장 및 코인 디자인 개선</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -81,11 +81,19 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
-        .coin-icon { width: 1.25em; height: 1.25em; margin-right: 4px; display: block; }
+        .coin-icon {
+            width: 1.25em;
+            height: 1.25em;
+            margin-right: 4px;
+            display: block;
+        }
 
         #coin-display { 
-            display: flex; align-items: center; color: var(--hint-color); 
-            font-weight: 800; line-height: 1; 
+            display: flex; 
+            align-items: center; 
+            color: var(--hint-color); 
+            font-weight: 800; 
+            line-height: 1; 
         }
         
         .top-section {
@@ -214,11 +222,11 @@
     </style>
 </head>
 <body>
+    <!-- 겹쳐보이는 문제를 해결하기 위해 내부 원을 제거하고 글자를 키운 깔끔한 코인 아이콘 -->
     <svg style="display: none;">
         <symbol id="icon-coin" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#F39C12" stroke-width="2"/>
-            <circle cx="12" cy="12" r="6" fill="none" stroke="#F39C12" stroke-width="1.5" opacity="0.6"/>
-            <text x="12" y="12" dy="0.35em" text-anchor="middle" fill="#D35400" font-size="14.5" font-weight="900" font-family="sans-serif">C</text>
+            <text x="12" y="12" dy="0.35em" text-anchor="middle" fill="#D35400" font-size="15" font-weight="900" font-family="sans-serif">C</text>
         </symbol>
     </svg>
 
@@ -245,6 +253,7 @@
         <div id="board" class="board"></div>
     </div>
 
+    <!-- 하단 플로팅 아이템 바 -->
     <div class="item-bar">
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
@@ -293,19 +302,28 @@
     <script>
         const cardOffset = 22; 
         
+        // 카테고리 및 단어 풀 대폭 확장 (20개 카테고리, 각 15개 단어)
         const categoryPool = {
-            '동물': { words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말'] },
-            '과일': { words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리'] },
-            '직업': { words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너'] },
-            '국가': { words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아'] },
-            '음식': { words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드'] },
-            '스포츠': { words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도'] },
-            '색깔': { words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘'] },
-            '악기': { words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른'] },
-            '우주': { words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운'] },
-            '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개'] },
-            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트'] },
-            '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
+            '동물': { words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말', '치타', '코뿔소', '하마'] },
+            '과일': { words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리', '파인애플', '자두', '배'] },
+            '직업': { words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너', '건축가', '기자', '조종사'] },
+            '국가': { words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아', '스페인', '멕시코', '이집트'] },
+            '음식': { words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드', '짬뽕', '탕수육', '샌드위치'] },
+            '스포츠': { words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도', '복싱', '태권도', '펜싱'] },
+            '색깔': { words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘', '갈색', '베이지', '자주'] },
+            '악기': { words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른', '클라리넷', '색소폰', '가야금'] },
+            '우주': { words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운', '인공위성', '우주선', '은하수'] },
+            '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개', '폭설', '폭우', '가뭄'] },
+            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트', '케이블카', '킥보드', '우마차'] },
+            '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모', '사촌', '조카', '이모부'] },
+            '감정': { words: ['기쁨', '슬픔', '분노', '놀람', '두려움', '기대', '혐오', '신뢰', '당황', '우울', '행복', '짜증', '부끄러움', '설렘', '평온'] },
+            '신체': { words: ['머리', '어깨', '무릎', '발', '눈', '코', '입', '귀', '손', '팔', '다리', '심장', '위', '간', '뇌'] },
+            '식물': { words: ['소나무', '참나무', '장미', '해바라기', '튤립', '선인장', '대나무', '단풍나무', '무궁화', '민들레', '벚나무', '백합', '국화', '소철', '연꽃'] },
+            '곤충': { words: ['나비', '벌', '개미', '잠자리', '모기', '파리', '매미', '사마귀', '딱정벌레', '무당벌레', '귀뚜라미', '메뚜기', '바퀴벌레', '나방', '거미'] },
+            '의복': { words: ['바지', '치마', '셔츠', '코트', '패딩', '모자', '양말', '신발', '장갑', '목도리', '넥타이', '원피스', '조끼', '스웨터', '운동화'] },
+            '가전': { words: ['냉장고', '세탁기', 'TV', '에어컨', '청소기', '전자레인지', '선풍기', '컴퓨터', '드라이기', '밥솥', '오븐', '다리미', '건조기', '공기청정기', '스피커'] },
+            '가구': { words: ['책상', '의자', '침대', '옷장', '식탁', '소파', '서랍장', '화장대', '책장', '신발장', '선반', '탁자', '협탁', '장식장', '안락의자'] },
+            '취미': { words: ['독서', '요리', '게임', '등산', '낚시', '캠핑', '여행', '그림', '사진', '영화', '음악', '춤', '뜨개질', '원예', '바둑'] }
         };
 
         let inventory = { undo: 1, hint: 1, addAction: 0 };
@@ -330,7 +348,6 @@
         let touchStartX = 0; let touchStartY = 0;
         let moveHistory = [];
 
-        // 로컬 스토리지 데이터 저장 함수
         function saveToLocalStorage() {
             if(isGameOver) return; 
             const state = {
@@ -350,7 +367,6 @@
             localStorage.setItem('worditaire_save', JSON.stringify(state));
         }
 
-        // 로컬 스토리지 데이터 불러오기 함수
         function loadFromLocalStorage() {
             const saved = localStorage.getItem('worditaire_save');
             if (saved) {
@@ -439,7 +455,6 @@
             moveHistory.push(state);
             if(moveHistory.length > 10) moveHistory.shift(); 
             
-            // 이전 액션이 존재해야만 Undo 버튼 활성화 (배열 길이가 1 이상일 때)
             document.getElementById('btn-undo').style.opacity = moveHistory.length > 1 ? '1' : '0.5';
             saveToLocalStorage();
         }
@@ -641,7 +656,7 @@
                 if(!success) {
                     moveHistory.pop(); 
                 } else {
-                    saveToLocalStorage(); // 성공적으로 드롭이 끝나면 저장
+                    saveToLocalStorage();
                 }
                 draggedCards = [];
             }
@@ -685,7 +700,7 @@
                             setTimeout(() => {
                                 dropZoneElement.innerHTML = '';
                                 adjustBoardHeight(); 
-                                saveToLocalStorage(); // 정리 후 상태 저장
+                                saveToLocalStorage();
                                 if(clearedCategoriesCount === targetCategoriesCount) {
                                     isGameOver = true;
                                     setTimeout(() => showPopup('clear'), 400);
@@ -792,7 +807,7 @@
                 if(!success) {
                     moveHistory.pop();
                 } else {
-                    saveToLocalStorage(); // 성공적으로 드롭 완료 시 저장
+                    saveToLocalStorage(); 
                 }
             }
             draggedCards = []; sourceColumn = null;
@@ -861,7 +876,7 @@
             }
             updateDeckUI();
             adjustBoardHeight(); 
-            saveToLocalStorage(); // 클릭 이벤트 처리 후 저장
+            saveToLocalStorage(); 
         });
 
         function applyHint(sourceStack, targetElement) {
@@ -892,7 +907,7 @@
                 rebindCardEvents();
                 
                 if (moveHistory.length <= 1) document.getElementById('btn-undo').style.opacity = '0.5';
-                saveToLocalStorage(); // 되돌리기 후 상태 저장
+                saveToLocalStorage(); 
                 return true;
             }
             
@@ -971,7 +986,7 @@
                 remainingActions += 10;
                 isGameOver = false; 
                 document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-                saveToLocalStorage(); // 행동 수 추가 후 저장
+                saveToLocalStorage(); 
                 return true;
             }
         }
@@ -987,7 +1002,7 @@
                 if (executeItemLogic(type)) {
                     inventory[config.key]--;
                     updateInventoryUI();
-                    saveToLocalStorage(); // 뱃지 차감 후 저장
+                    saveToLocalStorage(); 
                 }
             } else {
                 showPopup('buy-item', () => {
