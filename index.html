@@ -158,6 +158,7 @@
             font-size: var(--font-base); font-weight: 800; position: absolute; 
             border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.05);
             user-select: none; word-break: keep-all; 
+            /* 트랜지션에 3D 변형 효과 반영 */
             transition: transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease; 
             touch-action: none; z-index: 1; 
         }
@@ -352,7 +353,7 @@
             '유행어': { words: ['킹받네', '무야호', '어쩔티비', '점메추', '오히려 좋아', '중꺾마', '이왜진', 'ㄴㅇㄱ', '텍스트 힙', '갓생', '많관부', '영크크', '난리자베스', '밤티', '샤갈'] },
             '유행 간식': { words: ['두바이 쫀득 쿠키', '대왕 카스테라', '탕후루', '버터떡', '피자설기', '소떡소떡', '버블티', '허니버터칩', '포켓몬빵', '달고나 커피', '크로플', '소금빵'] },
             '고양이': { words: ['노르웨이 숲', '러시안 블루', '스핑크스', '브리티시 숏헤어', '코리안 숏헤어', '샴', '페르시안', '랙돌', '벵갈', '스코티시 폴드', '터키시 앙고라'] },
-            '개': { words: ['말티즈', '푸들', '시베리안 허스키', '골든 리트리버', '진돗개', '불독', '퍼그', '도베르만', '포메라니안', '치와와', '시츄', '비숑', '웰시코기'] }
+            '개': { words: ['말티즈', '푸들', '시베리안 허스키', '골든 리트리버', '진돗개', '불독', '퍼그', '도베르만', '포메라니안', '치와와', '시츄', '비숑', '웰시코기'] }
         };
 
         let inventory = { undo: 1, hint: 1, addAction: 0 };
@@ -743,21 +744,32 @@
                     label.innerText = `${currentCategory} (${currentCardsCount - 1}/${categoryTargetCounts[currentCategory] - 1})`;
                     dropZoneElement.appendChild(label);
                     
+                    // 여기서 촤라라락 연출 로직 적용
                     if (currentCardsCount === categoryTargetCounts[currentCategory]) {
                         clearedCategoriesCount++;
-                        setTimeout(() => {
-                            dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0');
-                            if(label) label.style.opacity = '0';
+                        
+                        const cardsToRemove = Array.from(dropZoneElement.querySelectorAll('.card'));
+                        
+                        cardsToRemove.reverse().forEach((c, idx) => {
                             setTimeout(() => {
-                                dropZoneElement.innerHTML = '';
-                                adjustBoardHeight(); 
-                                saveToLocalStorage();
-                                if(clearedCategoriesCount === targetCategoriesCount) {
-                                    isGameOver = true;
-                                    setTimeout(() => showPopup('clear'), 400);
-                                }
-                            }, 500); 
-                        }, 800);
+                                c.style.transition = 'all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                                c.style.transform = 'translateY(-60px) rotate(15deg) scale(1.1)';
+                                c.style.opacity = '0';
+                            }, idx * 80); 
+                        });
+
+                        if(label) label.style.opacity = '0';
+                        
+                        const totalAnimationTime = (cardsToRemove.length * 80) + 400;
+                        setTimeout(() => {
+                            dropZoneElement.innerHTML = '';
+                            adjustBoardHeight(); 
+                            saveToLocalStorage();
+                            if(clearedCategoriesCount === targetCategoriesCount) {
+                                isGameOver = true;
+                                setTimeout(() => showPopup('clear'), 400);
+                            }
+                        }, totalAnimationTime); 
                     }
                 }
             } else if (isBoard) {
@@ -864,23 +876,43 @@
             draggedCards = []; sourceColumn = null;
         }
 
+        // 여기서 3D 입체 뒤집기 연출 로직 적용
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
-            cardElement.classList.remove('card-back', 'stacked-deck');
-            cardElement.dataset.faceUp = 'true';
             
-            const word = cardElement.dataset.word;
-            let innerHTML = '';
-            if (cardElement.dataset.isCategoryCard === 'true') {
-                cardElement.classList.add('category-card');
-                innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
-            } else {
-                innerHTML += `<div class="card-word">${word}</div>`; 
-            }
-            cardElement.innerHTML = innerHTML;
-            cardElement.draggable = true;
+            // 1. 카드를 얇은 측면이 보이도록 회전 애니메이션 시작
+            cardElement.style.transition = 'transform 0.15s ease-in';
+            cardElement.style.transform = 'rotateY(90deg)';
             
-            rebindCardEvents();
+            setTimeout(() => {
+                // 2. 카드가 가장 얇아졌을 때 앞면 데이터로 교체
+                cardElement.classList.remove('card-back', 'stacked-deck');
+                cardElement.dataset.faceUp = 'true';
+                
+                const word = cardElement.dataset.word;
+                let innerHTML = '';
+                if (cardElement.dataset.isCategoryCard === 'true') {
+                    cardElement.classList.add('category-card');
+                    innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
+                } else {
+                    innerHTML += `<div class="card-word">${word}</div>`; 
+                }
+                cardElement.innerHTML = innerHTML;
+                cardElement.draggable = true;
+                
+                // 3. 다시 0도로 튕기듯 펼쳐지는 연출
+                cardElement.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                cardElement.style.transform = 'rotateY(0deg)';
+                
+                rebindCardEvents();
+                
+                // 4. 애니메이션 종료 후 기존 드래그 속성 복구
+                setTimeout(() => {
+                    cardElement.style.transform = '';
+                    cardElement.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                }, 200);
+                
+            }, 150);
         }
 
         const deckPileDiv = document.getElementById('deck-pile');
