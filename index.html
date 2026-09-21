@@ -8,10 +8,11 @@
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
         :root {
-            --card-width: 75px;
-            --card-height: 110px;
-            --gap-size: 10px; 
-            --font-base: 1rem;
+            /* 3열 기준 기본값 (Fallback) */
+            --card-width: 80px;
+            --card-height: 118px;
+            --gap-size: 15px; 
+            --font-base: 1.05rem;
             
             --bg-color: #c5dec4; 
             --panel-bg: #025f1d; 
@@ -25,13 +26,17 @@
             --hint-color: #ffd700;
         }
 
+        /* 열 개수에 따른 동적 사이즈 조절 (데스크탑) */
+        .game-layout[data-cols="3"] { --card-width: 80px; --card-height: 118px; --gap-size: 15px; --font-base: 1.05rem; }
+        .game-layout[data-cols="4"] { --card-width: 75px; --card-height: 110px; --gap-size: 10px; --font-base: 1rem; }
+        .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px;  --font-base: 0.85rem; }
+
         @media (max-width: 600px) {
-            :root {
-                --card-width: 19vw; 
-                --card-height: 28vw;
-                --gap-size: 1.5vw;
-                --font-base: 0.8rem;
-            }
+            /* 열 개수에 따른 동적 사이즈 조절 (모바일) */
+            .game-layout[data-cols="3"] { --card-width: 24vw;   --card-height: 35vw; --gap-size: 2vw;   --font-base: 0.9rem; }
+            .game-layout[data-cols="4"] { --card-width: 19vw;   --card-height: 28vw; --gap-size: 1.5vw; --font-base: 0.8rem; }
+            .game-layout[data-cols="5"] { --card-width: 16.5vw; --card-height: 24vw; --gap-size: 1.2vw; --font-base: 0.7rem; }
+            
             .game-layout { padding: 0 10px !important; }
             .top-section {
                 gap: 40px !important;
@@ -44,6 +49,8 @@
             .item-bar { bottom: 15px !important; gap: 20px !important; }
             .item-btn { width: 50px !important; height: 50px !important; }
             .item-btn svg.item-icon { width: 22px; height: 22px; }
+            
+            .foundation-label { font-size: calc(var(--font-base) * 0.85) !important; padding: 2px 6px !important; }
         }
 
         body { 
@@ -85,7 +92,7 @@
             width: 1.25em;
             height: 1.25em;
             margin-right: 4px;
-            display: inline-block; /* 블록 요소에서 인라인 블록으로 변경하여 줄바꿈 방지 */
+            display: inline-block;
             vertical-align: middle;
         }
 
@@ -102,7 +109,8 @@
         }
 
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
-        .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; flex-wrap: wrap; }
+        /* 줄바꿈을 방지하여 열이 아래로 떨어지지 않도록 nowrap 적용 */
+        .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; flex-wrap: nowrap; }
         .board { align-items: flex-start; }
 
         .column { 
@@ -162,7 +170,7 @@
         }
 
         .stacked-deck { box-shadow: -1px 1px 0 #fff, -2px 2px 0 var(--card-back-main), -3px 3px 0 #fff, -4px 4px 0 var(--card-back-main), -5px 5px 6px rgba(0,0,0,0.2) !important; }
-        .target-count-text { font-size: 0.65rem; margin-top: 4px; color: #7f8c8d; font-weight: 600; }
+        .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: #7f8c8d; font-weight: 600; }
         #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: rgba(255, 255, 255, 0.9); border-radius: 8px; transition: all 0.2s ease; }
 
         .item-bar {
@@ -230,7 +238,8 @@
         </symbol>
     </svg>
 
-    <div class="game-layout">
+    <!-- data-cols 속성으로 현재 열 개수를 관리하여 CSS 변수를 동적으로 할당 -->
+    <div class="game-layout" data-cols="3">
         <h1>Word Solitaire</h1>
         
         <div class="status-panel">
@@ -314,7 +323,7 @@
             '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개', '폭설', '폭우', '가뭄'] },
             '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트', '케이블카', '킥보드', '우마차'] },
             '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모', '사촌', '조카', '이모부'] },
-            '해외 영화': { words: ['타이타닉', '아바타', '어벤져스', '매트릭스', '해리포터', '인터스텔라', '인셉션', '반지의 제왕', '쥬라기 공원', '터미네이터', '미션 임파서블', '다크 나이트'] },
+            '해외 영화': { words: ['타이타닉', '아바타', '어벤져스', '매트릭스', '해리포터', '쏘우', '인셉션', '그랜드 부다페스트 호텔', '그래비티', '오디세우스', '미션 임파서블', '판의 미로'] },
             '한국 영화': { words: ['기생충', '밀양', '장화, 홍련', '신과 함께', '파묘', '베테랑', '도둑들', '괴물', '암살', '아가씨', '박쥐', '부산행'] },
             '브랜드': { words: ['삼성', '애플', '나이키', '구글', '스타벅스', '코카콜라', '현대', '아마존', '소니', '닌텐도', '디즈니', '레고'] },
             '과자': { words: ['새우깡', '포카칩', '빼빼로', '홈런볼', '오징어땅콩', '맛동산', '꼬깔콘', '칸쵸', '초코파이', '쿠크다스', '치토스', '프링글스'] },
@@ -326,7 +335,9 @@
             '여름': { words: ['모기', '수박', '에어컨', '해수욕장', '선풍기', '장마', '팥빙수', '매미', '열대야', '튜브', '태풍', '빙수'] },
             '보드게임' : { words: ['할리갈리', '루미큐브', '뱅', '아발론', '체스', '바둑', '모노폴리', '우노', '장기', '마작', '카탄', '스플렌더'] },
             '유행어': { words: ['킹받네', '무야호', '어쩔티비', '점메추', '오히려 좋아', '중꺾마', '이왜진', 'ㄴㅇㄱ', '텍스트 힙', '갓생', '많관부', '영크크', '난리자베스', '밤티', '샤갈'] },
-            '유행 간식': { words: ['두바이 쫀득 쿠키', '대왕 카스테라', '탕후루', '버터떡', '피자설기', '소떡소떡', '버블티', '허니버터칩', '포켓몬빵', '달고나 커피', '크로플', '소금빵'] }
+            '유행 간식': { words: ['두바이 쫀득 쿠키', '대왕 카스테라', '탕후루', '버터떡', '피자설기', '소떡소떡', '버블티', '허니버터칩', '포켓몬빵', '달고나 커피', '크로플', '소금빵'] },
+            '고양이': { words: ['노르웨이 숲', '러시안 블루', '스핑크스', '브리티시 숏헤어', '코리안 숏헤어', '샴', '페르시안', '랙돌', '벵갈', '스코티시 폴드', '터키시 앙고라'] },
+            '개': { words: ['말티즈', '푸들', '시베리안 허스키', '골든 리트리버', '진돗개', '불독', '퍼그', '도베르만', '포메라니안', '치와와', '시츄', '비숑', '웰시코기'] }
         };
 
         let inventory = { undo: 1, hint: 1, addAction: 0 };
@@ -385,6 +396,11 @@
                     moveHistory = state.moveHistory || [];
 
                     document.getElementById('stage-display').innerText = `Stage: ${currentStage}`;
+                    
+                    // 동적으로 화면 열 개수 데이터 속성 복구
+                    const config = getStageConfig(currentStage);
+                    document.querySelector('.game-layout').dataset.cols = config.cols;
+
                     updateCoinDisplay();
                     updateInventoryUI();
                     document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
@@ -489,6 +505,10 @@
             updateInventoryUI();
             
             const config = getStageConfig(stage);
+            
+            // 데이터 속성 업데이트로 CSS 변수 자동 적용 유도
+            document.querySelector('.game-layout').dataset.cols = config.cols;
+            
             targetCategoriesCount = config.cats;
             document.getElementById('stage-display').innerText = `Stage: ${stage}`;
             
@@ -605,7 +625,6 @@
             if(type === 'clear') {
                 title.innerText = '스테이지 클리어!'; title.style.color = '#13b54d';
                 const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
-                // 팝업 내 텍스트와 아이콘의 수직 중앙 정렬을 위해 inline-flex 래퍼 추가
                 desc.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24" style="margin: 0 4px;"><use href="#icon-coin"></use></svg> ${earnedCoins} 획득</span>`;
                 btn.innerText = '다음 스테이지로';
                 addCoins(earnedCoins); 
