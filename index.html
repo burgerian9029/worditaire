@@ -97,7 +97,6 @@
         
         .board { align-items: flex-start; }
 
-        /* 테두리와 배경색을 제거하고 순수 레이아웃 박스로만 사용 */
         .column { 
             box-sizing: content-box; 
             width: var(--card-width); 
@@ -107,7 +106,6 @@
             transition: padding-bottom 0.3s ease;
         }
 
-        /* 보드와 폐기물 더미의 빈 슬롯 시각화 (크기 고정) */
         #board .column::before,
         #waste-pile::before {
             content: '';
@@ -115,12 +113,12 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: var(--card-height); /* 테두리가 늘어나지 않도록 카드 크기로 고정 */
+            height: var(--card-height);
             border: 2px dashed rgba(2, 95, 29, 0.3);
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             box-sizing: border-box;
-            z-index: 0; /* 카드보다 뒤에 위치 */
+            z-index: 0; 
         }
         
         .foundation {
@@ -153,6 +151,8 @@
             width: var(--card-width); 
             height: var(--card-height); 
             background: #ffffff; 
+            /* 모든 카드의 폰트 색상을 어두운 그린으로 통일 */
+            color: var(--text-main); 
             border-radius: 8px; 
             display: flex;
             flex-direction: column;
@@ -167,7 +167,7 @@
             word-break: keep-all; 
             transition: transform 0.2s ease, opacity 0.3s ease; 
             touch-action: none;
-            z-index: 1; /* 빈 슬롯 테두리보다 항상 위에 위치 */
+            z-index: 1; 
         }
 
         .card-word { text-align: center; }
@@ -207,19 +207,6 @@
             color: #7f8c8d;
             font-weight: 600;
         }
-
-        .color-animal { color: #64731E; } 
-        .color-fruit { color: #267D39; } 
-        .color-job { color: #00807A; } 
-        .color-country { color: #007863; } 
-        .color-food { color: #005452; } 
-        .color-sport { color: #008489; } 
-        .color-color { color: #48A3A7; } 
-        .color-instrument { color: #8AAD34; }
-        .color-space { color: #2c3e50; }
-        .color-weather { color: #2980b9; }
-        .color-transport { color: #d35400; }
-        .color-family { color: #e84393; }
         
         #deck-pile {
             cursor: pointer;
@@ -288,18 +275,18 @@
         const cardOffset = 22; 
         
         const categoryPool = {
-            '동물': { colorClass: 'color-animal', words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말'] },
-            '과일': { colorClass: 'color-fruit', words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리'] },
-            '직업': { colorClass: 'color-job', words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너'] },
-            '국가': { colorClass: 'color-country', words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아'] },
-            '음식': { colorClass: 'color-food', words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드'] },
-            '스포츠': { colorClass: 'color-sport', words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도'] },
-            '색깔': { colorClass: 'color-color', words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘'] },
-            '악기': { colorClass: 'color-instrument', words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른'] },
-            '우주': { colorClass: 'color-space', words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운'] },
-            '날씨': { colorClass: 'color-weather', words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개'] },
-            '교통': { colorClass: 'color-transport', words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트'] },
-            '가족': { colorClass: 'color-family', words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
+            '동물': { words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말'] },
+            '과일': { words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리'] },
+            '직업': { words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너'] },
+            '국가': { words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아'] },
+            '음식': { words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드'] },
+            '스포츠': { words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도'] },
+            '색깔': { words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘'] },
+            '악기': { words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른'] },
+            '우주': { words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운'] },
+            '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개'] },
+            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트'] },
+            '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
         };
 
         let currentStage = 1;
@@ -360,7 +347,7 @@
                 
                 deck.push({ 
                     isCategoryCard: true, category: cat, word: cat, 
-                    targetCount: wordCount, colorClass: poolConfig.colorClass 
+                    targetCount: wordCount
                 });
                 
                 let wordsPool = [...poolConfig.words];
@@ -369,7 +356,7 @@
                 
                 for (let word of selectedWords) {
                     deck.push({ 
-                        isCategoryCard: false, category: cat, word: word, colorClass: poolConfig.colorClass 
+                        isCategoryCard: false, category: cat, word: word
                     });
                 }
             }
@@ -432,7 +419,6 @@
             el.style.top = (index * cardOffset) + 'px'; 
             el.dataset.category = cardData.category;
             el.dataset.word = cardData.word;
-            el.dataset.colorClass = cardData.colorClass;
             el.dataset.isCategoryCard = cardData.isCategoryCard;
             el.dataset.targetCount = cardData.targetCount || ''; 
             el.dataset.faceUp = 'false'; 
@@ -651,7 +637,6 @@
             
             cardElement.classList.remove('card-back', 'stacked-deck');
             cardElement.dataset.faceUp = 'true';
-            cardElement.classList.add(cardElement.dataset.colorClass);
             
             const word = cardElement.dataset.word;
             let innerHTML = '';
@@ -705,7 +690,7 @@
                         let cardEl = wasteCards[k];
                         window.drawPile.push({
                             category: cardEl.dataset.category, word: cardEl.dataset.word,
-                            colorClass: cardEl.dataset.colorClass, isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
+                            isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
                             targetCount: cardEl.dataset.targetCount
                         });
                         cardEl.remove();
