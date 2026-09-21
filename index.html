@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 힌트 로직 완벽 개선</title>
+    <title>단어 분류 게임 - 자동 저장 및 아이템 개선</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -130,21 +130,14 @@
             touch-action: none; z-index: 1; 
         }
 
-        /* !important를 뚫고 확실하게 빛나도록 outline 기반 애니메이션 적용 */
         @keyframes hintGlow {
             0% { outline: 0px solid var(--hint-color); outline-offset: 0; box-shadow: 0 0 5px var(--hint-color); }
             50% { outline: 4px solid var(--hint-color); outline-offset: 4px; box-shadow: 0 0 20px var(--hint-color); }
             100% { outline: 0px solid var(--hint-color); outline-offset: 0; box-shadow: 0 0 5px var(--hint-color); }
         }
         
-        .hint-active { 
-            animation: hintGlow 1.5s ease-in-out infinite !important; 
-            z-index: 100 !important; 
-        }
-        
-        .column.hint-active::before {
-            animation: hintGlow 1.5s ease-in-out infinite !important;
-        }
+        .hint-active { animation: hintGlow 1.5s ease-in-out infinite !important; z-index: 100 !important; }
+        .column.hint-active::before { animation: hintGlow 1.5s ease-in-out infinite !important; }
 
         .card-word { text-align: center; pointer-events: none; }
         .card[draggable="true"] { cursor: grab; }
@@ -252,7 +245,6 @@
         <div id="board" class="board"></div>
     </div>
 
-    <!-- 하단 플로팅 아이템 바 -->
     <div class="item-bar">
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
@@ -338,6 +330,68 @@
         let touchStartX = 0; let touchStartY = 0;
         let moveHistory = [];
 
+        // 로컬 스토리지 데이터 저장 함수
+        function saveToLocalStorage() {
+            if(isGameOver) return; 
+            const state = {
+                currentStage,
+                coins,
+                inventory,
+                remainingActions,
+                clearedCategoriesCount,
+                targetCategoriesCount,
+                categoryTargetCounts,
+                moveHistory,
+                foundations: document.getElementById('foundations').innerHTML,
+                board: document.getElementById('board').innerHTML,
+                waste: document.getElementById('waste-pile').innerHTML,
+                drawPileCopy: JSON.parse(JSON.stringify(window.drawPile || []))
+            };
+            localStorage.setItem('worditaire_save', JSON.stringify(state));
+        }
+
+        // 로컬 스토리지 데이터 불러오기 함수
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('worditaire_save');
+            if (saved) {
+                try {
+                    const state = JSON.parse(saved);
+                    currentStage = state.currentStage;
+                    coins = state.coins;
+                    inventory = state.inventory;
+                    remainingActions = state.remainingActions;
+                    clearedCategoriesCount = state.clearedCategoriesCount;
+                    targetCategoriesCount = state.targetCategoriesCount;
+                    categoryTargetCounts = state.categoryTargetCounts;
+                    moveHistory = state.moveHistory || [];
+
+                    document.getElementById('stage-display').innerText = `스테이지: ${currentStage}`;
+                    updateCoinDisplay();
+                    updateInventoryUI();
+                    document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
+
+                    document.getElementById('foundations').innerHTML = state.foundations;
+                    document.getElementById('board').innerHTML = state.board;
+                    document.getElementById('waste-pile').innerHTML = state.waste;
+                    
+                    window.drawPile = state.drawPileCopy || [];
+                    
+                    bindDropEvents();
+                    rebindCardEvents();
+                    updateDeckUI();
+                    adjustBoardHeight();
+                    
+                    document.getElementById('btn-undo').style.opacity = moveHistory.length > 1 ? '1' : '0.5';
+                    
+                    return true;
+                } catch (e) {
+                    console.error('Save data corrupted', e);
+                    return false;
+                }
+            }
+            return false;
+        }
+
         function updateInventoryUI() {
             const undoBadge = document.getElementById('badge-undo');
             undoBadge.innerText = inventory.undo;
@@ -384,7 +438,10 @@
             };
             moveHistory.push(state);
             if(moveHistory.length > 10) moveHistory.shift(); 
-            document.getElementById('btn-undo').style.opacity = '1';
+            
+            // 이전 액션이 존재해야만 Undo 버튼 활성화 (배열 길이가 1 이상일 때)
+            document.getElementById('btn-undo').style.opacity = moveHistory.length > 1 ? '1' : '0.5';
+            saveToLocalStorage();
         }
 
         function initGame(stage) {
@@ -496,9 +553,10 @@
         function addCoins(amount) {
             coins += amount;
             updateCoinDisplay();
+            saveToLocalStorage();
         }
         function consumeCoins(amount) {
-            if (coins >= amount) { coins -= amount; updateCoinDisplay(); return true; }
+            if (coins >= amount) { coins -= amount; updateCoinDisplay(); saveToLocalStorage(); return true; }
             return false;
         }
 
@@ -580,7 +638,11 @@
             if (draggedCards.length > 0 && !isGameOver) {
                 saveGameState(); 
                 let success = executeDropLogic(this);
-                if(!success) moveHistory.pop(); 
+                if(!success) {
+                    moveHistory.pop(); 
+                } else {
+                    saveToLocalStorage(); // 성공적으로 드롭이 끝나면 저장
+                }
                 draggedCards = [];
             }
         }
@@ -623,6 +685,7 @@
                             setTimeout(() => {
                                 dropZoneElement.innerHTML = '';
                                 adjustBoardHeight(); 
+                                saveToLocalStorage(); // 정리 후 상태 저장
                                 if(clearedCategoriesCount === targetCategoriesCount) {
                                     isGameOver = true;
                                     setTimeout(() => showPopup('clear'), 400);
@@ -726,7 +789,11 @@
             if (dropZoneElement) {
                 saveGameState();
                 let success = executeDropLogic(dropZoneElement);
-                if(!success) moveHistory.pop();
+                if(!success) {
+                    moveHistory.pop();
+                } else {
+                    saveToLocalStorage(); // 성공적으로 드롭 완료 시 저장
+                }
             }
             draggedCards = []; sourceColumn = null;
         }
@@ -754,7 +821,7 @@
         const wastePileDiv = document.getElementById('waste-pile');
 
         function updateDeckUI() {
-            if (window.drawPile.length > 0) {
+            if (window.drawPile && window.drawPile.length > 0) {
                 deckPileDiv.classList.add('card-back', 'stacked-deck');
                 deckPileDiv.style.border = 'none'; deckPileDiv.innerText = '';
             } else {
@@ -769,7 +836,7 @@
             if (isGameOver) return; 
             saveGameState();
             
-            if (window.drawPile.length > 0) {
+            if (window.drawPile && window.drawPile.length > 0) {
                 const cardData = window.drawPile.pop();
                 let cardElement = createCardElement(cardData, 0);
                 
@@ -794,6 +861,7 @@
             }
             updateDeckUI();
             adjustBoardHeight(); 
+            saveToLocalStorage(); // 클릭 이벤트 처리 후 저장
         });
 
         function applyHint(sourceStack, targetElement) {
@@ -805,7 +873,7 @@
             }, 2000);
         }
 
-        /* --- 아이템 실행 로직 완벽 개선 --- */
+        /* --- 아이템 실행 로직 --- */
         function executeItemLogic(type) {
             if (type === 'undo') {
                 const prevState = moveHistory.pop();
@@ -823,7 +891,8 @@
                 bindDropEvents();
                 rebindCardEvents();
                 
-                if (moveHistory.length === 0) document.getElementById('btn-undo').style.opacity = '0.5';
+                if (moveHistory.length <= 1) document.getElementById('btn-undo').style.opacity = '0.5';
+                saveToLocalStorage(); // 되돌리기 후 상태 저장
                 return true;
             }
             
@@ -873,8 +942,6 @@
                         const existing = bCol.querySelectorAll('.card');
                         
                         if (existing.length === 0) {
-                            // 폐기물 더미에서 빈 보드 칸으로 이동하는 것은 행동 수 낭비이므로 추천 배제
-                            // 오직 아래에 깔린 뒤집힌 카드를 까볼 수 있는 의미 있는 이동일 때만 빈 칸 추천
                             if (sourceCol.id !== 'waste-pile' && cardIndex > 0 && cardsInSource[cardIndex - 1].dataset.faceUp === 'false') {
                                 applyHint(draggedStack, bCol);
                                 return true;
@@ -889,29 +956,30 @@
                     }
                 }
                 
-                // 3. 더 이상 옮길 카드가 없을 때 덱(더미) 뒤집기 추천
-                if(window.drawPile.length > 0 || wasteCards.length > 0) {
+                // 3. 더미 뒤집기 추천
+                if((window.drawPile && window.drawPile.length > 0) || wasteCards.length > 0) {
                     deckPileDiv.classList.add('hint-active');
                     setTimeout(() => deckPileDiv.classList.remove('hint-active'), 2000);
                     return true;
                 }
                 
-                // 4. 정말로 더 이상 아무것도 할 수 없을 때
                 showPopup('no-moves');
-                return false; // 코인 차감 안 됨
+                return false;
             }
             
             if (type === 'add-action') {
                 remainingActions += 10;
                 isGameOver = false; 
                 document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
+                saveToLocalStorage(); // 행동 수 추가 후 저장
                 return true;
             }
         }
 
         function handleItemClick(type) {
             if (isGameOver && type !== 'add-action') return;
-            if (type === 'undo' && moveHistory.length === 0) return;
+            // 실행 취소 예외 처리: 돌아갈 히스토리 내역이 없으면 즉시 종료
+            if (type === 'undo' && moveHistory.length <= 1) return;
 
             const config = itemConfig[type];
 
@@ -919,6 +987,7 @@
                 if (executeItemLogic(type)) {
                     inventory[config.key]--;
                     updateInventoryUI();
+                    saveToLocalStorage(); // 뱃지 차감 후 저장
                 }
             } else {
                 showPopup('buy-item', () => {
@@ -937,7 +1006,12 @@
         document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
         document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
 
-        initGame(currentStage);
+        // 게임 시작 시, 로컬 스토리지 데이터가 없으면 1스테이지부터 새로 시작
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!loadFromLocalStorage()) {
+                initGame(1);
+            }
+        });
 
     </script>
 </body>
