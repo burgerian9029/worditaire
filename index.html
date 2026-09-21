@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 아이템 배지 및 구매 확인</title>
+    <title>단어 분류 게임 - 코인 정산 시스템</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -315,7 +315,7 @@
         };
 
         let currentStage = 1;
-        let coins = 100; // 초기 시작 코인 100으로 변경
+        let coins = 100; // 초기 시작 코인
         let deck = [];
         let draggedCards = []; 
         let sourceColumn = null; 
@@ -386,14 +386,11 @@
             categoryTargetCounts = {};
             document.getElementById('btn-undo').style.opacity = '0.5';
             
-            // 1스테이지일 때만 코인을 100으로 초기화 (이후 스테이지는 누적)
+            // 1스테이지일 때만 코인을 100으로 초기화
             if (stage === 1) {
                 coins = 100;
-                // 게임 최초 시작 시 아이템 초기화: 취소/힌트는 1개 기본, 행동추가는 0개
                 inventory = { undo: 1, hint: 1, addAction: 0 };
             } else {
-                // 스테이지가 넘어갈 때, 실행 취소와 힌트는 1개로 리필
-                // (만약 이전 판에서 안 써서 이미 1개 이상 있다면 그대로 유지)
                 inventory.undo = Math.max(1, inventory.undo);
                 inventory.hint = Math.max(1, inventory.hint);
             }
@@ -510,9 +507,13 @@
             
             if(type === 'clear') {
                 title.innerText = '스테이지 클리어!'; title.style.color = '#13b54d';
-                desc.innerText = `총 ${targetCategoriesCount}개의 카테고리를 완성했습니다.\n(보너스 +${remainingActions * 5} 코인)`;
+                
+                // 스테이지 클리어 시 코인 정산 공식 적용
+                const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
+                desc.innerText = `총 ${targetCategoriesCount}개의 카테고리를 완성했습니다.\n(💰 ${earnedCoins} 코인 획득!)`;
                 btn.innerText = '다음 스테이지로';
-                addCoins(remainingActions * 5); 
+                addCoins(earnedCoins); 
+                
                 btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
             } else if (type === 'gameover') {
                 title.innerText = '게임 오버'; title.style.color = '#d35400';
@@ -525,7 +526,6 @@
                 };
                 cancelBtn.onclick = () => { 
                     overlay.style.display = 'none'; 
-                    // 게임오버 시, 현재 스테이지를 재도전 (스테이지 유지)
                     initGame(currentStage); 
                 };
             } else if (type === 'no-coin') {
@@ -591,7 +591,6 @@
                         card.style.top = '0px'; 
                         dropZoneElement.appendChild(card);
                         card.draggable = false; card.classList.add('locked');
-                        addCoins(10); 
                     });
                     moveSuccessful = true;
                     
@@ -607,7 +606,6 @@
                     dropZoneElement.appendChild(label);
                     
                     if (currentCardsCount === categoryTargetCounts[currentCategory]) {
-                        addCoins(100); 
                         clearedCategoriesCount++;
                         setTimeout(() => {
                             dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0');
@@ -765,7 +763,6 @@
                 const cardData = window.drawPile.pop();
                 let cardElement = createCardElement(cardData, 0);
                 
-                // --- 버그 수정: 덱에서 뽑은 카드를 렌더링하고 바로 flipCard() 호출하여 드래그 이벤트 바인딩 ---
                 wastePileDiv.appendChild(cardElement); 
                 flipCard(cardElement); 
                 
@@ -889,7 +886,6 @@
         document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
         document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
 
-        // 첫 게임 시작 (1스테이지)
         initGame(currentStage);
 
     </script>
