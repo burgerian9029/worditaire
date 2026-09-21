@@ -8,36 +8,30 @@
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
         :root {
-            /* 3열 기준 기본값 */
             --card-width: 80px;
             --card-height: 118px;
             --gap-size: 15px; 
             --font-base: 1.05rem;
             
-            /* B안 모던 컬러 팔레트 */
             --bg-gradient: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); 
             --text-main: #004d40; 
             --text-muted: #00695c;
             
-            /* 글래스모피즘 변수 */
             --glass-bg: rgba(255, 255, 255, 0.4);
             --glass-border: rgba(255, 255, 255, 0.6);
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
             
-            /* 카드 뒷면 그라데이션 */
             --card-back-grad: linear-gradient(135deg, #00897b 0%, #004d40 100%);
             
             --coin-color: #f39c12;
             --hint-color: #ffffff;
         }
 
-        /* 열 개수에 따른 동적 사이즈 조절 (데스크탑) */
         .game-layout[data-cols="3"] { --card-width: 80px; --card-height: 118px; --gap-size: 15px; --font-base: 1.05rem; }
         .game-layout[data-cols="4"] { --card-width: 75px; --card-height: 110px; --gap-size: 10px; --font-base: 1rem; }
         .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px;  --font-base: 0.85rem; }
 
         @media (max-width: 600px) {
-            /* 열 개수에 따른 동적 사이즈 조절 (모바일) */
             .game-layout[data-cols="3"] { --card-width: min(23vw, 80px); --card-height: min(34vw, 118px); --gap-size: 2vw; --font-base: 0.95rem; }
             .game-layout[data-cols="4"] { --card-width: min(19vw, 75px); --card-height: min(28vw, 110px); --gap-size: 1.5vw; --font-base: 0.85rem; }
             .game-layout[data-cols="5"] { --card-width: min(16.5vw, 65px); --card-height: min(24vw, 95px); --gap-size: 1.2vw; --font-base: 0.75rem; }
@@ -50,7 +44,6 @@
             .item-bar { bottom: 25px !important; gap: 20px !important; }
             .item-btn { width: 50px !important; height: 50px !important; }
             .item-btn svg.item-icon { width: 22px; height: 22px; }
-            .foundation-label { font-size: calc(var(--font-base) * 0.85) !important; padding: 2px 8px !important; }
         }
 
         body { 
@@ -72,7 +65,6 @@
 
         h1 { margin-top: 20px; font-weight: 800; color: var(--text-main); text-align: center; letter-spacing: -0.5px; }
 
-        /* 글래스모피즘 상태창 */
         .status-panel {
             display: flex; justify-content: space-between; align-items: center;
             margin: 15px 0; font-size: 1.05rem; font-weight: 700;
@@ -94,7 +86,6 @@
             border-radius: 12px; position: relative; transition: padding-bottom 0.3s ease;
         }
 
-        /* 빈 슬롯 가이드라인 */
         #board .column::before, #waste-pile::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: var(--card-height);
             border: 2px dashed rgba(0, 77, 64, 0.2); background-color: rgba(255, 255, 255, 0.1);
@@ -106,33 +97,37 @@
             background: rgba(255,255,255,0.2); box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        /* 파운데이션 라벨 간격 바짝 좁히기 (top: -28px -> -15px) */
+        /* 2줄 구조 및 유색 디자인이 적용된 파운데이션 라벨 */
         .foundation-label {
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: max-content; padding: 4px 10px; text-align: center; font-size: 0.75rem; font-weight: 800;
-            color: var(--text-main); background: rgba(255,255,255,0.9); border-radius: 12px;
-            pointer-events: none; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.08); backdrop-filter: blur(4px);
+            position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+            width: max-content; padding: 5px 10px; text-align: center; font-size: 0.7rem; font-weight: 800;
+            color: #ffffff; background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+            border-radius: 10px; border: 1px solid rgba(255,255,255,0.4);
+            pointer-events: none; z-index: 50; box-shadow: 0 4px 10px rgba(0,77,64,0.25);
+            line-height: 1.3; white-space: nowrap;
+        }
+        .foundation-label .sub-count {
+            display: block; font-size: 0.65rem; opacity: 0.85; font-weight: 600;
         }
 
-        /* 카드 스태킹 시인성을 높이기 위해 상단 화이트 하이라이트 라인 & 선명한 그림자 추가 */
+        /* 스태킹 시인성을 대폭 높인 카드 디자인 (다중 그림자 및 림라이트) */
         .card { 
             box-sizing: border-box; width: var(--card-width); height: var(--card-height); 
             background: #ffffff; color: var(--text-main); border-radius: 12px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             font-size: var(--font-base); font-weight: 800; position: absolute; 
-            border: 1px solid rgba(0, 77, 64, 0.2); /* 은은한 초록 테두리 */
-            border-top: 2px solid rgba(255, 255, 255, 0.95); /* 위에서 빛을 받는 듯한 입체감 */
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* 그림자 또렷하게 강화 */
+            border: 1px solid rgba(0, 77, 64, 0.25);
+            border-top: 2px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1), 0 0 1px rgba(0,0,0,0.2); 
             user-select: none; word-break: keep-all; 
             transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease; 
             touch-action: none; z-index: 1; 
         }
 
-        /* 고급스러운 빛번짐 힌트 애니메이션 */
         @keyframes hintGlow {
-            0% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 4px 12px rgba(0,0,0,0.08); transform: translateY(0); }
+            0% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 6px 12px rgba(0,0,0,0.15); transform: translateY(0); }
             50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(0, 200, 150, 0.6); transform: translateY(-3px); }
-            100% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 4px 12px rgba(0,0,0,0.08); transform: translateY(0); }
+            100% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 6px 12px rgba(0,0,0,0.15); transform: translateY(0); }
         }
         
         .hint-active { animation: hintGlow 1.5s ease-in-out infinite !important; z-index: 100 !important; }
@@ -140,12 +135,11 @@
 
         .card-word { text-align: center; pointer-events: none; }
         .card[draggable="true"] { cursor: grab; }
-        .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-8px); box-shadow: 0 15px 25px rgba(0,0,0,0.15); z-index: 999; }
+        .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-8px); box-shadow: 0 20px 30px rgba(0,0,0,0.25); z-index: 999; }
         .card.locked { cursor: default; touch-action: auto; }
         
         .category-card { background: #f4fdfb; border-color: #80cbc4; }
         
-        /* 모던 타일/스테인드글라스 기하학 패턴 배경 적용 */
         .card-back {
             background: 
                 linear-gradient(135deg, rgba(255,255,255,0.1) 25%, transparent 25%) -10px 0,
@@ -157,11 +151,10 @@
             border: 2px solid rgba(255,255,255,0.4) !important; color: transparent !important;
         }
 
-        .stacked-deck { box-shadow: -1px 1px 0 rgba(255,255,255,0.5), -2px 2px 0 #00695c, -3px 3px 0 rgba(255,255,255,0.5), -4px 4px 0 #00695c, -6px 6px 12px rgba(0,0,0,0.2) !important; }
+        .stacked-deck { box-shadow: -1px 1px 0 rgba(255,255,255,0.5), -2px 2px 0 #00695c, -3px 3px 0 rgba(255,255,255,0.5), -4px 4px 0 #00695c, -6px 6px 14px rgba(0,0,0,0.25) !important; }
         .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: var(--text-muted); font-weight: 600; }
         #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: rgba(255, 255, 255, 0.9); border-radius: 12px; transition: all 0.2s ease; }
 
-        /* 하단 플로팅 글래스 버튼 */
         .item-bar {
             position: fixed; bottom: 35px; left: 0; width: 100%;
             display: flex; justify-content: center; align-items: flex-end; gap: 35px;
@@ -198,7 +191,6 @@
             line-height: 1; 
         }
 
-        /* 팝업 UI */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,30,20,0.4); display: none; justify-content: center; align-items: center;
@@ -219,7 +211,6 @@
         .btn-cancel { background: rgba(0,0,0,0.1); color: var(--text-main); margin-top: 12px; box-shadow: none; }
         .btn:active { transform: translateY(2px); }
 
-        /* 우측 상단으로 이동한 테스트용 개발자 버튼 */
         #dev-tools {
             position: absolute; top: 15px; right: 20px; z-index: 1000;
             display: flex; gap: 6px; opacity: 0.4; transition: opacity 0.2s;
@@ -243,7 +234,6 @@
         </symbol>
     </svg>
 
-    <!-- 우측 상단에 배치된 작고 반투명한 리셋 툴 -->
     <div id="dev-tools">
         <button class="dev-btn" id="btn-restart-current" title="현재 스테이지 다시 시작">🔄</button>
         <button class="dev-btn" id="btn-restart-all" title="1스테이지부터 다시 시작">⏪</button>
@@ -331,21 +321,23 @@
             '악기': { words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른', '클라리넷', '색소폰', '가야금'] },
             '우주': { words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운', '인공위성', '우주선', '은하수'] },
             '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개', '폭설', '폭우', '가뭄'] },
-            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트', '케이블카', '킥보드', '우마차'] },
+            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬리콥터', '요트', '케이블카', '킥보드'] },
             '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모', '사촌', '조카', '이모부'] },
-            '해외 영화': { words: ['타이타닉', '아바타', '어벤져스', '매트릭스', '해리포터', '인터스텔라', '인셉션', '반지의 제왕', '쥬라기 공원', '터미네이터', '미션 임파서블', '다크 나이트'] },
+            '해외 영화': { words: ['타이타닉', '아바타', '어벤져스', '매트릭스', '해리포터', '쏘우', '인셉션', '그랜드 부다페스트 호텔', '그래비티', '오디세우스', '미션 임파서블', '판의 미로'] },
             '한국 영화': { words: ['기생충', '밀양', '장화, 홍련', '신과 함께', '파묘', '베테랑', '도둑들', '괴물', '암살', '아가씨', '박쥐', '부산행'] },
             '브랜드': { words: ['삼성', '애플', '나이키', '구글', '스타벅스', '코카콜라', '현대', '아마존', '소니', '닌텐도', '디즈니', '레고'] },
             '과자': { words: ['새우깡', '포카칩', '빼빼로', '홈런볼', '오징어땅콩', '맛동산', '꼬깔콘', '칸쵸', '초코파이', '쿠크다스', '치토스', '프링글스'] },
             '아이스크림': { words: ['메로나', '돼지바', '수박바', '죠스바', '쌍쌍바', '구구콘', '투게더', '붕어싸만코', '바밤바', '비비빅', '설레임', '옥동자'] },
             '아이돌': { words: ['BTS', '블랙핑크', '뉴진스', '아이브', '엑소', '트와이스', '세븐틴', 'f(x)', '샤이니', '에스파', '소녀시대', '빅뱅', '리센느', '레드벨벳'] },
-            '랜드마크': { words: ['에펠탑', '자유의여신상', '만리장성', '타지마할', '피라미드', '콜로세움', '마추픽추', '빅벤', '오페라하우스', '타임스퀘어', '경복궁', '남산타워'] },
+            '랜드마크': { words: ['에펠탑', '자유의 여신상', '만리장성', '타지마할', '피라미드', '콜로세움', '마추픽추', '빅벤', '오페라하우스', '타임스퀘어', '경복궁', '남산타워'] },
             '생각': { words: ['심사숙고', '숙려', '사고', '고민', '고찰', '사색', '추론', '궁리', '명상', '되새김', '사유', '숙고'] },
             '겨울': { words: ['눈사람', '붕어빵', '군고구마', '썰매', '목도리', '핫팩', '크리스마스', '패딩', '호떡', '장갑', '얼음', '눈싸움'] },
             '여름': { words: ['모기', '수박', '에어컨', '해수욕장', '선풍기', '장마', '팥빙수', '매미', '열대야', '튜브', '태풍', '빙수'] },
             '보드게임' : { words: ['할리갈리', '루미큐브', '뱅', '아발론', '체스', '바둑', '모노폴리', '우노', '장기', '마작', '카탄', '스플렌더'] },
             '유행어': { words: ['킹받네', '무야호', '어쩔티비', '점메추', '오히려 좋아', '중꺾마', '이왜진', 'ㄴㅇㄱ', '텍스트 힙', '갓생', '많관부', '영크크', '난리자베스', '밤티', '샤갈'] },
-            '유행 간식': { words: ['두바이 쫀득 쿠키', '대왕 카스테라', '탕후루', '버터떡', '피자설기', '소떡소떡', '버블티', '허니버터칩', '포켓몬빵', '달고나 커피', '크로플', '소금빵'] }
+            '유행 간식': { words: ['두바이 쫀득 쿠키', '대왕 카스테라', '탕후루', '버터떡', '피자설기', '소떡소떡', '버블티', '허니버터칩', '포켓몬빵', '달고나 커피', '크로플', '소금빵'] },
+            '고양이': { words: ['노르웨이 숲', '러시안 블루', '스핑크스', '브리티시 숏헤어', '코리안 숏헤어', '샴', '페르시안', '랙돌', '벵갈', '스코티시 폴드', '터키시 앙고라'] },
+            '개': { words: ['말티즈', '푸들', '시베리안 허스키', '골든 리트리버', '진돗개', '불독', '퍼그', '도베르만', '포메라니안', '치와와', '시츄', '비숑', '웰시코기'] }
         };
 
         let inventory = { undo: 1, hint: 1, addAction: 0 };
@@ -731,7 +723,9 @@
                     
                     const currentCardsCount = dropZoneElement.querySelectorAll('.card').length;
                     const currentCategory = draggedCards[0].dataset.category;
-                    label.innerText = `${currentCategory} (${currentCardsCount - 1}/${categoryTargetCounts[currentCategory] - 1})`;
+                    
+                    // 2줄 구조 (윗줄: 카테고리명, 아랫줄: 수집현황) 적용
+                    label.innerHTML = `${currentCategory}<span class="sub-count">(${currentCardsCount - 1}/${categoryTargetCounts[currentCategory] - 1})</span>`;
                     dropZoneElement.appendChild(label);
                     
                     if (currentCardsCount === categoryTargetCounts[currentCategory]) {
