@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 아이템 및 코인 시스템</title>
+    <title>단어 분류 게임 - 아이템 배지 및 구매 확인</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -21,7 +21,6 @@
             --text-main: #025f1d; 
             --glass-border: rgba(255, 255, 255, 0.3);
             
-            /* 아이템 포인트 컬러 */
             --coin-color: #f39c12;
             --hint-color: #ffd700;
         }
@@ -42,7 +41,6 @@
             .status-panel { margin: 10px 0; font-size: 0.9rem !important; }
             h1 { font-size: 1.3rem; text-align: center; margin-bottom: 5px; }
             
-            /* 모바일 아이템 바 조정 */
             .item-bar { padding: 10px 15px !important; }
             .item-btn { width: 50px !important; height: 50px !important; font-size: 1.2rem !important; }
         }
@@ -52,7 +50,7 @@
             color: var(--text-main); 
             font-family: 'Pretendard', sans-serif; 
             margin: 0;
-            padding-bottom: 100px; /* 하단 아이템 바 공간 확보 */
+            padding-bottom: 100px; 
             overflow-x: hidden;
             touch-action: pan-y;
         }
@@ -67,7 +65,6 @@
             padding: 0 20px;
         }
 
-        /* 상태판 - 코인으로 변경 */
         .status-panel {
             display: flex;
             justify-content: space-between;
@@ -82,7 +79,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
-        /* 획득한 코인 강조 강조 */
         #coin-display {
             color: var(--coin-color);
             font-weight: 800;
@@ -138,7 +134,6 @@
             touch-action: none; z-index: 1; 
         }
 
-        /* 힌트 효과 (테두리 반짝임) */
         @keyframes hintGlow {
             0% { box-shadow: 0 0 5px var(--hint-color), inset 0 0 5px var(--hint-color); border: 2px solid var(--hint-color); }
             50% { box-shadow: 0 0 20px var(--hint-color), inset 0 0 10px var(--hint-color); border: 2px solid var(--hint-color); transform: scale(1.05); }
@@ -184,7 +179,25 @@
         }
         
         .item-container {
+            position: relative;
             display: flex; flex-direction: column; align-items: center; gap: 5px;
+        }
+        
+        /* 알림 배지 UI */
+        .item-badge {
+            position: absolute;
+            top: -6px; right: -6px;
+            background-color: #ff3b30;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            min-width: 22px; height: 22px;
+            border-radius: 11px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+            padding: 0 4px;
+            box-sizing: border-box;
         }
 
         .item-btn {
@@ -198,7 +211,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .item-btn:active { transform: scale(0.95); background: var(--bg-color); }
-        .item-btn:disabled { opacity: 0.5; cursor: not-allowed; border-color: #95a5a6; color: #95a5a6; }
         
         .item-cost {
             font-size: 0.75rem; font-weight: 800; color: var(--coin-color);
@@ -216,7 +228,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;
         }
         .popup h2 { margin-top: 0; color: var(--panel-bg); }
-        .popup p { margin: 15px 0; font-weight: 600; line-height: 1.5; }
+        .popup p { margin: 15px 0; font-weight: 600; line-height: 1.5; white-space: pre-wrap; }
         .btn {
             background: var(--card-back-main); color: #fff; border: none; padding: 12px 24px; font-size: 1.1rem;
             font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
@@ -231,7 +243,7 @@
         
         <div class="status-panel">
             <div id="stage-display">스테이지: 1</div>
-            <div id="coin-display">💰 500</div> <!-- 초기 지급 코인 -->
+            <div id="coin-display">💰 500</div>
             <div id="action-display">남은 행동: 0</div>
         </div>
         
@@ -249,14 +261,17 @@
     <!-- 하단 아이템 바 -->
     <div class="item-bar">
         <div class="item-container">
+            <div class="item-badge" id="badge-undo">1</div>
             <button class="item-btn" id="btn-undo" title="실행 취소">↩️</button>
             <div class="item-cost">30 C</div>
         </div>
         <div class="item-container">
+            <div class="item-badge" id="badge-hint">1</div>
             <button class="item-btn" id="btn-hint" title="힌트 보기">🔍</button>
             <div class="item-cost">50 C</div>
         </div>
         <div class="item-container">
+            <div class="item-badge" id="badge-add-action">1</div>
             <button class="item-btn" id="btn-add-action" title="행동 수 +10">➕</button>
             <div class="item-cost">100 C</div>
         </div>
@@ -290,8 +305,17 @@
             '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
         };
 
+        // 인벤토리 상태
+        let inventory = { undo: 1, hint: 1, addAction: 1 };
+        
+        const itemConfig = {
+            'undo': { cost: 30, name: '실행 취소', key: 'undo' },
+            'hint': { cost: 50, name: '힌트 보기', key: 'hint' },
+            'add-action': { cost: 100, name: '행동 수 추가', key: 'addAction' }
+        };
+
         let currentStage = 1;
-        let coins = 500; // 초기 점수를 코인으로 변경, 500지급
+        let coins = 500; 
         let deck = [];
         let draggedCards = []; 
         let sourceColumn = null; 
@@ -301,12 +325,22 @@
         let targetCategoriesCount = 0;
         let clearedCategoriesCount = 0;
         let categoryTargetCounts = {};
-        
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        // 아이템: 실행 취소를 위한 히스토리 스택
+        let touchStartX = 0; let touchStartY = 0;
         let moveHistory = [];
+
+        function updateInventoryUI() {
+            const undoBadge = document.getElementById('badge-undo');
+            undoBadge.innerText = inventory.undo;
+            undoBadge.style.display = inventory.undo > 0 ? 'flex' : 'none';
+
+            const hintBadge = document.getElementById('badge-hint');
+            hintBadge.innerText = inventory.hint;
+            hintBadge.style.display = inventory.hint > 0 ? 'flex' : 'none';
+
+            const addBadge = document.getElementById('badge-add-action');
+            addBadge.innerText = inventory.addAction;
+            addBadge.style.display = inventory.addAction > 0 ? 'flex' : 'none';
+        }
 
         function getStageConfig(stage) {
             let cols = 3, cats = 3, minW = 3, maxW = 4;
@@ -329,7 +363,6 @@
 
         function saveGameState() {
             if (isGameOver) return;
-            // 현재 보드, 파운데이션, 더미, 덱의 상태를 복사하여 저장 (간단한 객체 직렬화 활용)
             const state = {
                 actions: remainingActions,
                 foundations: document.getElementById('foundations').innerHTML,
@@ -340,8 +373,8 @@
                 clearedCat: clearedCategoriesCount
             };
             moveHistory.push(state);
-            if(moveHistory.length > 10) moveHistory.shift(); // 최대 10번까지만 기억
-            document.getElementById('btn-undo').disabled = false;
+            if(moveHistory.length > 10) moveHistory.shift(); 
+            document.getElementById('btn-undo').style.opacity = '1';
         }
 
         function initGame(stage) {
@@ -350,12 +383,13 @@
             moveHistory = [];
             clearedCategoriesCount = 0;
             categoryTargetCounts = {};
-            document.getElementById('btn-undo').disabled = true;
+            document.getElementById('btn-undo').style.opacity = '0.5';
+            
             updateCoinDisplay();
+            updateInventoryUI();
             
             const config = getStageConfig(stage);
             targetCategoriesCount = config.cats;
-            
             document.getElementById('stage-display').innerText = `스테이지: ${stage}`;
             
             const allCatKeys = Object.keys(categoryPool);
@@ -367,10 +401,7 @@
                 const wordCount = Math.floor(Math.random() * (config.maxW - config.minW + 1)) + config.minW;
                 categoryTargetCounts[cat] = wordCount + 1; 
                 
-                deck.push({ 
-                    isCategoryCard: true, category: cat, word: cat, 
-                    targetCount: wordCount
-                });
+                deck.push({ isCategoryCard: true, category: cat, word: cat, targetCount: wordCount });
                 
                 let wordsPool = [...poolConfig.words];
                 shuffle(wordsPool);
@@ -418,7 +449,7 @@
             document.getElementById('waste-pile').innerHTML = '';
             updateDeckUI();
             adjustBoardHeight();
-            saveGameState(); // 초기 상태 저장
+            saveGameState(); 
         }
 
         function createCardElement(cardData, index) {
@@ -453,7 +484,7 @@
             return false;
         }
 
-        function showPopup(type, onConfirm = null) {
+        function showPopup(type, onConfirm = null, config = null) {
             const overlay = document.getElementById('overlay');
             const title = document.getElementById('popup-title');
             const desc = document.getElementById('popup-desc');
@@ -462,6 +493,7 @@
             
             cancelBtn.style.display = 'none';
             btn.onclick = () => { overlay.style.display = 'none'; if(onConfirm) onConfirm(); };
+            cancelBtn.onclick = () => { overlay.style.display = 'none'; };
             
             if(type === 'clear') {
                 title.innerText = '스테이지 클리어!'; title.style.color = '#13b54d';
@@ -472,17 +504,22 @@
             } else if (type === 'gameover') {
                 title.innerText = '게임 오버'; title.style.color = '#d35400';
                 desc.innerText = '행동 횟수를 모두 소진했습니다.';
-                btn.innerText = '행동 수 추가 (100C)';
+                btn.innerText = '행동 수 추가 (아이템 사용)';
                 cancelBtn.style.display = 'block';
                 btn.onclick = () => { 
                     overlay.style.display = 'none'; 
-                    if(useItem('add-action')) { isGameOver = false; } 
+                    handleItemClick('add-action');
                 };
                 cancelBtn.onclick = () => { overlay.style.display = 'none'; initGame(currentStage); };
             } else if (type === 'no-coin') {
                 title.innerText = '코인 부족'; title.style.color = '#d35400';
                 desc.innerText = '아이템을 구매할 코인이 부족합니다.\n게임을 진행하여 코인을 획득하세요.';
                 btn.innerText = '확인';
+            } else if (type === 'buy-item') {
+                title.innerText = '아이템 구매'; title.style.color = 'var(--panel-bg)';
+                desc.innerText = `${config.cost} 코인을 사용해\n[${config.name}]을(를) 구매하고\n즉시 사용하시겠습니까?`;
+                btn.innerText = '구매 및 사용';
+                cancelBtn.style.display = 'block';
             }
             overlay.style.display = 'flex';
         }
@@ -514,9 +551,9 @@
         function handleDropArea(e) {
             e.preventDefault();
             if (draggedCards.length > 0 && !isGameOver) {
-                saveGameState(); // 떨구기 직전 상태 저장
+                saveGameState(); 
                 let success = executeDropLogic(this);
-                if(!success) moveHistory.pop(); // 실패하면 저장소 롤백
+                if(!success) moveHistory.pop(); 
                 draggedCards = [];
             }
         }
@@ -599,7 +636,6 @@
             return moveSuccessful;
         }
 
-        /* --- 기존 드래그 & 터치 이벤트 바인딩 (재활용을 위해 함수로 분리) --- */
         function rebindCardEvents() {
             document.querySelectorAll('.card').forEach(card => {
                 card.removeEventListener('dragstart', handleDragStart);
@@ -733,20 +769,10 @@
             adjustBoardHeight(); 
         });
 
-        /* --- 아이템 시스템 로직 --- */
-        function useItem(type) {
-            if (isGameOver && type !== 'add-action') return false;
-            
-            const costs = { 'undo': 30, 'hint': 50, 'add-action': 100 };
-            const cost = costs[type];
-            
-            if (coins < cost) { showPopup('no-coin'); return false; }
-
+        /* --- 아이템 실행 로직 --- */
+        function executeItemLogic(type) {
             if (type === 'undo') {
-                if (moveHistory.length === 0) return false;
-                consumeCoins(cost);
                 const prevState = moveHistory.pop();
-                
                 remainingActions = prevState.actions;
                 clearedCategoriesCount = prevState.clearedCat;
                 document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
@@ -761,12 +787,11 @@
                 bindDropEvents();
                 rebindCardEvents();
                 
-                if (moveHistory.length === 0) document.getElementById('btn-undo').disabled = true;
+                if (moveHistory.length === 0) document.getElementById('btn-undo').style.opacity = '0.5';
                 return true;
             }
             
             if (type === 'hint') {
-                // 힌트 알고리즘: 현재 옮길 수 있는 카드 찾기
                 const movableCards = Array.from(document.querySelectorAll('.card[draggable="true"]'));
                 let foundHint = false;
                 
@@ -774,12 +799,10 @@
                     const cardCat = card.dataset.category;
                     const isCatCard = card.dataset.isCategoryCard === 'true';
                     
-                    // 1. 파운데이션에 넣을 수 있는지 체크
                     const foundations = Array.from(document.querySelectorAll('#foundations .column'));
                     for(let fCol of foundations) {
                         const existing = fCol.querySelectorAll('.card');
                         if ((existing.length === 0 && isCatCard) || (existing.length > 0 && existing[0].dataset.category === cardCat)) {
-                            consumeCoins(cost);
                             card.classList.add('hint-active');
                             fCol.classList.add('hint-active');
                             setTimeout(() => { card.classList.remove('hint-active'); fCol.classList.remove('hint-active'); }, 2000);
@@ -787,14 +810,12 @@
                         }
                     }
                     
-                    // 2. 보드의 다른 열에 넣을 수 있는지 체크
                     const boards = Array.from(document.querySelectorAll('#board .column'));
                     for(let bCol of boards) {
-                        if (bCol === card.parentNode) continue; // 자기 자신의 위치 제외
+                        if (bCol === card.parentNode) continue; 
                         const existing = bCol.querySelectorAll('.card');
                         if ((existing.length === 0 && card.parentNode.querySelectorAll('.card').length > 1) || 
                             (existing.length > 0 && existing[existing.length-1].dataset.category === cardCat && !isCatCard)) {
-                            consumeCoins(cost);
                             card.classList.add('hint-active');
                             bCol.classList.add('hint-active');
                             setTimeout(() => { card.classList.remove('hint-active'); bCol.classList.remove('hint-active'); }, 2000);
@@ -803,9 +824,7 @@
                     }
                 }
                 
-                // 이동할 카드가 없으면 덱 뒤집기를 유도
                 if(!foundHint && (window.drawPile.length > 0 || document.getElementById('waste-pile').querySelectorAll('.card').length > 0)) {
-                    consumeCoins(cost);
                     deckPileDiv.classList.add('hint-active');
                     setTimeout(() => deckPileDiv.classList.remove('hint-active'), 2000);
                     return true;
@@ -814,16 +833,41 @@
             }
             
             if (type === 'add-action') {
-                consumeCoins(cost);
                 remainingActions += 10;
+                isGameOver = false; 
                 document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
                 return true;
             }
         }
 
-        document.getElementById('btn-undo').addEventListener('click', () => useItem('undo'));
-        document.getElementById('btn-hint').addEventListener('click', () => useItem('hint'));
-        document.getElementById('btn-add-action').addEventListener('click', () => useItem('add-action'));
+        /* --- 아이템 클릭 핸들러 --- */
+        function handleItemClick(type) {
+            if (isGameOver && type !== 'add-action') return;
+            if (type === 'undo' && moveHistory.length === 0) return;
+
+            const config = itemConfig[type];
+
+            if (inventory[config.key] > 0) {
+                if (executeItemLogic(type)) {
+                    inventory[config.key]--;
+                    updateInventoryUI();
+                }
+            } else {
+                showPopup('buy-item', () => {
+                    if (coins >= config.cost) {
+                        if (executeItemLogic(type)) {
+                            consumeCoins(config.cost);
+                        }
+                    } else {
+                        showPopup('no-coin');
+                    }
+                }, config);
+            }
+        }
+
+        document.getElementById('btn-undo').addEventListener('click', () => handleItemClick('undo'));
+        document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
+        document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
 
         initGame(currentStage);
 
