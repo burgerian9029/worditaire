@@ -86,6 +86,7 @@
             margin: 0 auto;
             box-sizing: border-box;
             padding: 0 20px;
+            min-height: 100vh; /* 전체 높이 확보 */
         }
 
         .status-panel {
@@ -125,7 +126,9 @@
 
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
         .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; flex-wrap: nowrap; }
-        .board { align-items: flex-start; }
+        
+        /* 🔥 빈 슬롯 영역 확장을 위해 stretch 부여 */
+        .board { align-items: stretch; flex-grow: 1; }
 
         .column { 
             box-sizing: content-box; width: var(--card-width); min-height: var(--card-height); 
@@ -136,6 +139,7 @@
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: var(--card-height);
             border: 2px dashed rgba(2, 95, 29, 0.3); background-color: rgba(255, 255, 255, 0.2);
             border-radius: 8px; box-sizing: border-box; z-index: 0; 
+            pointer-events: none; /* 클릭 이벤트 방해 방지 */
         }
         
         .foundation {
@@ -157,11 +161,12 @@
             font-size: var(--font-base); font-weight: 800; position: absolute; 
             border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.05);
             user-select: none; word-break: keep-all; 
+            /* 트랜지션에 3D 변형 효과 반영 */
             transition: transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease; 
             touch-action: none; z-index: 1; 
         }
 
-        /* 🟢 성공 시 튕기는 효과 */
+        /* 🟢 성공 시 착! 달라붙는 팝 효과 */
         @keyframes successPop {
             0% { transform: scale(1); box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
             50% { transform: scale(1.15); box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4); z-index: 10; }
@@ -172,7 +177,7 @@
             animation: successPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 🔴 실패 시 붉게 변하며 흔들리는 효과 */
+        /* 🔴 실패 시 붉게 변하며 도리도리 흔들리는 효과 */
         @keyframes errorShake {
             0%, 100% { transform: translateX(0); background-color: #ffffff; }
             20%, 60% { transform: translateX(-6px); background-color: #ffeaa7; color: #d63031; border-color: #d63031; }
@@ -726,11 +731,18 @@
             e.preventDefault();
             if (draggedCards.length > 0 && !isGameOver) {
                 saveGameState(); 
+                let currentDragged = [...draggedCards];
                 let success = executeDropLogic(this);
+                
                 if(!success) {
                     moveHistory.pop(); 
-                    // 🔴 보드나 파운데이션에 드롭했으나 규칙이 틀렸을 때 에러 흔들림 효과
-                    draggedCards.forEach(c => {
+                    // 에러 시: 트랜지션을 우회해 즉시 불투명도 100% 복구 후 도리도리 애니메이션
+                    currentDragged.forEach(c => {
+                        c.style.transition = 'none';
+                        c.style.opacity = '1';
+                        void c.offsetWidth;
+                        c.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                        
                         c.classList.add('error-shake');
                         setTimeout(() => c.classList.remove('error-shake'), 400);
                     });
@@ -747,6 +759,11 @@
             let moveSuccessful = false;
 
             if (isFoundation) {
+                // 파운데이션에는 카드 1장만 이동 가능하도록 제한
+                if (draggedCards.length > 1) {
+                    return false;
+                }
+                
                 const existingCards = dropZoneElement.querySelectorAll('.card');
                 let canDrop = false;
                 if (existingCards.length === 0) { if (draggedCards[0].dataset.isCategoryCard === 'true') canDrop = true; } 
@@ -754,13 +771,20 @@
 
                 if (canDrop) {
                     draggedCards.forEach(card => {
-                        // 🟢 성공 시 착! 달라붙는 팝 효과
-                        card.classList.add('success-pop');
-                        setTimeout(() => card.classList.remove('success-pop'), 300);
-                        
+                        // 투명도 복구 시 텍스트 겹침(Fade-in 깜빡임) 방지 트릭
+                        card.style.transition = 'none';
+                        card.style.opacity = '1';
                         card.style.top = '0px'; 
                         dropZoneElement.appendChild(card);
                         card.draggable = false; card.classList.add('locked');
+                        
+                        // DOM 업데이트 강제 후 트랜지션 원복
+                        void card.offsetWidth;
+                        card.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                        
+                        // 성공 시 튕기는 효과 적용
+                        card.classList.add('success-pop');
+                        setTimeout(() => card.classList.remove('success-pop'), 300);
                     });
                     moveSuccessful = true;
                     
@@ -806,12 +830,17 @@
                 if (canDrop) {
                     let count = existingCards.length;
                     draggedCards.forEach((card, index) => {
-                        // 🟢 성공 시 착! 달라붙는 팝 효과
-                        card.classList.add('success-pop');
-                        setTimeout(() => card.classList.remove('success-pop'), 300);
-                        
+                        // 투명도 복구 시 텍스트 겹침 방지
+                        card.style.transition = 'none';
+                        card.style.opacity = '1';
                         card.style.top = ((count + index) * cardOffset) + 'px';
                         dropZoneElement.appendChild(card);
+                        
+                        void card.offsetWidth;
+                        card.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                        
+                        card.classList.add('success-pop');
+                        setTimeout(() => card.classList.remove('success-pop'), 300);
                     });
                     moveSuccessful = true;
                 }
@@ -854,11 +883,16 @@
         }
 
         function handleDragEnd(e) {
-            // 🔴 허공에 드롭했을 때 흔들리는 에러 효과
             if (draggedCards.length > 0) {
-                draggedCards.forEach(card => {
-                    card.classList.add('error-shake');
-                    setTimeout(() => card.classList.remove('error-shake'), 400);
+                // 마우스 드롭존 이탈 시 에러 이펙트 (즉각 불투명도 복구 포함)
+                draggedCards.forEach(c => {
+                    c.style.transition = 'none';
+                    c.style.opacity = '1';
+                    void c.offsetWidth;
+                    c.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                    
+                    c.classList.add('error-shake');
+                    setTimeout(() => c.classList.remove('error-shake'), 400);
                 });
             }
             setTimeout(() => {
@@ -895,17 +929,20 @@
             
             draggedCards.forEach(card => {
                 card.style.pointerEvents = '';
-                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                card.style.transition = 'none';
                 card.style.transform = ''; card.style.zIndex = '';
             });
 
             if (dropZoneElement) {
                 saveGameState();
+                let currentDragged = [...draggedCards];
                 let success = executeDropLogic(dropZoneElement);
                 if(!success) {
                     moveHistory.pop();
-                    // 🔴 드롭존에 놓았으나 규칙에 어긋났을 때 효과 (터치)
-                    draggedCards.forEach(c => {
+                    // 터치로 규칙 위반 시 에러 흔들기
+                    currentDragged.forEach(c => {
+                        void c.offsetWidth;
+                        c.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
                         c.classList.add('error-shake');
                         setTimeout(() => c.classList.remove('error-shake'), 400);
                     });
@@ -913,10 +950,12 @@
                     saveToLocalStorage(); 
                 }
             } else {
-                // 🔴 허공에 놓았을 때 에러 효과 (터치)
-                draggedCards.forEach(card => {
-                    card.classList.add('error-shake');
-                    setTimeout(() => card.classList.remove('error-shake'), 400);
+                // 터치로 허공에 놓았을 때 에러 흔들기
+                draggedCards.forEach(c => {
+                    void c.offsetWidth;
+                    c.style.transition = 'transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease';
+                    c.classList.add('error-shake');
+                    setTimeout(() => c.classList.remove('error-shake'), 400);
                 });
             }
             draggedCards = []; sourceColumn = null;
@@ -930,14 +969,12 @@
             
             const word = cardElement.dataset.word;
             let innerHTML = '';
-            
             if (cardElement.dataset.isCategoryCard === 'true') {
                 cardElement.classList.add('category-card');
                 innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
             } else {
                 innerHTML += `<div class="card-word">${word}</div>`; 
             }
-            
             cardElement.innerHTML = innerHTML;
             cardElement.draggable = true;
             
