@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 코인 정산 시스템</title>
+    <title>단어 분류 게임 - 픽토그램 아이템 UI</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -41,8 +41,9 @@
             .status-panel { margin: 10px 0; font-size: 0.9rem !important; }
             h1 { font-size: 1.3rem; text-align: center; margin-bottom: 5px; }
             
-            .item-bar { padding: 10px 15px !important; }
-            .item-btn { width: 50px !important; height: 50px !important; font-size: 1.2rem !important; }
+            .item-bar { bottom: 15px !important; gap: 20px !important; }
+            .item-btn { width: 50px !important; height: 50px !important; }
+            .item-btn svg { width: 22px; height: 22px; }
         }
 
         body { 
@@ -50,7 +51,7 @@
             color: var(--text-main); 
             font-family: 'Pretendard', sans-serif; 
             margin: 0;
-            padding-bottom: 100px; 
+            padding-bottom: 120px; /* 플로팅 아이템 바 공간 확보 */
             overflow-x: hidden;
             touch-action: pan-y;
         }
@@ -79,17 +80,10 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         
-        #coin-display {
-            color: var(--coin-color);
-            font-weight: 800;
-        }
+        #coin-display { color: var(--coin-color); font-weight: 800; }
         
         .top-section {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            gap: 40px;
-            margin: 15px 0 35px 0; 
+            display: flex; flex-direction: column; width: 100%; gap: 40px; margin: 15px 0 35px 0; 
         }
 
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
@@ -97,12 +91,8 @@
         .board { align-items: flex-start; }
 
         .column { 
-            box-sizing: content-box; 
-            width: var(--card-width); 
-            min-height: var(--card-height); 
-            border-radius: 8px; 
-            position: relative; 
-            transition: padding-bottom 0.3s ease;
+            box-sizing: content-box; width: var(--card-width); min-height: var(--card-height); 
+            border-radius: 8px; position: relative; transition: padding-bottom 0.3s ease;
         }
 
         #board .column::before, #waste-pile::before {
@@ -139,10 +129,7 @@
             50% { box-shadow: 0 0 20px var(--hint-color), inset 0 0 10px var(--hint-color); border: 2px solid var(--hint-color); transform: scale(1.05); }
             100% { box-shadow: 0 0 5px var(--hint-color), inset 0 0 5px var(--hint-color); border: 2px solid var(--hint-color); }
         }
-        .hint-active {
-            animation: hintGlow 1s ease-in-out infinite;
-            z-index: 100 !important;
-        }
+        .hint-active { animation: hintGlow 1s ease-in-out infinite; z-index: 100 !important; }
 
         .card-word { text-align: center; pointer-events: none; }
         .card[draggable="true"] { cursor: grab; }
@@ -157,64 +144,52 @@
             border: 2px solid #ffffff !important; color: transparent !important;
         }
 
-        .stacked-deck {
-            box-shadow: -1px 1px 0 #fff, -2px 2px 0 var(--card-back-main), -3px 3px 0 #fff, -4px 4px 0 var(--card-back-main), -5px 5px 6px rgba(0,0,0,0.2) !important;
-        }
-
+        .stacked-deck { box-shadow: -1px 1px 0 #fff, -2px 2px 0 var(--card-back-main), -3px 3px 0 #fff, -4px 4px 0 var(--card-back-main), -5px 5px 6px rgba(0,0,0,0.2) !important; }
         .target-count-text { font-size: 0.65rem; margin-top: 4px; color: #7f8c8d; font-weight: 600; }
-        
         #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: rgba(255, 255, 255, 0.9); border-radius: 8px; transition: all 0.2s ease; }
 
-        /* 하단 아이템 바 UI */
+        /* 하단 플로팅 아이템 바 UI (배경 제거, 아이콘 개선) */
         .item-bar {
             position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            display: flex; justify-content: center; align-items: center; gap: 30px;
-            padding: 15px 20px; box-sizing: border-box;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
-            border-top: 1px solid rgba(0,0,0,0.1);
+            bottom: 25px; left: 0; width: 100%;
+            display: flex; justify-content: center; align-items: flex-end; gap: 35px;
+            pointer-events: none; /* 빈 공간 클릭 통과 */
             z-index: 900;
         }
         
         .item-container {
             position: relative;
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            pointer-events: auto; /* 아이템 컨테이너만 클릭 허용 */
         }
         
-        /* 알림 배지 UI */
         .item-badge {
             position: absolute;
-            top: -6px; right: -6px;
-            background-color: #ff3b30;
-            color: #fff;
-            font-size: 0.75rem;
-            font-weight: 800;
-            min-width: 22px; height: 22px;
-            border-radius: 11px;
+            top: -5px; right: -5px;
+            background-color: #ff3b30; color: #fff; font-size: 0.75rem; font-weight: 800;
+            min-width: 22px; height: 22px; border-radius: 11px;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            z-index: 10;
-            padding: 0 4px;
-            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 10; padding: 0 4px; box-sizing: border-box;
         }
 
         .item-btn {
-            width: 60px; height: 60px;
-            background: #ffffff;
-            border: 2px solid var(--panel-bg);
+            width: 56px; height: 56px;
+            background: var(--panel-bg); /* 버튼 자체를 테마색으로 변경 */
+            border: none;
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; color: var(--panel-bg);
-            cursor: pointer; transition: all 0.2s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: #ffffff;
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
-        .item-btn:active { transform: scale(0.95); background: var(--bg-color); }
+        .item-btn svg { width: 24px; height: 24px; }
+        .item-btn:active { transform: scale(0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         
         .item-cost {
-            font-size: 0.75rem; font-weight: 800; color: var(--coin-color);
-            background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 10px;
+            font-size: 0.75rem; font-weight: 800; color: #ffffff;
+            background: var(--coin-color); padding: 4px 12px; border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
         }
 
         /* 팝업 UI */
@@ -258,26 +233,40 @@
         <div id="board" class="board"></div>
     </div>
 
-    <!-- 하단 아이템 바 -->
+    <!-- 하단 플로팅 아이템 바 (픽토그램 아이콘 교체) -->
     <div class="item-bar">
+        <!-- 실행 취소 -->
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
-            <button class="item-btn" id="btn-undo" title="실행 취소">↩️</button>
+            <button class="item-btn" id="btn-undo" title="실행 취소">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                </svg>
+            </button>
             <div class="item-cost">30 C</div>
         </div>
+        <!-- 힌트 보기 -->
         <div class="item-container">
             <div class="item-badge" id="badge-hint">1</div>
-            <button class="item-btn" id="btn-hint" title="힌트 보기">🔍</button>
+            <button class="item-btn" id="btn-hint" title="힌트 보기">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </button>
             <div class="item-cost">50 C</div>
         </div>
+        <!-- 행동 수 추가 -->
         <div class="item-container">
             <div class="item-badge" id="badge-add-action">0</div>
-            <button class="item-btn" id="btn-add-action" title="행동 수 +10">➕</button>
+            <button class="item-btn" id="btn-add-action" title="행동 수 +10">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </button>
             <div class="item-cost">100 C</div>
         </div>
     </div>
 
-    <!-- 팝업 -->
     <div id="overlay">
         <div class="popup" id="popup-content">
             <h2 id="popup-title">알림</h2>
@@ -305,7 +294,6 @@
             '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] }
         };
 
-        // 초기 인벤토리 상태 (add-action은 0개로 시작)
         let inventory = { undo: 1, hint: 1, addAction: 0 };
         
         const itemConfig = {
@@ -315,7 +303,7 @@
         };
 
         let currentStage = 1;
-        let coins = 100; // 초기 시작 코인
+        let coins = 100; 
         let deck = [];
         let draggedCards = []; 
         let sourceColumn = null; 
@@ -377,7 +365,6 @@
             document.getElementById('btn-undo').style.opacity = '1';
         }
 
-        // 새 게임 / 새 스테이지 시작 로직
         function initGame(stage) {
             isGameOver = false;
             deck = [];
@@ -386,7 +373,6 @@
             categoryTargetCounts = {};
             document.getElementById('btn-undo').style.opacity = '0.5';
             
-            // 1스테이지일 때만 코인을 100으로 초기화
             if (stage === 1) {
                 coins = 100;
                 inventory = { undo: 1, hint: 1, addAction: 0 };
@@ -507,13 +493,10 @@
             
             if(type === 'clear') {
                 title.innerText = '스테이지 클리어!'; title.style.color = '#13b54d';
-                
-                // 스테이지 클리어 시 코인 정산 공식 적용
                 const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
                 desc.innerText = `총 ${targetCategoriesCount}개의 카테고리를 완성했습니다.\n(💰 ${earnedCoins} 코인 획득!)`;
                 btn.innerText = '다음 스테이지로';
                 addCoins(earnedCoins); 
-                
                 btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
             } else if (type === 'gameover') {
                 title.innerText = '게임 오버'; title.style.color = '#d35400';
@@ -762,10 +745,8 @@
             if (window.drawPile.length > 0) {
                 const cardData = window.drawPile.pop();
                 let cardElement = createCardElement(cardData, 0);
-                
                 wastePileDiv.appendChild(cardElement); 
                 flipCard(cardElement); 
-                
                 consumeAction(); 
             } else {
                 const wasteCards = Array.from(wastePileDiv.querySelectorAll('.card'));
@@ -857,7 +838,6 @@
             }
         }
 
-        /* --- 아이템 클릭 핸들러 --- */
         function handleItemClick(type) {
             if (isGameOver && type !== 'add-action') return;
             if (type === 'undo' && moveHistory.length === 0) return;
