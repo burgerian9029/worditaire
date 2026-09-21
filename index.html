@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>단어 분류 게임 - 확장판</title>
+    <title>단어 분류 게임 - 난이도 밸런스 패치</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
@@ -101,7 +101,7 @@
         }
 
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
-        .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; }
+        .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; flex-wrap: wrap; }
         .board { align-items: flex-start; }
 
         .column { 
@@ -225,7 +225,7 @@
     <svg style="display: none;">
         <symbol id="icon-coin" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#F39C12" stroke-width="2"/>
-            <text x="12" y="12" dy="0.35em" text-anchor="middle" fill="#D35400" font-size="14.5" font-weight="900" font-family="sans-serif">C</text>
+            <text x="12" y="12" dy="0.35em" text-anchor="middle" fill="#D35400" font-size="15" font-weight="900" font-family="sans-serif">C</text>
         </symbol>
     </svg>
 
@@ -252,7 +252,6 @@
         <div id="board" class="board"></div>
     </div>
 
-    <!-- 하단 플로팅 아이템 바 -->
     <div class="item-bar">
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
@@ -301,34 +300,29 @@
     <script>
         const cardOffset = 22; 
         
-        // --- 단어 및 카테고리 풀 대폭 확장 (상징, 유의어, 팝컬쳐 포함 총 22개) ---
         const categoryPool = {
-            '동물': { words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말'] },
-            '과일': { words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리'] },
-            '직업': { words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너'] },
-            '국가': { words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아'] },
-            '요리': { words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드'] },
-            '스포츠': { words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도'] },
-            '색깔': { words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘'] },
-            '악기': { words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른'] },
-            '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개'] },
-            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트'] },
-            '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모'] },
-            
-            // 신규 확장 카테고리
+            '동물': { words: ['사자', '호랑이', '코끼리', '기린', '원숭이', '판다', '토끼', '여우', '늑대', '곰', '사슴', '얼룩말', '치타', '코뿔소', '하마'] },
+            '과일': { words: ['사과', '바나나', '포도', '딸기', '오렌지', '수박', '멜론', '복숭아', '키위', '망고', '레몬', '체리', '파인애플', '자두', '배'] },
+            '직업': { words: ['의사', '경찰', '소방관', '교사', '판사', '요리사', '가수', '배우', '간호사', '농부', '개발자', '디자이너', '건축가', '기자', '조종사'] },
+            '국가': { words: ['한국', '미국', '영국', '프랑스', '독일', '일본', '중국', '캐나다', '호주', '브라질', '인도', '이탈리아', '스페인', '멕시코', '이집트'] },
+            '음식': { words: ['피자', '햄버거', '초밥', '파스타', '김밥', '라면', '떡볶이', '치킨', '스테이크', '우동', '돈까스', '샐러드', '짬뽕', '탕수육', '샌드위치'] },
+            '스포츠': { words: ['축구', '농구', '야구', '배구', '테니스', '수영', '육상', '골프', '탁구', '볼링', '스키', '유도', '복싱', '태권도', '펜싱'] },
+            '색깔': { words: ['빨강', '주황', '노랑', '초록', '파랑', '보라', '분홍', '검정', '하양', '회색', '연두', '하늘', '갈색', '베이지', '자주'] },
+            '악기': { words: ['피아노', '기타', '바이올린', '드럼', '플루트', '첼로', '하프', '트럼펫', '단소', '리코더', '오보에', '호른', '클라리넷', '색소폰', '가야금'] },
+            '우주': { words: ['태양', '달', '지구', '화성', '목성', '토성', '은하', '블랙홀', '혜성', '별', '운석', '성운', '인공위성', '우주선', '은하수'] },
+            '날씨': { words: ['맑음', '흐림', '비', '눈', '태풍', '안개', '천둥', '번개', '우박', '이슬', '서리', '무지개', '폭설', '폭우', '가뭄'] },
+            '교통': { words: ['자동차', '버스', '기차', '지하철', '택시', '비행기', '배', '자전거', '오토바이', '트럭', '헬기', '요트', '케이블카', '킥보드', '우마차'] },
+            '가족': { words: ['엄마', '아빠', '형', '오빠', '누나', '언니', '동생', '할머니', '할아버지', '삼촌', '이모', '고모', '사촌', '조카', '이모부'] },
             '해외 영화': { words: ['타이타닉', '아바타', '어벤져스', '매트릭스', '해리포터', '인터스텔라', '인셉션', '반지의 제왕', '쥬라기 공원', '터미네이터', '미션 임파서블', '다크 나이트'] },
-            '한국 영화': { words: ['기생충', '명량', '극한직업', '신과함께', '국제시장', '베테랑', '도둑들', '괴물', '암살', '파묘', '택시운전사', '부산행'] },
+            '한국 영화': { words: ['기생충', '명량', '극한직업', '신과함께', '국제시장', '베테랑', '도둑들', '괴물', '암살', '7번방의 선물', '택시운전사', '부산행'] },
             '브랜드': { words: ['삼성', '애플', '나이키', '구글', '스타벅스', '코카콜라', '현대', '아마존', '소니', '닌텐도', '디즈니', '레고'] },
             '과자': { words: ['새우깡', '포카칩', '빼빼로', '홈런볼', '오징어땅콩', '맛동산', '꼬깔콘', '칸쵸', '초코파이', '쿠크다스', '치토스', '프링글스'] },
             '아이스크림': { words: ['메로나', '돼지바', '수박바', '죠스바', '쌍쌍바', '구구콘', '투게더', '붕어싸만코', '바밤바', '비비빅', '설레임', '옥동자'] },
             '아이돌': { words: ['방탄소년단', '블랙핑크', '뉴진스', '아이브', '엑소', '트와이스', '세븐틴', '레드벨벳', '샤이니', '에스파', '소녀시대', '빅뱅'] },
-            '랜드마크': { words: ['에펠탑', '자유의여신상', '만리장성', '타지마할', '피라미드', '콜로세움', '마추픽추', '빅벤', '오페라하우스', '타임스퀘어', '경복궁', '남산타워'] },
-            
-            // 상징 및 유의어 기반 카테고리
-            '생각': { words: ['심사숙고', '숙려', '사고', '고민', '고찰', '사색', '추론', '궁리', '명상', '되새김', '사유', '숙고'] },
-            '겨울': { words: ['눈사람', '붕어빵', '군고구마', '썰매', '목도리', '핫팩', '크리스마스', '패딩', '호떡', '장갑', '얼음', '눈싸움'] },
-            '여름': { words: ['모기', '수박', '에어컨', '해수욕장', '선풍기', '장마', '팥빙수', '매미', '열대야', '튜브', '태풍', '빙수'] },
-            '학교': { words: ['칠판', '교과서', '쉬는시간', '운동장', '종소리', '급식', '선생님', '짝꿍', '시험', '성적표', '체육복', '수학여행'] }
+            '명소 (상징)': { words: ['에펠탑', '자유의여신상', '만리장성', '타지마할', '피라미드', '콜로세움', '마추픽추', '빅벤', '오페라하우스', '타임스퀘어', '경복궁', '남산타워'] },
+            '생각 (유의어)': { words: ['심사숙고', '숙려', '사고', '고민', '고찰', '사색', '추론', '궁리', '명상', '되새김', '사유', '숙고'] },
+            '겨울 (상징)': { words: ['눈사람', '붕어빵', '군고구마', '썰매', '목도리', '핫팩', '크리스마스', '패딩', '호떡', '장갑', '얼음', '눈싸움'] },
+            '여름 (상징)': { words: ['모기', '수박', '에어컨', '해수욕장', '선풍기', '장마', '팥빙수', '매미', '열대야', '튜브', '태풍', '빙수'] }
         };
 
         let inventory = { undo: 1, hint: 1, addAction: 0 };
@@ -427,15 +421,23 @@
             addBadge.style.display = inventory.addAction > 0 ? 'flex' : 'none';
         }
 
+        // 유저 요청에 맞춘 새로운 난이도 밸런스 설정 
         function getStageConfig(stage) {
-            let cols = 3, cats = 3, minW = 3, maxW = 4;
-            if (stage <= 5) { cols = 3; cats = 3; minW = 3; maxW = 4; }
-            else if (stage <= 15) { cols = 4; cats = 4; minW = 4; maxW = 5; }
-            else if (stage <= 35) { cols = 4; cats = 5; minW = 4; maxW = 6; }
-            else if (stage <= 60) { cols = 5; cats = 6; minW = 5; maxW = 7; }
-            else if (stage <= 80) { cols = 5; cats = 8; minW = 5; maxW = 8; }
-            else { cols = 5; cats = Math.min(10, Object.keys(categoryPool).length); minW = 6; maxW = 8; }
-            return { cols, cats, minW, maxW };
+            let cols = 3, foundations = 3, cats = 3, minW = 3, maxW = 6;
+            
+            if (stage <= 5) { 
+                cols = 3; foundations = 3; cats = 3; minW = 3; maxW = 6; 
+            } else if (stage <= 10) { 
+                cols = 4; foundations = 3; cats = 4; minW = 3; maxW = 8; 
+            } else if (stage <= 15) { 
+                cols = 4; foundations = 4; cats = 5; minW = 3; maxW = 8; 
+            } else if (stage <= 20) { 
+                cols = 5; foundations = 4; cats = 7; minW = 3; maxW = 8; 
+            } else { 
+                cols = 5; foundations = 4; cats = Math.min(10, Object.keys(categoryPool).length); minW = 3; maxW = 8; 
+            }
+            
+            return { cols, foundations, cats, minW, maxW };
         }
 
         function shuffle(array) {
@@ -515,8 +517,14 @@
             foundationsDiv.innerHTML = ''; boardDiv.innerHTML = '';
             
             const columns = [];
-            for (let i = 0; i < config.cols; i++) {
+            
+            // 파운데이션(완성 슬롯) 개수 적용
+            for (let i = 0; i < config.foundations; i++) {
                 let fCol = document.createElement('div'); fCol.className = 'column foundation dropzone'; foundationsDiv.appendChild(fCol);
+            }
+            
+            // 보드 열 개수 적용
+            for (let i = 0; i < config.cols; i++) {
                 let bCol = document.createElement('div'); bCol.className = 'column dropzone'; boardDiv.appendChild(bCol);
                 columns.push(bCol);
             }
@@ -594,13 +602,13 @@
             if(type === 'clear') {
                 title.innerText = '스테이지 클리어!'; title.style.color = '#13b54d';
                 const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
-                desc.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> ${earnedCoins} 획득!`;
+                desc.innerHTML = `총 ${targetCategoriesCount}개의 카테고리를 완성했습니다.<br><br>(<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> ${earnedCoins} 획득!)`;
                 btn.innerText = '다음 스테이지로';
                 addCoins(earnedCoins); 
                 btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
             } else if (type === 'gameover') {
                 title.innerText = '게임 오버'; title.style.color = '#d35400';
-                desc.innerText = '행동 횟수를 모두 소진했어요.';
+                desc.innerText = '행동 횟수를 모두 소진했습니다.';
                 btn.innerText = '행동 수 추가 (아이템 사용)';
                 cancelBtn.style.display = 'block';
                 btn.onclick = () => { 
@@ -613,17 +621,17 @@
                 };
             } else if (type === 'no-coin') {
                 title.innerText = '코인 부족'; title.style.color = '#d35400';
-                desc.innerText = '아이템을 구매할 코인이 부족해요.\n게임을 진행하여 코인을 획득하세요!';
+                desc.innerText = '아이템을 구매할 코인이 부족합니다.\n게임을 진행하여 코인을 획득하세요.';
                 btn.innerText = '확인';
             } else if (type === 'buy-item') {
                 title.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> 아이템 구매`; 
                 title.style.color = 'var(--panel-bg)';
-                desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]를 구매하고<br>즉시 사용할까요?`;
+                desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매하고<br>즉시 사용하시겠습니까?`;
                 btn.innerText = '구매 및 사용';
                 cancelBtn.style.display = 'block';
             } else if (type === 'no-moves') {
                 title.innerText = '이동 불가'; title.style.color = '#d35400';
-                desc.innerText = '현재 더 이상 뽑거나 옮길 카드가 없어요.\n행동 수 추가나 실행 취소를 사용해 보세요.';
+                desc.innerText = '현재 더 이상 뽑거나 옮길 카드가 없습니다.\n행동 수 추가나 실행 취소를 사용해 보세요.';
                 btn.innerText = '확인';
             }
             overlay.style.display = 'flex';
@@ -893,7 +901,6 @@
             }, 2000);
         }
 
-        /* --- 아이템 실행 로직 --- */
         function executeItemLogic(type) {
             if (type === 'undo') {
                 const prevState = moveHistory.pop();
@@ -929,7 +936,6 @@
 
                 const allCandidates = wasteCard ? [wasteCard, ...boardMovableCards] : boardMovableCards;
                 
-                // 1. 최우선: 파운데이션 이동 확인
                 for(let card of allCandidates) {
                     const cardCat = card.dataset.category;
                     const isCatCard = card.dataset.isCategoryCard === 'true';
@@ -948,7 +954,6 @@
                     }
                 }
 
-                // 2. 보드 및 빈칸 이동 확인
                 for(let card of allCandidates) {
                     const cardCat = card.dataset.category;
                     const isCatCard = card.dataset.isCategoryCard === 'true';
@@ -976,7 +981,6 @@
                     }
                 }
                 
-                // 3. 더미 뒤집기 추천
                 if((window.drawPile && window.drawPile.length > 0) || wasteCards.length > 0) {
                     deckPileDiv.classList.add('hint-active');
                     setTimeout(() => deckPileDiv.classList.remove('hint-active'), 2000);
@@ -1025,7 +1029,6 @@
         document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
         document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
 
-        // 게임 시작 시, 로컬 스토리지 데이터가 없으면 1스테이지부터 새로 시작
         window.addEventListener('DOMContentLoaded', () => {
             if (!loadFromLocalStorage()) {
                 initGame(1);
