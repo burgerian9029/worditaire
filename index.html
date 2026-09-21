@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Word Solitaire</title>
+    <title>Word Solitaire - Modern Edition</title>
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
         :root {
-            /* 3열 기준 기본값 (데스크탑) */
+            /* 3열 기준 기본값 */
             --card-width: 80px;
             --card-height: 118px;
             --gap-size: 15px; 
             --font-base: 1.05rem;
             
-            --bg-color: #c5dec4; 
-            --panel-bg: #025f1d; 
-            --card-back-main: #13b54d; 
-            --card-back-pattern: #0e9a40; 
+            /* B안 모던 컬러 팔레트 */
+            --bg-gradient: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); 
+            --text-main: #004d40; 
+            --text-muted: #00695c;
             
-            --text-main: #025f1d; 
-            --glass-border: rgba(255, 255, 255, 0.3);
+            /* 글래스모피즘 변수 */
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            
+            /* 카드 뒷면 그라데이션 */
+            --card-back-grad: linear-gradient(135deg, #00897b 0%, #004d40 100%);
             
             --coin-color: #f39c12;
-            --hint-color: #ffd700;
+            --hint-color: #ffffff;
         }
 
         /* 열 개수에 따른 동적 사이즈 조절 (데스크탑) */
@@ -32,220 +37,193 @@
         .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px;  --font-base: 0.85rem; }
 
         @media (max-width: 600px) {
-            /* 열 개수에 따른 동적 사이즈 조절 (모바일) - min()을 통해 최대 크기 상한선 설정 */
-            .game-layout[data-cols="3"] { 
-                --card-width: min(23vw, 80px);   
-                --card-height: min(34vw, 118px); 
-                --gap-size: 2vw;   
-                --font-base: 0.95rem; 
-            }
-            .game-layout[data-cols="4"] { 
-                --card-width: min(19vw, 75px);   
-                --card-height: min(28vw, 110px); 
-                --gap-size: 1.5vw; 
-                --font-base: 0.85rem; 
-            }
-            .game-layout[data-cols="5"] { 
-                --card-width: min(16.5vw, 65px); 
-                --card-height: min(24vw, 95px); 
-                --gap-size: 1.2vw; 
-                --font-base: 0.75rem; 
-            }
+            /* 열 개수에 따른 동적 사이즈 조절 (모바일) */
+            .game-layout[data-cols="3"] { --card-width: min(23vw, 80px); --card-height: min(34vw, 118px); --gap-size: 2vw; --font-base: 0.95rem; }
+            .game-layout[data-cols="4"] { --card-width: min(19vw, 75px); --card-height: min(28vw, 110px); --gap-size: 1.5vw; --font-base: 0.85rem; }
+            .game-layout[data-cols="5"] { --card-width: min(16.5vw, 65px); --card-height: min(24vw, 95px); --gap-size: 1.2vw; --font-base: 0.75rem; }
             
             .game-layout { padding: 0 10px !important; }
-            .top-section {
-                gap: 40px !important;
-                margin-top: 10px !important;
-                margin-bottom: 40px !important; 
-            }
+            .top-section { gap: 30px !important; margin-top: 10px !important; margin-bottom: 30px !important; }
             .status-panel { margin: 10px 0; font-size: 0.9rem !important; }
-            h1 { font-size: 1.3rem; text-align: center; margin-bottom: 5px; }
+            h1 { font-size: 1.3rem; text-align: center; margin-bottom: 5px; font-weight: 800; color: var(--text-main); }
             
-            .item-bar { bottom: 15px !important; gap: 20px !important; }
+            .item-bar { bottom: 25px !important; gap: 20px !important; }
             .item-btn { width: 50px !important; height: 50px !important; }
             .item-btn svg.item-icon { width: 22px; height: 22px; }
-            
-            .foundation-label { font-size: calc(var(--font-base) * 0.85) !important; padding: 2px 6px !important; }
+            .foundation-label { font-size: calc(var(--font-base) * 0.85) !important; padding: 2px 8px !important; }
         }
 
         body { 
-            background-color: var(--bg-color);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
             color: var(--text-main); 
             font-family: 'Pretendard', sans-serif; 
             margin: 0;
-            /* 카드가 밑으로 길어질 때 하단 아이템 바와 겹치지 않도록 스크롤 여백 대폭 확보 */
             padding-bottom: 180px; 
             overflow-x: hidden;
             touch-action: pan-y;
+            min-height: 100vh;
         }
         
         .game-layout {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 550px; 
-            margin: 0 auto;
-            box-sizing: border-box;
-            padding: 0 20px;
+            display: flex; flex-direction: column; width: 100%; max-width: 550px; 
+            margin: 0 auto; box-sizing: border-box; padding: 0 20px;
         }
 
+        h1 { margin-top: 20px; font-weight: 800; color: var(--text-main); text-align: center; letter-spacing: -0.5px; }
+
+        /* 글래스모피즘 상태창 */
         .status-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 15px 0;
-            font-size: 1.05rem;
-            font-weight: 600;
-            background: var(--panel-bg);
-            color: #ffffff;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            margin: 15px 0; font-size: 1.05rem; font-weight: 700;
+            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: var(--text-main); padding: 14px 18px; border-radius: 16px;
+            border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
         }
         
-        .coin-icon {
-            width: 1.25em;
-            height: 1.25em;
-            margin-right: 4px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        #coin-display { 
-            display: flex; 
-            align-items: center; 
-            color: var(--hint-color); 
-            font-weight: 800; 
-            line-height: 1; 
-        }
+        .coin-icon { width: 1.3em; height: 1.3em; margin-right: 4px; display: inline-block; vertical-align: middle; }
+        #coin-display { display: flex; align-items: center; color: #d35400; font-weight: 900; line-height: 1; }
         
-        .top-section {
-            display: flex; flex-direction: column; width: 100%; gap: 40px; margin: 15px 0 35px 0; 
-        }
-
+        .top-section { display: flex; flex-direction: column; width: 100%; gap: 35px; margin: 15px 0 35px 0; }
         .deck-area { display: flex; gap: var(--gap-size); width: 100%; justify-content: flex-start; }
         .foundation-area, .board { display: flex; gap: var(--gap-size); width: 100%; justify-content: center; flex-wrap: nowrap; }
         .board { align-items: flex-start; }
 
         .column { 
             box-sizing: content-box; width: var(--card-width); min-height: var(--card-height); 
-            border-radius: 8px; position: relative; transition: padding-bottom 0.3s ease;
+            border-radius: 12px; position: relative; transition: padding-bottom 0.3s ease;
         }
 
+        /* 빈 슬롯 가이드라인 부드럽게 */
         #board .column::before, #waste-pile::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: var(--card-height);
-            border: 2px dashed rgba(2, 95, 29, 0.3); background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 8px; box-sizing: border-box; z-index: 0; 
+            border: 2px dashed rgba(0, 77, 64, 0.2); background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px; box-sizing: border-box; z-index: 0; 
         }
         
         .foundation {
-            border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 8px;
-            background-color: var(--panel-bg); box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6); border-radius: 12px;
+            background: rgba(255,255,255,0.2); box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .foundation-label {
-            position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
-            width: max-content; padding: 3px 8px; text-align: center; font-size: 0.7rem; font-weight: 800;
-            color: var(--panel-bg); background: #ffffff; border-radius: 10px;
-            pointer-events: none; z-index: 50; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+            width: max-content; padding: 4px 10px; text-align: center; font-size: 0.75rem; font-weight: 800;
+            color: var(--text-main); background: rgba(255,255,255,0.8); border-radius: 12px;
+            pointer-events: none; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.05); backdrop-filter: blur(4px);
         }
 
+        /* 플랫 & 드롭섀도우 테마의 카드 */
         .card { 
             box-sizing: border-box; width: var(--card-width); height: var(--card-height); 
-            background: #ffffff; color: var(--text-main); border-radius: 8px; 
+            background: #ffffff; color: var(--text-main); border-radius: 12px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             font-size: var(--font-base); font-weight: 800; position: absolute; 
-            border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.05);
+            border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             user-select: none; word-break: keep-all; 
-            transition: transform 0.2s ease, opacity 0.3s ease, box-shadow 0.3s ease; 
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease; 
             touch-action: none; z-index: 1; 
         }
 
+        /* 고급스러운 빛번짐 힌트 애니메이션 */
         @keyframes hintGlow {
-            0% { outline: 0px solid var(--hint-color); outline-offset: 0; box-shadow: 0 0 5px var(--hint-color); }
-            50% { outline: 4px solid var(--hint-color); outline-offset: 4px; box-shadow: 0 0 20px var(--hint-color); }
-            100% { outline: 0px solid var(--hint-color); outline-offset: 0; box-shadow: 0 0 5px var(--hint-color); }
+            0% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 4px 12px rgba(0,0,0,0.08); transform: translateY(0); }
+            50% { box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 30px rgba(0, 200, 150, 0.6); transform: translateY(-3px); }
+            100% { box-shadow: 0 0 5px rgba(255,255,255,0.5), 0 4px 12px rgba(0,0,0,0.08); transform: translateY(0); }
         }
         
         .hint-active { animation: hintGlow 1.5s ease-in-out infinite !important; z-index: 100 !important; }
-        .column.hint-active::before { animation: hintGlow 1.5s ease-in-out infinite !important; }
+        .column.hint-active::before { animation: hintGlow 1.5s ease-in-out infinite !important; border-color: #fff !important; }
 
         .card-word { text-align: center; pointer-events: none; }
         .card[draggable="true"] { cursor: grab; }
-        .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 999; }
+        .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-8px); box-shadow: 0 15px 25px rgba(0,0,0,0.15); z-index: 999; }
         .card.locked { cursor: default; touch-action: auto; }
         
-        .category-card { background: #fdfdfd; border: 2px solid var(--panel-bg) !important; box-shadow: 0 0 8px rgba(2, 95, 29, 0.2); }
+        /* 카테고리 카드는 살짝 다르게 강조 */
+        .category-card { background: #f4fdfb; border: 2px solid #80cbc4 !important; }
         
         .card-back {
-            background-color: var(--card-back-main) !important;
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, var(--card-back-pattern) 10px, var(--card-back-pattern) 20px) !important;
-            border: 2px solid #ffffff !important; color: transparent !important;
+            background: var(--card-back-grad) !important;
+            border: 2px solid rgba(255,255,255,0.3) !important; color: transparent !important;
         }
 
-        .stacked-deck { box-shadow: -1px 1px 0 #fff, -2px 2px 0 var(--card-back-main), -3px 3px 0 #fff, -4px 4px 0 var(--card-back-main), -5px 5px 6px rgba(0,0,0,0.2) !important; }
-        .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: #7f8c8d; font-weight: 600; }
-        #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: rgba(255, 255, 255, 0.9); border-radius: 8px; transition: all 0.2s ease; }
+        .stacked-deck { box-shadow: -1px 1px 0 rgba(255,255,255,0.5), -2px 2px 0 #00695c, -3px 3px 0 rgba(255,255,255,0.5), -4px 4px 0 #00695c, -6px 6px 12px rgba(0,0,0,0.2) !important; }
+        .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: var(--text-muted); font-weight: 600; }
+        #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: rgba(255, 255, 255, 0.9); border-radius: 12px; transition: all 0.2s ease; }
 
+        /* 하단 플로팅 글래스 버튼 */
         .item-bar {
-            position: fixed; bottom: 25px; left: 0; width: 100%;
+            position: fixed; bottom: 35px; left: 0; width: 100%;
             display: flex; justify-content: center; align-items: flex-end; gap: 35px;
             pointer-events: none; z-index: 900;
         }
         
-        .item-container {
-            position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px;
-            pointer-events: auto; 
-        }
+        .item-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: auto; }
         
         .item-badge {
-            position: absolute; top: -5px; right: -5px;
-            background-color: #ff3b30; color: #fff; font-size: 0.75rem; font-weight: 800;
-            min-width: 22px; height: 22px; border-radius: 11px;
+            position: absolute; top: -6px; right: -6px;
+            background-color: #ff5252; color: #fff; font-size: 0.75rem; font-weight: 800;
+            min-width: 24px; height: 24px; border-radius: 12px;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 10; padding: 0 4px; box-sizing: border-box;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 10; padding: 0 4px; box-sizing: border-box;
         }
 
         .item-btn {
-            width: 56px; height: 56px; background: var(--panel-bg); 
-            border: none; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; color: #ffffff;
+            width: 60px; height: 60px; 
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; color: var(--text-main);
             cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
-        .item-btn svg.item-icon { width: 24px; height: 24px; }
-        .item-btn:active { transform: scale(0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .item-btn svg.item-icon { width: 26px; height: 26px; }
+        .item-btn:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: rgba(255,255,255,0.8); }
         
         .item-cost {
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 800; color: #ffffff;
-            background: #d35400; padding: 4px 10px; border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            font-size: 0.8rem; font-weight: 800; color: #fff;
+            background: rgba(0, 77, 64, 0.8); backdrop-filter: blur(4px);
+            padding: 5px 12px; border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             line-height: 1; 
         }
 
+        /* 팝업 UI 모던화 */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(5px);
+            background: rgba(0,30,20,0.4); display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
         .popup {
-            background: #fff; color: var(--text-main); padding: 30px; border-radius: 16px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            color: var(--text-main); padding: 35px 25px; border-radius: 24px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 20px 40px rgba(0,0,0,0.15); width: 80%; max-width: 320px;
         }
-        .popup h2 { margin-top: 0; color: var(--panel-bg); display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .popup p { margin: 15px 0; font-weight: 600; line-height: 1.5; white-space: pre-wrap; }
+        .popup h2 { margin-top: 0; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800;}
+        .popup p { margin: 20px 0; font-weight: 600; line-height: 1.5; white-space: pre-wrap; color: #00695c; }
         .btn {
-            background: var(--card-back-main); color: #fff; border: none; padding: 12px 24px; font-size: 1.1rem;
-            font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            background: var(--text-main); color: #fff; border: none; padding: 14px 24px; font-size: 1.05rem;
+            font-weight: bold; border-radius: 14px; cursor: pointer; margin-top: 10px; width: 100%; box-shadow: 0 4px 12px rgba(0,77,64,0.2);
+            transition: transform 0.1s;
         }
-        .btn-cancel { background: #95a5a6; margin-top: 10px; }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px 3px rgba(0,0,0,0.2); }
+        .btn-cancel { background: rgba(0,0,0,0.1); color: var(--text-main); margin-top: 12px; box-shadow: none; }
+        .btn:active { transform: translateY(2px); }
+
+        /* 테스트용 개발자 버튼 (좌측 하단) */
+        #dev-tools {
+            position: fixed; bottom: 10px; left: 10px; z-index: 1000;
+            display: flex; gap: 8px; opacity: 0.6; transition: opacity 0.2s;
+        }
+        #dev-tools:hover { opacity: 1; }
+        .dev-btn {
+            background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px;
+            padding: 8px; font-size: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
+    <!-- 세련된 코인 아이콘 -->
     <svg style="display: none;">
         <symbol id="icon-coin" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#F39C12" stroke-width="2"/>
@@ -276,11 +254,12 @@
         <div id="board" class="board"></div>
     </div>
 
+    <!-- 미니멀 라인 아이콘 적용을 유도하는 글래스 버튼 바 -->
     <div class="item-bar">
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
             <button class="item-btn" id="btn-undo" title="실행 취소">
-                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
                 </svg>
             </button>
@@ -291,7 +270,7 @@
         <div class="item-container">
             <div class="item-badge" id="badge-hint">1</div>
             <button class="item-btn" id="btn-hint" title="힌트 보기">
-                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
             </button>
@@ -302,7 +281,7 @@
         <div class="item-container">
             <div class="item-badge" id="badge-add-action">0</div>
             <button class="item-btn" id="btn-add-action" title="행동 수 +10">
-                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
             </button>
@@ -310,6 +289,12 @@
                 <svg class="coin-icon"><use href="#icon-coin"></use></svg><span>100</span>
             </div>
         </div>
+    </div>
+
+    <!-- 개발자용 리셋 툴 -->
+    <div id="dev-tools">
+        <button class="dev-btn" id="btn-restart-current" title="현재 스테이지 다시 시작">🔄</button>
+        <button class="dev-btn" id="btn-restart-all" title="1스테이지부터 다시 시작">⏪</button>
     </div>
 
     <div id="overlay">
@@ -633,14 +618,14 @@
             cancelBtn.onclick = () => { overlay.style.display = 'none'; };
             
             if(type === 'clear') {
-                title.innerText = '스테이지 클리어!'; title.style.color = '#13b54d';
+                title.innerText = '스테이지 클리어!'; title.style.color = '#00897b';
                 const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
                 desc.innerHTML = `<span style="display: inline-flex; align-items: center; justify-content: center;">(<svg class="coin-icon" viewBox="0 0 24 24" style="margin: 0 4px;"><use href="#icon-coin"></use></svg> ${earnedCoins} 획득!)</span>`;
                 btn.innerText = '다음 스테이지로';
                 addCoins(earnedCoins); 
                 btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
             } else if (type === 'gameover') {
-                title.innerText = 'GAME OVER'; title.style.color = '#d35400';
+                title.innerText = 'GAME OVER'; title.style.color = '#e53935';
                 desc.innerText = '남은 행동 횟수가 없어요.';
                 btn.innerText = '행동 수 추가 아이템 사용';
                 cancelBtn.style.display = 'block';
@@ -653,17 +638,17 @@
                     initGame(currentStage); 
                 };
             } else if (type === 'no-coin') {
-                title.innerText = '코인 부족'; title.style.color = '#d35400';
+                title.innerText = '코인 부족'; title.style.color = '#e53935';
                 desc.innerText = '아이템을 구매할 코인이 부족해요.\n게임을 진행하여 코인을 획득하세요.';
                 btn.innerText = '확인';
             } else if (type === 'buy-item') {
                 title.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> 아이템 구매`; 
-                title.style.color = 'var(--panel-bg)';
+                title.style.color = 'var(--text-main)';
                 desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매하고<br>즉시 사용할까요?`;
                 btn.innerText = '구매 및 사용';
                 cancelBtn.style.display = 'block';
             } else if (type === 'no-moves') {
-                title.innerText = '이동 불가'; title.style.color = '#d35400';
+                title.innerText = '이동 불가'; title.style.color = '#e53935';
                 desc.innerText = '현재 더 이상 뽑거나 옮길 카드가 없어요.\n행동 수 추가나 실행 취소를 사용해 보세요.';
                 btn.innerText = '확인';
             }
@@ -843,7 +828,7 @@
             
             draggedCards.forEach(card => {
                 card.style.pointerEvents = '';
-                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease';
+                card.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease';
                 card.style.transform = ''; card.style.zIndex = '';
             });
 
@@ -861,21 +846,28 @@
 
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
-            cardElement.classList.remove('card-back', 'stacked-deck');
-            cardElement.dataset.faceUp = 'true';
             
-            const word = cardElement.dataset.word;
-            let innerHTML = '';
-            if (cardElement.dataset.isCategoryCard === 'true') {
-                cardElement.classList.add('category-card');
-                innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
-            } else {
-                innerHTML += `<div class="card-word">${word}</div>`; 
-            }
-            cardElement.innerHTML = innerHTML;
-            cardElement.draggable = true;
+            // 시각적 부드러움을 위해 약간의 투명도 트랜지션 추가
+            cardElement.style.opacity = '0';
             
-            rebindCardEvents();
+            setTimeout(() => {
+                cardElement.classList.remove('card-back', 'stacked-deck');
+                cardElement.dataset.faceUp = 'true';
+                
+                const word = cardElement.dataset.word;
+                let innerHTML = '';
+                if (cardElement.dataset.isCategoryCard === 'true') {
+                    cardElement.classList.add('category-card');
+                    innerHTML += `<div class="card-word">${word}<div class="target-count-text">(${cardElement.dataset.targetCount}개)</div></div>`;
+                } else {
+                    innerHTML += `<div class="card-word">${word}</div>`; 
+                }
+                cardElement.innerHTML = innerHTML;
+                cardElement.draggable = true;
+                
+                cardElement.style.opacity = '1';
+                rebindCardEvents();
+            }, 150);
         }
 
         const deckPileDiv = document.getElementById('deck-pile');
@@ -888,8 +880,8 @@
             } else {
                 deckPileDiv.classList.remove('card-back', 'stacked-deck');
                 deckPileDiv.style.background = 'rgba(255, 255, 255, 0.2)';
-                deckPileDiv.style.border = '2px dashed rgba(2, 95, 29, 0.3)';
-                deckPileDiv.innerText = '↺'; deckPileDiv.style.color = 'var(--panel-bg)';
+                deckPileDiv.style.border = '2px dashed rgba(0, 77, 64, 0.3)';
+                deckPileDiv.innerText = '↺'; deckPileDiv.style.color = 'var(--text-main)';
             }
         }
 
@@ -1061,6 +1053,23 @@
         document.getElementById('btn-undo').addEventListener('click', () => handleItemClick('undo'));
         document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
         document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
+
+        // 개발자용 리셋 도구 이벤트 리스너 추가
+        document.getElementById('btn-restart-current').addEventListener('click', () => {
+            if (confirm(`스테이지 ${currentStage}을(를) 처음부터 다시 시작할까요?`)) {
+                initGame(currentStage);
+                saveToLocalStorage();
+            }
+        });
+        
+        document.getElementById('btn-restart-all').addEventListener('click', () => {
+            if (confirm(`모든 저장 데이터를 삭제하고 1스테이지부터 다시 시작할까요?`)) {
+                localStorage.removeItem('worditaire_save');
+                currentStage = 1;
+                initGame(1);
+                saveToLocalStorage();
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', () => {
             if (!loadFromLocalStorage()) {
