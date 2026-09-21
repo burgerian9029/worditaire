@@ -8,7 +8,7 @@
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
         
         :root {
-            /* 3열 기준 기본값 (Fallback) */
+            /* 3열 기준 기본값 (데스크탑) */
             --card-width: 80px;
             --card-height: 118px;
             --gap-size: 15px; 
@@ -32,10 +32,25 @@
         .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px;  --font-base: 0.85rem; }
 
         @media (max-width: 600px) {
-            /* 열 개수에 따른 동적 사이즈 조절 (모바일) */
-            .game-layout[data-cols="3"] { --card-width: 24vw;   --card-height: 35vw; --gap-size: 2vw;   --font-base: 0.9rem; }
-            .game-layout[data-cols="4"] { --card-width: 19vw;   --card-height: 28vw; --gap-size: 1.5vw; --font-base: 0.8rem; }
-            .game-layout[data-cols="5"] { --card-width: 16.5vw; --card-height: 24vw; --gap-size: 1.2vw; --font-base: 0.7rem; }
+            /* 열 개수에 따른 동적 사이즈 조절 (모바일) - min()을 통해 최대 크기 상한선 설정 */
+            .game-layout[data-cols="3"] { 
+                --card-width: min(23vw, 80px);   
+                --card-height: min(34vw, 118px); 
+                --gap-size: 2vw;   
+                --font-base: 0.95rem; 
+            }
+            .game-layout[data-cols="4"] { 
+                --card-width: min(19vw, 75px);   
+                --card-height: min(28vw, 110px); 
+                --gap-size: 1.5vw; 
+                --font-base: 0.85rem; 
+            }
+            .game-layout[data-cols="5"] { 
+                --card-width: min(16.5vw, 65px); 
+                --card-height: min(24vw, 95px); 
+                --gap-size: 1.2vw; 
+                --font-base: 0.75rem; 
+            }
             
             .game-layout { padding: 0 10px !important; }
             .top-section {
