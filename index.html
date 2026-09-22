@@ -11,7 +11,6 @@
             --card-height: 118px;
             --gap-size: 15px; 
             
-            /* 핵심 변경: 폰트 기본 크기를 카드 가로 너비(width)의 22%로 동적 연동 */
             --font-base: calc(var(--card-width) * 0.22);
             
             --retro-bg: #0b021d;
@@ -22,7 +21,6 @@
             --pixel-border: #2a1b4e;
         }
 
-        /* 폰트 크기가 자동 계산되므로 --card-width만 조정하면 폰트도 함께 변합니다 */
         .game-layout[data-cols="3"] { --card-width: 80px; --card-height: 118px; --gap-size: 15px; }
         .game-layout[data-cols="4"] { --card-width: 75px; --card-height: 110px; --gap-size: 10px; }
         .game-layout[data-cols="5"] { --card-width: 65px; --card-height: 95px;  --gap-size: 8px; }
@@ -159,13 +157,14 @@
         .hint-active { animation: hintGlow 1s ease-in-out infinite !important; z-index: 100 !important; border-color: var(--neon-yellow) !important; }
         .column.hint-active::before { animation: hintGlow 1s ease-in-out infinite !important; border-color: var(--neon-yellow) !important; }
 
-        /* 단어 길이에 따른 클래스 (JS에서 제어) */
+        /* 카드 텍스트 기본값을 0.75em(풀드포크 버거 사이즈)로 통일 */
         .card-word { 
             text-align: center; pointer-events: none; z-index: 2; 
             width: 100%; padding: 0 4px; box-sizing: border-box; line-height: 1.2;
+            font-size: 0.75em; 
+            word-break: keep-all;
         }
-        .long-text { font-size: 0.75em; word-break: break-word; } /* 6~7글자 */
-        .longest-text { font-size: 0.6em; word-break: break-word; } /* 8글자 이상 */
+        .longest-text { font-size: 0.6em; word-break: break-word; } /* 8글자 이상일 때만 추가 축소 */
 
         .card[draggable="true"] { cursor: grab; }
         .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-6px); box-shadow: 6px 10px 0px rgba(0,0,0,0.8); z-index: 999; }
@@ -836,7 +835,6 @@
                     card.addEventListener('dragend', handleDragEnd);
                     card.addEventListener('touchstart', handleTouchStart, { passive: false });
                     card.addEventListener('touchmove', handleTouchMove, { passive: false });
-                    card.addEventListener('touchmove', handleTouchMove, { passive: false });
                     card.addEventListener('touchend', handleTouchEnd);
                 }
             });
@@ -909,12 +907,9 @@
                 
                 const word = cardElement.dataset.word;
                 
-                // 단어 길이에 따른 클래스 부여로 폰트 크기 자동 축소 로직 추가
                 let textClass = '';
                 if (word.length >= 8) {
-                    textClass = ' longest-text'; // 8글자 이상
-                } else if (word.length > 5) {
-                    textClass = ' long-text'; // 6~7글자
+                    textClass = ' longest-text'; 
                 }
                 
                 let innerHTML = '';
