@@ -79,10 +79,7 @@
             font-size: 1.05rem;
             text-align: left;
             color: #ffffff;
-            text-shadow: 
-                0 0 4px #fff,
-                0 0 10px var(--neon-cyan),
-                0 0 20px var(--neon-cyan);
+            text-shadow: 0 0 4px #fff, 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
             letter-spacing: 1px;
             line-height: 1.4;
         }
@@ -128,15 +125,11 @@
             pointer-events: none; z-index: 50; box-shadow: 0 0 8px var(--neon-cyan);
             line-height: 1.3; white-space: nowrap;
         }
-        .foundation-label .sub-count {
-            display: block; font-size: 0.6rem; opacity: 0.9;
-        }
+        .foundation-label .sub-count { display: block; font-size: 0.6rem; opacity: 0.9; }
 
         .card { 
             box-sizing: border-box; width: var(--card-width); height: var(--card-height); 
-            background: 
-                linear-gradient(rgba(0, 0, 0, 0.012) 50%, rgba(255, 255, 255, 0.012) 50%),
-                #ffffff;
+            background: linear-gradient(rgba(0, 0, 0, 0.012) 50%, rgba(255, 255, 255, 0.012) 50%), #ffffff;
             background-size: 100% 4px;
             color: #111111; border-radius: 6px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -144,9 +137,25 @@
             border: 3px solid #1a0b2e;
             box-shadow: 4px 4px 0px #1a0b2e, 0 0 10px rgba(255,255,255,0.2); 
             user-select: none; word-break: keep-all; 
-            transition: transform 0.1s ease, opacity 0.2s ease; 
+            transition: transform 0.1s ease, opacity 0.2s ease, box-shadow 0.2s ease; 
             touch-action: none; z-index: 1; 
         }
+
+        /* 손맛 1: 카드 드롭 실패 시 부르르 떨림 */
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px) rotate(-4deg); }
+            40%, 80% { transform: translateX(6px) rotate(4deg); }
+        }
+        .shake-error { animation: shakeError 0.3s ease-in-out !important; }
+
+        /* 손맛 2: 카드 드롭 성공 시 쫀득하게 펌핑되며 빛남 */
+        @keyframes dropPop {
+            0% { transform: scale(1); box-shadow: 4px 4px 0px #1a0b2e; }
+            50% { transform: scale(1.1); box-shadow: 4px 4px 0px #1a0b2e, 0 0 25px var(--neon-cyan); }
+            100% { transform: scale(1); box-shadow: 4px 4px 0px #1a0b2e; }
+        }
+        .drop-pop { animation: dropPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
 
         @keyframes hintGlow {
             0% { box-shadow: 4px 4px 0px #1a0b2e, 0 0 10px var(--neon-yellow); transform: translateY(0); }
@@ -157,14 +166,12 @@
         .hint-active { animation: hintGlow 1s ease-in-out infinite !important; z-index: 100 !important; border-color: var(--neon-yellow) !important; }
         .column.hint-active::before { animation: hintGlow 1s ease-in-out infinite !important; border-color: var(--neon-yellow) !important; }
 
-        /* 카드 텍스트 기본값을 0.75em(풀드포크 버거 사이즈)로 통일 */
         .card-word { 
             text-align: center; pointer-events: none; z-index: 2; 
             width: 100%; padding: 0 4px; box-sizing: border-box; line-height: 1.2;
-            font-size: 0.75em; 
-            word-break: keep-all;
+            font-size: 0.75em; word-break: keep-all;
         }
-        .longest-text { font-size: 0.6em; word-break: break-word; } /* 8글자 이상일 때만 추가 축소 */
+        .longest-text { font-size: 0.6em; word-break: break-word; } 
 
         .card[draggable="true"] { cursor: grab; }
         .card[draggable="true"]:active { cursor: grabbing; transform: scale(1.05) translateY(-6px); box-shadow: 6px 10px 0px rgba(0,0,0,0.8); z-index: 999; }
@@ -189,41 +196,24 @@
         .target-count-text { font-size: calc(var(--font-base) * 0.65); margin-top: 4px; color: #555555; font-weight: bold; }
         #deck-pile { cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: calc(var(--font-base) * 2); color: var(--neon-cyan); border-radius: 6px; transition: all 0.2s ease; text-shadow: 0 0 8px var(--neon-cyan); }
 
-        .item-bar {
-            position: fixed; bottom: 30px; left: 0; width: 100%;
-            display: flex; justify-content: center; align-items: flex-end; gap: 30px;
-            pointer-events: none; z-index: 900;
-        }
-        
+        .item-bar { position: fixed; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; align-items: flex-end; gap: 30px; pointer-events: none; z-index: 900; }
         .item-container { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: auto; }
-        
         .item-badge {
-            position: absolute; top: -8px; right: -8px;
-            background-color: var(--neon-pink); color: #fff; font-size: 0.7rem; font-weight: bold;
-            min-width: 22px; height: 22px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 8px var(--neon-pink); z-index: 10; padding: 0 4px; box-sizing: border-box;
-            border: 2px solid #ffffff;
+            position: absolute; top: -8px; right: -8px; background-color: var(--neon-pink); color: #fff; font-size: 0.7rem; font-weight: bold;
+            min-width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 8px var(--neon-pink); z-index: 10; padding: 0 4px; box-sizing: border-box; border: 2px solid #ffffff;
         }
-
         .item-btn {
-            width: 58px; height: 58px; 
-            background: #1a0b2e; 
-            border: 3px solid var(--neon-purple); border-radius: 12px;
-            display: flex; justify-content: center; align-items: center; color: var(--neon-cyan);
-            cursor: pointer; transition: all 0.1s ease;
+            width: 58px; height: 58px; background: #1a0b2e; border: 3px solid var(--neon-purple); border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; color: var(--neon-cyan); cursor: pointer; transition: all 0.1s ease;
             box-shadow: 4px 4px 0px var(--neon-purple), 0 0 10px rgba(157, 0, 255, 0.5);
         }
         .item-btn svg.item-icon { width: 26px; height: 26px; stroke: var(--neon-cyan); filter: drop-shadow(0 0 4px var(--neon-cyan)); }
         .item-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px var(--neon-purple); background: #2a1b4e; }
-        
         .item-cost {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: bold; color: var(--neon-yellow);
-            background: #1a0b2e; padding: 4px 10px; border-radius: 6px;
-            border: 2px solid var(--neon-yellow);
-            box-shadow: 0 0 8px rgba(243, 230, 0, 0.4);
-            line-height: 1; text-shadow: 0 0 4px var(--neon-yellow);
+            display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: var(--neon-yellow);
+            background: #1a0b2e; padding: 4px 10px; border-radius: 6px; border: 2px solid var(--neon-yellow);
+            box-shadow: 0 0 8px rgba(243, 230, 0, 0.4); line-height: 1; text-shadow: 0 0 4px var(--neon-yellow);
         }
 
         #overlay {
@@ -245,18 +235,10 @@
         .btn-cancel { background: #4a4a4a; border-color: #fff; box-shadow: 4px 4px 0px #000; margin-top: 12px; }
         .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #000; }
 
-        #dev-tools {
-            position: absolute; top: 15px; right: 20px; z-index: 1000;
-            display: flex; gap: 6px; opacity: 0.5; transition: opacity 0.2s;
-        }
+        #dev-tools { position: absolute; top: 15px; right: 20px; z-index: 1000; display: flex; gap: 6px; opacity: 0.5; transition: opacity 0.2s; }
         #dev-tools:hover { opacity: 1; }
-        .dev-btn {
-            background: #1a0b2e; border: 2px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 4px;
-            padding: 4px 8px; font-size: 12px; cursor: pointer; box-shadow: 0 0 6px var(--neon-cyan);
-        }
-        @media (max-width: 600px) {
-            #dev-tools { top: 15px; right: 15px; }
-        }
+        .dev-btn { background: #1a0b2e; border: 2px solid var(--neon-cyan); color: var(--neon-cyan); border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer; box-shadow: 0 0 6px var(--neon-cyan); }
+        @media (max-width: 600px) { #dev-tools { top: 15px; right: 15px; } }
     </style>
 </head>
 <body>
@@ -299,35 +281,23 @@
         <div class="item-container">
             <div class="item-badge" id="badge-undo">1</div>
             <button class="item-btn" id="btn-undo" title="실행 취소">
-                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
-                </svg>
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
             </button>
-            <div class="item-cost">
-                <svg class="coin-icon"><use href="#icon-coin"></use></svg><span>30</span>
-            </div>
+            <div class="item-cost"><svg class="coin-icon"><use href="#icon-coin"></use></svg><span>30</span></div>
         </div>
         <div class="item-container">
             <div class="item-badge" id="badge-hint">1</div>
             <button class="item-btn" id="btn-hint" title="힌트 보기">
-                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
-            <div class="item-cost">
-                <svg class="coin-icon"><use href="#icon-coin"></use></svg><span>50</span>
-            </div>
+            <div class="item-cost"><svg class="coin-icon"><use href="#icon-coin"></use></svg><span>50</span></div>
         </div>
         <div class="item-container">
             <div class="item-badge" id="badge-add-action">0</div>
             <button class="item-btn" id="btn-add-action" title="행동 수 +10">
-                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
+                <svg class="item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
-            <div class="item-cost">
-                <svg class="coin-icon"><use href="#icon-coin"></use></svg><span>100</span>
-            </div>
+            <div class="item-cost"><svg class="coin-icon"><use href="#icon-coin"></use></svg><span>100</span></div>
         </div>
     </div>
 
@@ -342,58 +312,29 @@
 
     <script>
         const cardOffset = window.innerWidth <= 600 ? 15 : 22; 
-        
         let categoryPool = {};
-        
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQZDg9YwWbIv3Y7ne6SYNBnSwemWUGbjZUk4jLfhILyJMwCFzT-9Bj4Hu87tJA_yWK0g0sXNephO4wU/pub?gid=0&single=true&output=csv";
 
         let inventory = { undo: 1, hint: 1, addAction: 0 };
-        
-        const itemConfig = {
-            'undo': { cost: 30, name: '실행 취소', key: 'undo' },
-            'hint': { cost: 50, name: '힌트 보기', key: 'hint' },
-            'add-action': { cost: 100, name: '행동 수 추가', key: 'addAction' }
-        };
-
-        let currentStage = 1;
-        let coins = 100; 
-        let deck = [];
-        let draggedCards = []; 
-        let sourceColumn = null; 
-        let remainingActions = 0;
-        let isGameOver = false;
-        
-        let targetCategoriesCount = 0;
-        let clearedCategoriesCount = 0;
-        let categoryTargetCounts = {};
-        let touchStartX = 0; let touchStartY = 0;
-        let moveHistory = [];
+        const itemConfig = { 'undo': { cost: 30, name: '실행 취소', key: 'undo' }, 'hint': { cost: 50, name: '힌트 보기', key: 'hint' }, 'add-action': { cost: 100, name: '행동 수 추가', key: 'addAction' } };
+        let currentStage = 1; let coins = 100; let deck = []; let draggedCards = []; let sourceColumn = null; let remainingActions = 0; let isGameOver = false;
+        let targetCategoriesCount = 0; let clearedCategoriesCount = 0; let categoryTargetCounts = {}; let touchStartX = 0; let touchStartY = 0; let moveHistory = [];
+        let isDragSuccessful = false; // 드래그 드롭 성공 여부 플래그
 
         async function loadDataAndStart() {
             try {
                 const response = await fetch(SHEET_CSV_URL);
                 const csvText = await response.text();
-                
                 const lines = csvText.split('\n');
                 categoryPool = {}; 
-                
                 lines.forEach(line => {
                     const cols = line.trim().split(',');
                     if (cols.length < 2) return; 
-                    
                     const category = cols[0].trim();
                     const words = cols.slice(1).map(w => w.trim()).filter(w => w !== '');
-                    
-                    if (category && words.length > 0) {
-                        categoryPool[category] = { words: words };
-                    }
+                    if (category && words.length > 0) categoryPool[category] = { words: words };
                 });
-
-                console.log("구글 시트 단어 로드 완료!", categoryPool);
-
-                if (!loadFromLocalStorage()) {
-                    initGame(1);
-                }
+                if (!loadFromLocalStorage()) initGame(1);
             } catch (error) {
                 console.error("데이터 로드 실패:", error);
                 alert("단어 데이터를 불러오는데 실패했습니다. 구글 시트 CSV 링크를 다시 확인해주세요.");
@@ -403,17 +344,8 @@
         function saveToLocalStorage() {
             if(isGameOver) return; 
             const state = {
-                currentStage,
-                coins,
-                inventory,
-                remainingActions,
-                clearedCategoriesCount,
-                targetCategoriesCount,
-                categoryTargetCounts,
-                moveHistory,
-                foundations: document.getElementById('foundations').innerHTML,
-                board: document.getElementById('board').innerHTML,
-                waste: document.getElementById('waste-pile').innerHTML,
+                currentStage, coins, inventory, remainingActions, clearedCategoriesCount, targetCategoriesCount, categoryTargetCounts, moveHistory,
+                foundations: document.getElementById('foundations').innerHTML, board: document.getElementById('board').innerHTML, waste: document.getElementById('waste-pile').innerHTML,
                 drawPileCopy: JSON.parse(JSON.stringify(window.drawPile || []))
             };
             localStorage.setItem('worditaire_save', JSON.stringify(state));
@@ -424,305 +356,132 @@
             if (saved) {
                 try {
                     const state = JSON.parse(saved);
-                    currentStage = state.currentStage;
-                    coins = state.coins;
-                    inventory = state.inventory;
-                    remainingActions = state.remainingActions;
-                    clearedCategoriesCount = state.clearedCategoriesCount;
-                    targetCategoriesCount = state.targetCategoriesCount;
-                    categoryTargetCounts = state.categoryTargetCounts;
-                    moveHistory = state.moveHistory || [];
-
+                    currentStage = state.currentStage; coins = state.coins; inventory = state.inventory; remainingActions = state.remainingActions;
+                    clearedCategoriesCount = state.clearedCategoriesCount; targetCategoriesCount = state.targetCategoriesCount; categoryTargetCounts = state.categoryTargetCounts; moveHistory = state.moveHistory || [];
                     document.getElementById('stage-display').innerText = `Stage ${currentStage}`;
-                    
-                    const config = getStageConfig(currentStage);
-                    document.querySelector('.game-layout').dataset.cols = config.cols;
-
-                    updateCoinDisplay();
-                    updateInventoryUI();
-                    document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-
-                    document.getElementById('foundations').innerHTML = state.foundations;
-                    document.getElementById('board').innerHTML = state.board;
-                    document.getElementById('waste-pile').innerHTML = state.waste;
-                    
+                    const config = getStageConfig(currentStage); document.querySelector('.game-layout').dataset.cols = config.cols;
+                    updateCoinDisplay(); updateInventoryUI(); document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
+                    document.getElementById('foundations').innerHTML = state.foundations; document.getElementById('board').innerHTML = state.board; document.getElementById('waste-pile').innerHTML = state.waste;
                     window.drawPile = state.drawPileCopy || [];
-                    
-                    bindDropEvents();
-                    rebindCardEvents();
-                    updateDeckUI();
-                    adjustBoardHeight();
-                    
+                    bindDropEvents(); rebindCardEvents(); updateDeckUI(); adjustBoardHeight();
                     document.getElementById('btn-undo').style.opacity = moveHistory.length > 1 ? '1' : '0.5';
-                    
                     return true;
-                } catch (e) {
-                    console.error('Save data corrupted', e);
-                    return false;
-                }
+                } catch (e) { console.error('Save data corrupted', e); return false; }
             }
             return false;
         }
 
         function updateInventoryUI() {
-            const undoBadge = document.getElementById('badge-undo');
-            undoBadge.innerText = inventory.undo;
-            undoBadge.style.display = inventory.undo > 0 ? 'flex' : 'none';
-
-            const hintBadge = document.getElementById('badge-hint');
-            hintBadge.innerText = inventory.hint;
-            hintBadge.style.display = inventory.hint > 0 ? 'flex' : 'none';
-
-            const addBadge = document.getElementById('badge-add-action');
-            addBadge.innerText = inventory.addAction;
-            addBadge.style.display = inventory.addAction > 0 ? 'flex' : 'none';
+            const u = document.getElementById('badge-undo'); u.innerText = inventory.undo; u.style.display = inventory.undo > 0 ? 'flex' : 'none';
+            const h = document.getElementById('badge-hint'); h.innerText = inventory.hint; h.style.display = inventory.hint > 0 ? 'flex' : 'none';
+            const a = document.getElementById('badge-add-action'); a.innerText = inventory.addAction; a.style.display = inventory.addAction > 0 ? 'flex' : 'none';
         }
 
         function getStageConfig(stage) {
             let cols = 3, foundations = 3, cats = 3, minW = 3, maxW = 6;
-            
-            if (stage <= 5) { 
-                cols = 3; foundations = 3; cats = 3; minW = 3; maxW = 6; 
-            } else if (stage <= 10) { 
-                cols = 4; foundations = 3; cats = 4; minW = 3; maxW = 8; 
-            } else if (stage <= 15) { 
-                cols = 4; foundations = 4; cats = 5; minW = 3; maxW = 8; 
-            } else if (stage <= 20) { 
-                cols = 5; foundations = 4; cats = 7; minW = 3; maxW = 8; 
-            } else { 
-                cols = 5; foundations = 4; cats = Math.min(10, Object.keys(categoryPool).length); minW = 3; maxW = 8; 
-            }
-            
+            if (stage <= 5) { cols = 3; foundations = 3; cats = 3; } 
+            else if (stage <= 10) { cols = 4; foundations = 3; cats = 4; maxW = 8; } 
+            else if (stage <= 15) { cols = 4; foundations = 4; cats = 5; maxW = 8; } 
+            else if (stage <= 20) { cols = 5; foundations = 4; cats = 7; maxW = 8; } 
+            else { cols = 5; foundations = 4; cats = Math.min(10, Object.keys(categoryPool).length); maxW = 8; }
             return { cols, foundations, cats, minW, maxW };
         }
 
         function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
+            for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; }
             return array;
         }
 
         function saveGameState() {
             if (isGameOver) return;
             const state = {
-                actions: remainingActions,
-                foundations: document.getElementById('foundations').innerHTML,
-                board: document.getElementById('board').innerHTML,
-                waste: document.getElementById('waste-pile').innerHTML,
-                deckPile: document.getElementById('deck-pile').outerHTML,
-                drawPileCopy: JSON.parse(JSON.stringify(window.drawPile)),
-                clearedCat: clearedCategoriesCount
+                actions: remainingActions, foundations: document.getElementById('foundations').innerHTML, board: document.getElementById('board').innerHTML,
+                waste: document.getElementById('waste-pile').innerHTML, deckPile: document.getElementById('deck-pile').outerHTML,
+                drawPileCopy: JSON.parse(JSON.stringify(window.drawPile)), clearedCat: clearedCategoriesCount
             };
-            moveHistory.push(state);
-            if(moveHistory.length > 10) moveHistory.shift(); 
-            
-            document.getElementById('btn-undo').style.opacity = moveHistory.length > 1 ? '1' : '0.5';
-            saveToLocalStorage();
+            moveHistory.push(state); if(moveHistory.length > 10) moveHistory.shift(); 
+            document.getElementById('btn-undo').style.opacity = moveHistory.length > 1 ? '1' : '0.5'; saveToLocalStorage();
         }
 
         function initGame(stage) {
-            isGameOver = false;
-            deck = [];
-            moveHistory = [];
-            clearedCategoriesCount = 0;
-            categoryTargetCounts = {};
+            isGameOver = false; deck = []; moveHistory = []; clearedCategoriesCount = 0; categoryTargetCounts = {};
             document.getElementById('btn-undo').style.opacity = '0.5';
-            
-            if (stage === 1) {
-                coins = 100;
-                inventory = { undo: 1, hint: 1, addAction: 0 };
-            } else {
-                inventory.undo = Math.max(1, inventory.undo);
-                inventory.hint = Math.max(1, inventory.hint);
-            }
-            
-            updateCoinDisplay();
-            updateInventoryUI();
-            
-            const config = getStageConfig(stage);
-            
-            document.querySelector('.game-layout').dataset.cols = config.cols;
-            
-            targetCategoriesCount = config.cats;
-            document.getElementById('stage-display').innerText = `Stage ${stage}`;
-            
-            const allCatKeys = Object.keys(categoryPool);
-            shuffle(allCatKeys);
-            const selectedCats = allCatKeys.slice(0, config.cats);
+            if (stage === 1) { coins = 100; inventory = { undo: 1, hint: 1, addAction: 0 }; } 
+            else { inventory.undo = Math.max(1, inventory.undo); inventory.hint = Math.max(1, inventory.hint); }
+            updateCoinDisplay(); updateInventoryUI();
+            const config = getStageConfig(stage); document.querySelector('.game-layout').dataset.cols = config.cols;
+            targetCategoriesCount = config.cats; document.getElementById('stage-display').innerText = `Stage ${stage}`;
+            const allCatKeys = Object.keys(categoryPool); shuffle(allCatKeys); const selectedCats = allCatKeys.slice(0, config.cats);
             
             for (let cat of selectedCats) {
-                const poolConfig = categoryPool[cat];
-                const wordCount = Math.floor(Math.random() * (config.maxW - config.minW + 1)) + config.minW;
+                const poolConfig = categoryPool[cat]; const wordCount = Math.floor(Math.random() * (config.maxW - config.minW + 1)) + config.minW;
                 categoryTargetCounts[cat] = wordCount + 1; 
-                
                 deck.push({ isCategoryCard: true, category: cat, word: cat, targetCount: wordCount });
-                
-                let wordsPool = [...poolConfig.words];
-                shuffle(wordsPool);
-                const selectedWords = wordsPool.slice(0, wordCount);
-                for (let word of selectedWords) {
-                    deck.push({ isCategoryCard: false, category: cat, word: word });
-                }
+                let wordsPool = [...poolConfig.words]; shuffle(wordsPool); const selectedWords = wordsPool.slice(0, wordCount);
+                for (let word of selectedWords) deck.push({ isCategoryCard: false, category: cat, word: word });
             }
-            shuffle(deck);
+            shuffle(deck); remainingActions = Math.floor(deck.length * 2.2); document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
             
-            remainingActions = Math.floor(deck.length * 2.2); 
-            document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-            
-            const foundationsDiv = document.getElementById('foundations');
-            const boardDiv = document.getElementById('board');
-            foundationsDiv.innerHTML = ''; boardDiv.innerHTML = '';
-            
-            const columns = [];
-            
-            for (let i = 0; i < config.foundations; i++) {
-                let fCol = document.createElement('div'); fCol.className = 'column foundation dropzone'; foundationsDiv.appendChild(fCol);
-            }
-            
-            for (let i = 0; i < config.cols; i++) {
-                let bCol = document.createElement('div'); bCol.className = 'column dropzone'; boardDiv.appendChild(bCol);
-                columns.push(bCol);
-            }
-            
+            const foundationsDiv = document.getElementById('foundations'); const boardDiv = document.getElementById('board');
+            foundationsDiv.innerHTML = ''; boardDiv.innerHTML = ''; const columns = [];
+            for (let i = 0; i < config.foundations; i++) { let fCol = document.createElement('div'); fCol.className = 'column foundation dropzone'; foundationsDiv.appendChild(fCol); }
+            for (let i = 0; i < config.cols; i++) { let bCol = document.createElement('div'); bCol.className = 'column dropzone'; boardDiv.appendChild(bCol); columns.push(bCol); }
             bindDropEvents();
             
             let cardIndex = 0;
             for (let i = 0; i < config.cols; i++) {
-                let cardCount = i + 2; 
-                if(cardIndex + cardCount > deck.length / 2) cardCount = 2; 
-                
+                let cardCount = i + 2; if(cardIndex + cardCount > deck.length / 2) cardCount = 2; 
                 for (let j = 0; j < cardCount; j++) {
-                    if (cardIndex >= deck.length) break;
-                    let card = deck[cardIndex++];
-                    let cardElement = createCardElement(card, j);
-                    
-                    columns[i].appendChild(cardElement);
-                    
-                    if (j === cardCount - 1) {
-                        flipCard(cardElement);
-                        cardElement.classList.remove('card-back', 'stacked-deck');
-                    } else {
-                        cardElement.classList.add('card-back');
-                        if (j > 0) cardElement.classList.add('stacked-deck');
-                    }
+                    if (cardIndex >= deck.length) break; let card = deck[cardIndex++]; let cardElement = createCardElement(card, j); columns[i].appendChild(cardElement);
+                    if (j === cardCount - 1) { flipCard(cardElement); cardElement.classList.remove('card-back', 'stacked-deck'); } 
+                    else { cardElement.classList.add('card-back'); if (j > 0) cardElement.classList.add('stacked-deck'); }
                 }
             }
-            
-            window.drawPile = deck.slice(cardIndex);
-            document.getElementById('waste-pile').innerHTML = '';
-            updateDeckUI();
-            adjustBoardHeight();
-            saveGameState(); 
+            window.drawPile = deck.slice(cardIndex); document.getElementById('waste-pile').innerHTML = ''; updateDeckUI(); adjustBoardHeight(); saveGameState(); 
         }
 
         function createCardElement(cardData, index) {
-            let el = document.createElement('div');
-            el.className = 'card';
-            el.style.top = (index * cardOffset) + 'px'; 
-            el.dataset.category = cardData.category;
-            el.dataset.word = cardData.word;
-            el.dataset.isCategoryCard = cardData.isCategoryCard;
-            el.dataset.targetCount = cardData.targetCount || ''; 
-            el.dataset.faceUp = 'false'; 
-            return el;
+            let el = document.createElement('div'); el.className = 'card'; el.style.top = (index * cardOffset) + 'px'; 
+            el.dataset.category = cardData.category; el.dataset.word = cardData.word; el.dataset.isCategoryCard = cardData.isCategoryCard;
+            el.dataset.targetCount = cardData.targetCount || ''; el.dataset.faceUp = 'false'; return el;
         }
 
         function adjustBoardHeight() {
             document.querySelectorAll('.board .column').forEach(col => {
                 const cards = col.querySelectorAll('.card');
-                if (cards.length > 0) {
-                    col.style.paddingBottom = (parseInt(cards[cards.length - 1].style.top) + 30) + 'px';
-                }
+                if (cards.length > 0) col.style.paddingBottom = (parseInt(cards[cards.length - 1].style.top) + 30) + 'px';
                 else col.style.paddingBottom = '0px';
             });
         }
 
-        function updateCoinDisplay() {
-            document.getElementById('coin-value').innerText = coins;
-        }
-        function addCoins(amount) {
-            coins += amount;
-            updateCoinDisplay();
-            saveToLocalStorage();
-        }
-        function consumeCoins(amount) {
-            if (coins >= amount) { coins -= amount; updateCoinDisplay(); saveToLocalStorage(); return true; }
-            return false;
-        }
+        function updateCoinDisplay() { document.getElementById('coin-value').innerText = coins; }
+        function addCoins(amount) { coins += amount; updateCoinDisplay(); saveToLocalStorage(); }
+        function consumeCoins(amount) { if (coins >= amount) { coins -= amount; updateCoinDisplay(); saveToLocalStorage(); return true; } return false; }
 
         function showPopup(type, onConfirm = null, config = null) {
-            const overlay = document.getElementById('overlay');
-            const title = document.getElementById('popup-title');
-            const desc = document.getElementById('popup-desc');
-            const btn = document.getElementById('popup-btn');
-            const cancelBtn = document.getElementById('popup-cancel');
-            
-            cancelBtn.style.display = 'none';
-            btn.onclick = () => { overlay.style.display = 'none'; if(onConfirm) onConfirm(); };
-            cancelBtn.onclick = () => { overlay.style.display = 'none'; };
-            
+            const overlay = document.getElementById('overlay'); const title = document.getElementById('popup-title'); const desc = document.getElementById('popup-desc');
+            const btn = document.getElementById('popup-btn'); const cancelBtn = document.getElementById('popup-cancel');
+            cancelBtn.style.display = 'none'; btn.onclick = () => { overlay.style.display = 'none'; if(onConfirm) onConfirm(); }; cancelBtn.onclick = () => { overlay.style.display = 'none'; };
             if(type === 'clear') {
-                title.innerText = 'STAGE CLEAR!'; title.style.color = '#00f3ff';
-                const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
+                title.innerText = 'STAGE CLEAR!'; title.style.color = '#00f3ff'; const earnedCoins = (remainingActions * 10) + (targetCategoriesCount * 10);
                 desc.innerHTML = `<span style="display: inline-flex; align-items: center; justify-content: center;">(<svg class="coin-icon" viewBox="0 0 24 24" style="margin: 0 4px;"><use href="#icon-coin"></use></svg> ${earnedCoins} 획득!)</span>`;
-                btn.innerText = '다음 스테이지';
-                addCoins(earnedCoins); 
-                btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
+                btn.innerText = '다음 스테이지'; addCoins(earnedCoins); btn.onclick = () => { overlay.style.display = 'none'; currentStage++; initGame(currentStage); };
             } else if (type === 'gameover') {
-                title.innerText = 'GAME OVER'; title.style.color = '#ff007f';
-                desc.innerText = '남은 행동 횟수가 없어요.';
-                btn.innerText = '행동 수 추가 아이템 사용';
-                cancelBtn.style.display = 'block';
-                btn.onclick = () => { 
-                    overlay.style.display = 'none'; 
-                    handleItemClick('add-action');
-                };
-                cancelBtn.onclick = () => { 
-                    overlay.style.display = 'none'; 
-                    initGame(currentStage); 
-                };
-            } else if (type === 'no-coin') {
-                title.innerText = 'COIN 부족'; title.style.color = '#ff007f';
-                desc.innerText = '코인이 부족합니다.';
-                btn.innerText = '확인';
+                title.innerText = 'GAME OVER'; title.style.color = '#ff007f'; desc.innerText = '남은 행동 횟수가 없어요.';
+                btn.innerText = '행동 수 추가 아이템 사용'; cancelBtn.style.display = 'block';
+                btn.onclick = () => { overlay.style.display = 'none'; handleItemClick('add-action'); }; cancelBtn.onclick = () => { overlay.style.display = 'none'; initGame(currentStage); };
+            } else if (type === 'no-coin') { title.innerText = 'COIN 부족'; title.style.color = '#ff007f'; desc.innerText = '코인이 부족합니다.'; btn.innerText = '확인';
             } else if (type === 'buy-item') {
-                title.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> 아이템 구매`; 
-                title.style.color = '#f3e600';
-                desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매할까요?`;
-                btn.innerText = '구매 및 사용';
-                cancelBtn.style.display = 'block';
-            } else if (type === 'no-moves') {
-                title.innerText = '이동 불가'; title.style.color = '#ff007f';
-                desc.innerText = '더 이상 이동할 수 없습니다.';
-                btn.innerText = '확인';
-            }
+                title.innerHTML = `<svg class="coin-icon" viewBox="0 0 24 24"><use href="#icon-coin"></use></svg> 아이템 구매`; title.style.color = '#f3e600';
+                desc.innerHTML = `<strong>${config.cost} 코인</strong>을 사용해<br>[${config.name}]을(를) 구매할까요?`; btn.innerText = '구매 및 사용'; cancelBtn.style.display = 'block';
+            } else if (type === 'no-moves') { title.innerText = '이동 불가'; title.style.color = '#ff007f'; desc.innerText = '더 이상 이동할 수 없습니다.'; btn.innerText = '확인'; }
             overlay.style.display = 'flex';
         }
 
-        function checkGameOver() {
-            if (remainingActions <= 0 && !isGameOver && clearedCategoriesCount < targetCategoriesCount) {
-                isGameOver = true;
-                setTimeout(() => showPopup('gameover'), 300);
-            }
-        }
+        function checkGameOver() { if (remainingActions <= 0 && !isGameOver && clearedCategoriesCount < targetCategoriesCount) { isGameOver = true; setTimeout(() => showPopup('gameover'), 300); } }
+        function consumeAction() { if (isGameOver) return; remainingActions--; document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`; checkGameOver(); }
         
-        function consumeAction() {
-            if (isGameOver) return;
-            remainingActions--;
-            document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-            checkGameOver();
-        }
-        
-        function bindDropEvents() {
-            document.querySelectorAll('.dropzone').forEach(zone => {
-                zone.removeEventListener('dragover', preventDefault);
-                zone.removeEventListener('drop', handleDropArea);
-                zone.addEventListener('dragover', preventDefault);
-                zone.addEventListener('drop', handleDropArea);
-            });
-        }
+        function bindDropEvents() { document.querySelectorAll('.dropzone').forEach(zone => { zone.removeEventListener('dragover', preventDefault); zone.removeEventListener('drop', handleDropArea); zone.addEventListener('dragover', preventDefault); zone.addEventListener('drop', handleDropArea); }); }
         function preventDefault(e) { e.preventDefault(); }
 
         function handleDropArea(e) {
@@ -730,80 +489,47 @@
             if (draggedCards.length > 0 && !isGameOver) {
                 saveGameState(); 
                 let success = executeDropLogic(this);
-                if(!success) {
-                    moveHistory.pop(); 
-                } else {
-                    saveToLocalStorage();
-                }
-                draggedCards = [];
+                if(!success) { moveHistory.pop(); } 
+                else { isDragSuccessful = true; saveToLocalStorage(); } // 성공 플래그 켜기
             }
         }
 
         function executeDropLogic(dropZoneElement) {
-            const isFoundation = dropZoneElement.parentNode.id === 'foundations';
-            const isBoard = dropZoneElement.parentNode.id === 'board';
-            let moveSuccessful = false;
+            const isFoundation = dropZoneElement.parentNode.id === 'foundations'; const isBoard = dropZoneElement.parentNode.id === 'board'; let moveSuccessful = false;
 
             if (isFoundation) {
-                const existingCards = dropZoneElement.querySelectorAll('.card');
-                let canDrop = false;
+                const existingCards = dropZoneElement.querySelectorAll('.card'); let canDrop = false;
                 if (existingCards.length === 0) { if (draggedCards[0].dataset.isCategoryCard === 'true') canDrop = true; } 
                 else { if (existingCards[0].dataset.category === draggedCards[0].dataset.category) canDrop = true; }
 
                 if (canDrop) {
-                    draggedCards.forEach(card => {
-                        card.style.top = '0px'; 
-                        dropZoneElement.appendChild(card);
-                        card.draggable = false; card.classList.add('locked');
-                    });
+                    draggedCards.forEach(card => { card.style.top = '0px'; dropZoneElement.appendChild(card); card.draggable = false; card.classList.add('locked'); });
                     moveSuccessful = true;
-                    
                     let label = dropZoneElement.querySelector('.foundation-label');
-                    if (!label) {
-                        label = document.createElement('div'); label.className = 'foundation-label';
-                        dropZoneElement.appendChild(label);
-                    }
+                    if (!label) { label = document.createElement('div'); label.className = 'foundation-label'; dropZoneElement.appendChild(label); }
                     
-                    const currentCardsCount = dropZoneElement.querySelectorAll('.card').length;
-                    const currentCategory = draggedCards[0].dataset.category;
-                    
+                    const currentCardsCount = dropZoneElement.querySelectorAll('.card').length; const currentCategory = draggedCards[0].dataset.category;
                     label.innerHTML = `${currentCategory}<span class="sub-count">(${currentCardsCount - 1}/${categoryTargetCounts[currentCategory] - 1})</span>`;
                     dropZoneElement.appendChild(label);
                     
                     if (currentCardsCount === categoryTargetCounts[currentCategory]) {
                         clearedCategoriesCount++;
                         setTimeout(() => {
-                            dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0');
-                            if(label) label.style.opacity = '0';
-                            setTimeout(() => {
-                                dropZoneElement.innerHTML = '';
-                                adjustBoardHeight(); 
-                                saveToLocalStorage();
-                                if(clearedCategoriesCount === targetCategoriesCount) {
-                                    isGameOver = true;
-                                    setTimeout(() => showPopup('clear'), 400);
-                                }
-                            }, 500); 
+                            dropZoneElement.querySelectorAll('.card').forEach(c => c.style.opacity = '0'); if(label) label.style.opacity = '0';
+                            setTimeout(() => { dropZoneElement.innerHTML = ''; adjustBoardHeight(); saveToLocalStorage(); if(clearedCategoriesCount === targetCategoriesCount) { isGameOver = true; setTimeout(() => showPopup('clear'), 400); } }, 500); 
                         }, 800);
                     }
                 }
             } else if (isBoard) {
-                const existingCards = dropZoneElement.querySelectorAll('.card');
-                let canDrop = false;
+                const existingCards = dropZoneElement.querySelectorAll('.card'); let canDrop = false;
                 if (existingCards.length === 0) { canDrop = true; } 
                 else {
                     const lastCard = existingCards[existingCards.length - 1];
-                    if (lastCard.dataset.category === draggedCards[0].dataset.category) {
-                        canDrop = draggedCards[0].dataset.isCategoryCard !== 'true';
-                    }
+                    if (lastCard.dataset.category === draggedCards[0].dataset.category) { canDrop = draggedCards[0].dataset.isCategoryCard !== 'true'; }
                 }
 
                 if (canDrop) {
-                    let count = existingCards.length;
-                    draggedCards.forEach((card, index) => {
-                        card.style.top = ((count + index) * cardOffset) + 'px';
-                        dropZoneElement.appendChild(card);
-                    });
+                    let count = existingCards.length; draggedCards.forEach((card, index) => { card.style.top = ((count + index) * cardOffset) + 'px'; dropZoneElement.appendChild(card); });
                     moveSuccessful = true;
                 }
             }
@@ -813,9 +539,7 @@
                 const remainingCards = sourceColumn.querySelectorAll('.card');
                 if (remainingCards.length > 0) {
                     flipCard(remainingCards[remainingCards.length - 1]);
-                    if (remainingCards.length === 1) {
-                        remainingCards[0].classList.remove('card-back', 'stacked-deck');
-                    }
+                    if (remainingCards.length === 1) remainingCards[0].classList.remove('card-back', 'stacked-deck');
                 }
             }
             adjustBoardHeight(); 
@@ -824,53 +548,53 @@
 
         function rebindCardEvents() {
             document.querySelectorAll('.card').forEach(card => {
-                card.removeEventListener('dragstart', handleDragStart);
-                card.removeEventListener('dragend', handleDragEnd);
-                card.removeEventListener('touchstart', handleTouchStart);
-                card.removeEventListener('touchmove', handleTouchMove);
-                card.removeEventListener('touchend', handleTouchEnd);
-                
+                card.removeEventListener('dragstart', handleDragStart); card.removeEventListener('dragend', handleDragEnd); card.removeEventListener('touchstart', handleTouchStart); card.removeEventListener('touchmove', handleTouchMove); card.removeEventListener('touchend', handleTouchEnd);
                 if(card.draggable) {
-                    card.addEventListener('dragstart', handleDragStart);
-                    card.addEventListener('dragend', handleDragEnd);
-                    card.addEventListener('touchstart', handleTouchStart, { passive: false });
-                    card.addEventListener('touchmove', handleTouchMove, { passive: false });
-                    card.addEventListener('touchend', handleTouchEnd);
+                    card.addEventListener('dragstart', handleDragStart); card.addEventListener('dragend', handleDragEnd); card.addEventListener('touchstart', handleTouchStart, { passive: false }); card.addEventListener('touchmove', handleTouchMove, { passive: false }); card.addEventListener('touchend', handleTouchEnd);
                 }
             });
         }
 
         function handleDragStart(e) {
             if (isGameOver || !this.draggable) return; 
-            const column = this.parentNode;
-            const cards = Array.from(column.querySelectorAll('.card'));
-            draggedCards = cards.slice(cards.indexOf(this));
-            sourceColumn = column; 
+            isDragSuccessful = false; // 드래그 시작 시 초기화
+            const column = this.parentNode; const cards = Array.from(column.querySelectorAll('.card'));
+            draggedCards = cards.slice(cards.indexOf(this)); sourceColumn = column; 
             setTimeout(() => { draggedCards.forEach(card => card.style.opacity = '0'); }, 0);
         }
+
         function handleDragEnd(e) {
             setTimeout(() => {
-                draggedCards.forEach(card => { if (card.style.opacity === '0') card.style.opacity = '1'; });
+                draggedCards.forEach(card => { 
+                    if (card.style.opacity === '0') card.style.opacity = '1'; 
+                    // [손맛 연출] 드롭 성공/실패에 따른 모션 처리
+                    if (isDragSuccessful) {
+                        card.classList.add('drop-pop');
+                        setTimeout(() => card.classList.remove('drop-pop'), 300);
+                    } else {
+                        card.classList.add('shake-error');
+                        setTimeout(() => card.classList.remove('shake-error'), 300);
+                    }
+                });
                 draggedCards = []; sourceColumn = null;
             }, 0);
         }
+
         function handleTouchStart(e) {
             if (isGameOver || !this.draggable) return;
-            const column = this.parentNode;
-            const cards = Array.from(column.querySelectorAll('.card'));
-            draggedCards = cards.slice(cards.indexOf(this));
-            sourceColumn = column;
-            const touch = e.touches[0];
-            touchStartX = touch.clientX; touchStartY = touch.clientY;
+            const column = this.parentNode; const cards = Array.from(column.querySelectorAll('.card'));
+            draggedCards = cards.slice(cards.indexOf(this)); sourceColumn = column;
+            const touch = e.touches[0]; touchStartX = touch.clientX; touchStartY = touch.clientY;
             draggedCards.forEach((card, index) => { card.style.zIndex = 1000 + index; card.style.transition = 'none'; });
         }
+
         function handleTouchMove(e) {
             if (draggedCards.length === 0) return;
             e.preventDefault(); 
-            const touch = e.touches[0];
-            const dx = touch.clientX - touchStartX; const dy = touch.clientY - touchStartY;
+            const touch = e.touches[0]; const dx = touch.clientX - touchStartX; const dy = touch.clientY - touchStartY;
             draggedCards.forEach(card => { card.style.transform = `translate(${dx}px, ${dy}px) scale(1.05)`; });
         }
+
         function handleTouchEnd(e) {
             if (draggedCards.length === 0) return;
             const touch = e.changedTouches[0];
@@ -878,39 +602,41 @@
             const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
             const dropZoneElement = dropTarget ? dropTarget.closest('.dropzone') : null;
             
-            draggedCards.forEach(card => {
-                card.style.pointerEvents = '';
-                card.style.transition = 'transform 0.2s ease, opacity 0.3s ease';
-                card.style.transform = ''; card.style.zIndex = '';
-            });
-
+            let success = false;
             if (dropZoneElement) {
-                saveGameState();
-                let success = executeDropLogic(dropZoneElement);
-                if(!success) {
-                    moveHistory.pop();
-                } else {
-                    saveToLocalStorage(); 
-                }
+                saveGameState(); success = executeDropLogic(dropZoneElement);
+                if(!success) { moveHistory.pop(); } else { saveToLocalStorage(); }
             }
+            
+            draggedCards.forEach(card => {
+                card.style.pointerEvents = ''; card.style.transition = 'transform 0.2s ease, opacity 0.3s ease'; card.style.transform = ''; card.style.zIndex = '';
+                // [손맛 연출] 모바일 터치 드롭 성공/실패에 따른 모션 처리
+                if (success) {
+                    card.classList.add('drop-pop');
+                    setTimeout(() => card.classList.remove('drop-pop'), 300);
+                } else {
+                    card.classList.add('shake-error');
+                    setTimeout(() => card.classList.remove('shake-error'), 300);
+                }
+            });
             draggedCards = []; sourceColumn = null;
         }
 
+        /* 손맛 핵심: 3D 플립 애니메이션 (CSS transition + JS 컨트롤) */
         function flipCard(cardElement) {
             if (!cardElement || cardElement.dataset.faceUp === 'true') return;
             
-            cardElement.style.opacity = '0';
+            // 카드가 90도 회전하며 얇아지는 모션
+            cardElement.style.transition = 'transform 0.15s ease-in';
+            cardElement.style.transform = 'perspective(500px) rotateY(90deg)';
             
             setTimeout(() => {
+                // 90도 도달 시점에 뒷면 디자인 끄고 앞면 디자인 활성화
                 cardElement.classList.remove('card-back', 'stacked-deck');
                 cardElement.dataset.faceUp = 'true';
                 
                 const word = cardElement.dataset.word;
-                
-                let textClass = '';
-                if (word.length >= 8) {
-                    textClass = ' longest-text'; 
-                }
+                let textClass = ''; if (word.length >= 8) textClass = ' longest-text'; 
                 
                 let innerHTML = '';
                 if (cardElement.dataset.isCategoryCard === 'true') {
@@ -922,219 +648,100 @@
                 cardElement.innerHTML = innerHTML;
                 cardElement.draggable = true;
                 
-                cardElement.style.opacity = '1';
-                rebindCardEvents();
+                // 다시 0도로 펴지며 등장하는 모션
+                cardElement.style.transition = 'transform 0.15s ease-out';
+                cardElement.style.transform = 'perspective(500px) rotateY(0deg)';
+                
+                setTimeout(() => {
+                    cardElement.style.transform = ''; // 트랜스폼 리셋
+                    rebindCardEvents();
+                }, 150);
             }, 150);
         }
 
-        const deckPileDiv = document.getElementById('deck-pile');
-        const wastePileDiv = document.getElementById('waste-pile');
+        const deckPileDiv = document.getElementById('deck-pile'); const wastePileDiv = document.getElementById('waste-pile');
 
         function updateDeckUI() {
             if (window.drawPile && window.drawPile.length > 0) {
                 deckPileDiv.classList.add('card-back');
-                if (window.drawPile.length > 1) {
-                    deckPileDiv.classList.add('stacked-deck');
-                } else {
-                    deckPileDiv.classList.remove('stacked-deck');
-                }
+                if (window.drawPile.length > 1) { deckPileDiv.classList.add('stacked-deck'); } else { deckPileDiv.classList.remove('stacked-deck'); }
                 deckPileDiv.style.border = '3px solid var(--neon-cyan)'; deckPileDiv.innerText = '';
             } else {
-                deckPileDiv.classList.remove('card-back', 'stacked-deck');
-                deckPileDiv.style.background = 'rgba(11, 2, 29, 0.5)';
-                deckPileDiv.style.border = '2px dashed rgba(0, 243, 255, 0.4)';
-                deckPileDiv.innerText = '↺'; deckPileDiv.style.color = 'var(--neon-cyan)';
+                deckPileDiv.classList.remove('card-back', 'stacked-deck'); deckPileDiv.style.background = 'rgba(11, 2, 29, 0.5)';
+                deckPileDiv.style.border = '2px dashed rgba(0, 243, 255, 0.4)'; deckPileDiv.innerText = '↺'; deckPileDiv.style.color = 'var(--neon-cyan)';
             }
         }
 
         deckPileDiv.addEventListener('click', () => {
             if (isGameOver) return; 
             saveGameState();
-            
             if (window.drawPile && window.drawPile.length > 0) {
-                const cardData = window.drawPile.pop();
-                let cardElement = createCardElement(cardData, 0);
-                
-                wastePileDiv.appendChild(cardElement); 
-                flipCard(cardElement); 
-                
-                consumeAction(); 
+                const cardData = window.drawPile.pop(); let cardElement = createCardElement(cardData, 0); wastePileDiv.appendChild(cardElement); flipCard(cardElement); consumeAction(); 
             } else {
                 const wasteCards = Array.from(wastePileDiv.querySelectorAll('.card'));
                 if (wasteCards.length > 0) {
                     for (let k = wasteCards.length - 1; k >= 0; k--) {
-                        let cardEl = wasteCards[k];
-                        window.drawPile.push({
-                            category: cardEl.dataset.category, word: cardEl.dataset.word,
-                            isCategoryCard: cardEl.dataset.isCategoryCard === 'true',
-                            targetCount: cardEl.dataset.targetCount
-                        });
-                        cardEl.remove();
+                        let cardEl = wasteCards[k]; window.drawPile.push({ category: cardEl.dataset.category, word: cardEl.dataset.word, isCategoryCard: cardEl.dataset.isCategoryCard === 'true', targetCount: cardEl.dataset.targetCount }); cardEl.remove();
                     }
                     consumeAction(); 
                 }
             }
-            updateDeckUI();
-            adjustBoardHeight(); 
-            saveToLocalStorage(); 
+            updateDeckUI(); adjustBoardHeight(); saveToLocalStorage(); 
         });
 
         function applyHint(sourceStack, targetElement) {
-            sourceStack.forEach(c => c.classList.add('hint-active'));
-            targetElement.classList.add('hint-active');
-            setTimeout(() => {
-                sourceStack.forEach(c => c.classList.remove('hint-active'));
-                targetElement.classList.remove('hint-active');
-            }, 2000);
+            sourceStack.forEach(c => c.classList.add('hint-active')); targetElement.classList.add('hint-active');
+            setTimeout(() => { sourceStack.forEach(c => c.classList.remove('hint-active')); targetElement.classList.remove('hint-active'); }, 2000);
         }
 
         function executeItemLogic(type) {
             if (type === 'undo') {
-                const prevState = moveHistory.pop();
-                remainingActions = prevState.actions;
-                clearedCategoriesCount = prevState.clearedCat;
-                document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-                
-                document.getElementById('foundations').innerHTML = prevState.foundations;
-                document.getElementById('board').innerHTML = prevState.board;
-                document.getElementById('waste-pile').innerHTML = prevState.waste;
-                
-                window.drawPile = prevState.drawPileCopy;
-                updateDeckUI();
-                adjustBoardHeight();
-                bindDropEvents();
-                rebindCardEvents();
-                
-                if (moveHistory.length <= 1) document.getElementById('btn-undo').style.opacity = '0.5';
-                saveToLocalStorage(); 
-                return true;
+                const prevState = moveHistory.pop(); remainingActions = prevState.actions; clearedCategoriesCount = prevState.clearedCat; document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
+                document.getElementById('foundations').innerHTML = prevState.foundations; document.getElementById('board').innerHTML = prevState.board; document.getElementById('waste-pile').innerHTML = prevState.waste;
+                window.drawPile = prevState.drawPileCopy; updateDeckUI(); adjustBoardHeight(); bindDropEvents(); rebindCardEvents();
+                if (moveHistory.length <= 1) document.getElementById('btn-undo').style.opacity = '0.5'; saveToLocalStorage(); return true;
             }
-            
             if (type === 'hint') {
-                const wasteCards = document.getElementById('waste-pile').querySelectorAll('.card');
-                const wasteCard = wasteCards.length > 0 ? wasteCards[wasteCards.length - 1] : null;
-
-                const boardCols = Array.from(document.querySelectorAll('#board .column'));
-                let boardMovableCards = [];
-                boardCols.forEach(col => {
-                    const cards = Array.from(col.querySelectorAll('.card[draggable="true"]'));
-                    boardMovableCards.push(...cards);
-                });
-
+                const wasteCards = document.getElementById('waste-pile').querySelectorAll('.card'); const wasteCard = wasteCards.length > 0 ? wasteCards[wasteCards.length - 1] : null;
+                const boardCols = Array.from(document.querySelectorAll('#board .column')); let boardMovableCards = [];
+                boardCols.forEach(col => { const cards = Array.from(col.querySelectorAll('.card[draggable="true"]')); boardMovableCards.push(...cards); });
                 const allCandidates = wasteCard ? [wasteCard, ...boardMovableCards] : boardMovableCards;
-                
                 for(let card of allCandidates) {
-                    const cardCat = card.dataset.category;
-                    const isCatCard = card.dataset.isCategoryCard === 'true';
-                    const sourceCol = card.parentNode;
-                    const cardsInSource = Array.from(sourceCol.querySelectorAll('.card'));
-                    const cardIndex = cardsInSource.indexOf(card);
-                    const draggedStack = cardsInSource.slice(cardIndex);
-                    
+                    const cardCat = card.dataset.category; const isCatCard = card.dataset.isCategoryCard === 'true'; const sourceCol = card.parentNode;
+                    const cardsInSource = Array.from(sourceCol.querySelectorAll('.card')); const cardIndex = cardsInSource.indexOf(card); const draggedStack = cardsInSource.slice(cardIndex);
                     const foundations = Array.from(document.querySelectorAll('#foundations .column'));
                     for(let fCol of foundations) {
                         const existing = fCol.querySelectorAll('.card');
-                        if ((existing.length === 0 && isCatCard) || (existing.length > 0 && existing[0].dataset.category === cardCat)) {
-                            applyHint(draggedStack, fCol);
-                            return true;
-                        }
+                        if ((existing.length === 0 && isCatCard) || (existing.length > 0 && existing[0].dataset.category === cardCat)) { applyHint(draggedStack, fCol); return true; }
                     }
                 }
-
                 for(let card of allCandidates) {
-                    const cardCat = card.dataset.category;
-                    const isCatCard = card.dataset.isCategoryCard === 'true';
-                    const sourceCol = card.parentNode;
-                    const cardsInSource = Array.from(sourceCol.querySelectorAll('.card'));
-                    const cardIndex = cardsInSource.indexOf(card);
-                    const draggedStack = cardsInSource.slice(cardIndex);
-                    
+                    const cardCat = card.dataset.category; const isCatCard = card.dataset.isCategoryCard === 'true'; const sourceCol = card.parentNode;
+                    const cardsInSource = Array.from(sourceCol.querySelectorAll('.card')); const cardIndex = cardsInSource.indexOf(card); const draggedStack = cardsInSource.slice(cardIndex);
                     for(let bCol of boardCols) {
-                        if (bCol === sourceCol) continue; 
-                        const existing = bCol.querySelectorAll('.card');
-                        
-                        if (existing.length === 0) {
-                            if (sourceCol.id !== 'waste-pile' && cardIndex > 0 && cardsInSource[cardIndex - 1].dataset.faceUp === 'false') {
-                                applyHint(draggedStack, bCol);
-                                return true;
-                            }
-                        } else {
-                            const lastExisting = existing[existing.length - 1];
-                            if (lastExisting.dataset.category === cardCat && !isCatCard) {
-                                applyHint(draggedStack, lastExisting);
-                                return true;
-                            }
-                        }
+                        if (bCol === sourceCol) continue; const existing = bCol.querySelectorAll('.card');
+                        if (existing.length === 0) { if (sourceCol.id !== 'waste-pile' && cardIndex > 0 && cardsInSource[cardIndex - 1].dataset.faceUp === 'false') { applyHint(draggedStack, bCol); return true; } } 
+                        else { const lastExisting = existing[existing.length - 1]; if (lastExisting.dataset.category === cardCat && !isCatCard) { applyHint(draggedStack, lastExisting); return true; } }
                     }
                 }
-                
-                if((window.drawPile && window.drawPile.length > 0) || wasteCards.length > 0) {
-                    deckPileDiv.classList.add('hint-active');
-                    setTimeout(() => deckPileDiv.classList.remove('hint-active'), 2000);
-                    return true;
-                }
-                
-                showPopup('no-moves');
-                return false;
+                if((window.drawPile && window.drawPile.length > 0) || wasteCards.length > 0) { deckPileDiv.classList.add('hint-active'); setTimeout(() => deckPileDiv.classList.remove('hint-active'), 2000); return true; }
+                showPopup('no-moves'); return false;
             }
-            
-            if (type === 'add-action') {
-                remainingActions += 10;
-                isGameOver = false; 
-                document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`;
-                saveToLocalStorage(); 
-                return true;
-            }
+            if (type === 'add-action') { remainingActions += 10; isGameOver = false; document.getElementById('action-display').innerText = `남은 행동: ${remainingActions}`; saveToLocalStorage(); return true; }
         }
 
         function handleItemClick(type) {
-            if (isGameOver && type !== 'add-action') return;
-            if (type === 'undo' && moveHistory.length <= 1) return;
-
+            if (isGameOver && type !== 'add-action') return; if (type === 'undo' && moveHistory.length <= 1) return;
             const config = itemConfig[type];
-
-            if (inventory[config.key] > 0) {
-                if (executeItemLogic(type)) {
-                    inventory[config.key]--;
-                    updateInventoryUI();
-                    saveToLocalStorage(); 
-                }
-            } else {
-                showPopup('buy-item', () => {
-                    if (coins >= config.cost) {
-                        if (executeItemLogic(type)) {
-                            consumeCoins(config.cost);
-                        }
-                    } else {
-                        showPopup('no-coin');
-                    }
-                }, config);
-            }
+            if (inventory[config.key] > 0) { if (executeItemLogic(type)) { inventory[config.key]--; updateInventoryUI(); saveToLocalStorage(); } } 
+            else { showPopup('buy-item', () => { if (coins >= config.cost) { if (executeItemLogic(type)) { consumeCoins(config.cost); } } else { showPopup('no-coin'); } }, config); }
         }
 
-        document.getElementById('btn-undo').addEventListener('click', () => handleItemClick('undo'));
-        document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint'));
-        document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
+        document.getElementById('btn-undo').addEventListener('click', () => handleItemClick('undo')); document.getElementById('btn-hint').addEventListener('click', () => handleItemClick('hint')); document.getElementById('btn-add-action').addEventListener('click', () => handleItemClick('add-action'));
+        document.getElementById('btn-restart-current').addEventListener('click', () => { if (confirm(`스테이지 ${currentStage}을(를) 처음부터 다시 시작할까요?`)) { initGame(currentStage); saveToLocalStorage(); } });
+        document.getElementById('btn-restart-all').addEventListener('click', () => { if (confirm(`모든 저장 데이터를 삭제하고 1스테이지부터 다시 시작할까요?`)) { localStorage.removeItem('worditaire_save'); currentStage = 1; initGame(1); saveToLocalStorage(); } });
 
-        document.getElementById('btn-restart-current').addEventListener('click', () => {
-            if (confirm(`스테이지 ${currentStage}을(를) 처음부터 다시 시작할까요?`)) {
-                initGame(currentStage);
-                saveToLocalStorage();
-            }
-        });
-        
-        document.getElementById('btn-restart-all').addEventListener('click', () => {
-            if (confirm(`모든 저장 데이터를 삭제하고 1스테이지부터 다시 시작할까요?`)) {
-                localStorage.removeItem('worditaire_save');
-                currentStage = 1;
-                initGame(1);
-                saveToLocalStorage();
-            }
-        });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadDataAndStart();
-        });
+        window.addEventListener('DOMContentLoaded', () => { loadDataAndStart(); });
 
     </script>
 </body>
